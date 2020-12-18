@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/null">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/null"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2020-12-18 19:24:49'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Hexo</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Hexo</h1><div id="site-subtitle"><span id="subtitle"></span></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/12/18/sparkMLlib/" title="sparkMLlib.">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="sparkMLlib."></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/sparkMLlib/" title="sparkMLlib.">sparkMLlib.</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.708Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content"># 1. 准备工作：
+# 一、准备工作：
+
+激活环境变量
+
+启动 hadoop
+
+启动 spark
+
+检查
+
+上传数据
+123hadoop fs -mkdir &#x2F;input&#x2F;mllibhadoop fs -put &#x2F;data&#x2F;train.tsv &#x2F;input&#x2F;mllib&#x2F;hadoop fs -put &#x2F;data&#x2F;test.tsv &#x2F;input&#x2F;mllib&#x2F;
+
+检查
+1hadoop fs -ls &#x2F;input&#x2F;mllib
+
+启动 pyspark
+创建目录～/pyspark-workspace/mllib/，在该目录中启动 Pyspark，创建一个 Notebook。
+
+# 二、 读取数据
+读取 hdfs 上的 train.tsv 文件，并查看数据项
+1234567from pyspark import SparkContext,SparkConffrom pyspark.sql import SQLContextconf = SparkConf()c ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/12/18/spark-streaming/" title="spark-Streaming">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-Streaming"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/spark-streaming/" title="spark-Streaming">spark-Streaming</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.705Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content"># Spark Streaming
+# 设置环境变量
+修改～/.bashrc     注释掉 jupyter，notebook。再指定 PYSPARK_DRIVER_PYTHON 和 PYTHONPATH
+1234567# pyspark# export PYSPARK_DRIVER_PYTHON=jupyterexport PYSPARK_DRIVER_PYTHON=/usr/bin/python3# export PYSPARK_DRIVER_PYTHON_OPTS=&#x27;notebook&#x27;export PYSPARK_PYTHON=python3# spark streamingexport PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH    
+使环境变量生效
+1source ~/.bashrc
+测试
+
+# 文件流
+监控一个目录，若有新文件，Spark 就会处理这个文件。但是如果修改文件内容，Spark 是不会发现的。
+设置监控目录为
+1/h ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/12/18/spark-practice/" title="spark-practice">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-practice"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/spark-practice/" title="spark-practice">spark-practice</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.703Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">Spark
+实验目的
+安装spark并熟悉pyspark 的RDD算子操作
+实验过程
+## 一、Spark local模式安装
+# 1.1 安装 scala
+123456789101112cp ~/big_data_tools/scala-2.12.8.tgz /apps/tar zxvf /apps/scala-2.12.8.tgz -C /apps/mv /apps/scala-2.12.8/ /apps/scala# 删除压缩包rm /apps/scala-2.12.8.tgz# 添加环境变量vim ~/.bashrc# Scalaexport SCALA_HOME=/apps/scalaexport PATH=$SCALA_HOME/bin:$PATH# 使配置生效source ~/.bashrc
+# 1.2 安装 spark
+123456789101112cp ~/big_data_tools/spark-2.4.3-bin-hadoop2.7.tgz /appstar zxvf /apps/spark-2.4.3-bin-hadoop2.7.tgz -C /apps/mv  ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/12/18/spark-install/" title="spark-install">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-install"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/spark-install/" title="spark-install">spark-install</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.701Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">Spark
+实验目的
+安装spark并熟悉pyspark 的RDD算子操作
+实验过程
+## 一、Spark local模式安装
+# 1.1 安装 scala
+123456789101112cp ~/big_data_tools/scala-2.12.8.tgz /apps/tar zxvf /apps/scala-2.12.8.tgz -C /apps/mv /apps/scala-2.12.8/ /apps/scala# 删除压缩包rm /apps/scala-2.12.8.tgz# 添加环境变量vim ~/.bashrc# Scalaexport SCALA_HOME=/apps/scalaexport PATH=$SCALA_HOME/bin:$PATH# 使配置生效source ~/.bashrc
+# 1.2 安装 spark
+123456789101112cp ~/big_data_tools/spark-2.4.3-bin-hadoop2.7.tgz /appstar zxvf /apps/spark-2.4.3-bin-hadoop2.7.tgz -C /apps/mv  ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/12/18/kafka/" title="kafka">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="kafka"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/kafka/" title="kafka">kafka</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.699Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">kafka
+实验目的
+安装kafka,并整合flume和kafka,整合sparkStreaming和kafka
+实验内容
+
+ 一、安装kafka,并整合flume和kafka,
+
+1.安装kafka
+[下载](http://kafka.apache.org/downloads)
+复制 kafka 到 /apps 下，进行解压，并删除压缩包
+1234cp ~/big_data_tools/kafka_2.12-2.6.0.tgz /apps/tar -xzvf /apps/kafka_2.12-2.6.0.tgz -C /apps/mv /apps/kafka_2.12-2.6.0 kafkarm -rf /apps/kafka_2.12-2.6.0.tgz 
+2.使用Kafka
+启动zookeeper服务
+ Kafka 自带了 ZooKeeper，直接使用脚本启动单节点的 ZooKeeper 即可。 
+1/apps/kafka/bin/zookeeper-server-start.sh -daemon /apps/kafka/config/zookeeper.properties 
+ ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/12/18/hive_QL/" title="hive-QL">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hive-QL"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/hive_QL/" title="hive-QL">hive-QL</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.698Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">Hive
+实验目的
+了解hive中的数据模型，熟悉hive QL语句。
+实验内容
+一、安装Hive并配置
+- hive安装并配置
+12345678910111213141516171819202122232425262728293031323334353637383940414243#!/bin/bashif [ -d &#x27;/apps/hive&#x27;  ];then        sudo rm -rf /apps/hivefi# clear envsed -i &#x27;/HIVE_HOME/d&#x27; ~/.bashrccp ~/big_data_tools/apache-hive-2.3.5-bin.tar.gz /apps/tar zxvf /apps/apache-hive-2.3.5-bin.tar.gz -C /apps/mv /apps/apache-hive-2.3.5-bin/ /apps/hive rm -rf /apps/apache-hive-2.3.5-bin.tar.gz# add hive to pathecho &#x27;expo ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/12/18/hive-practice/" title="Hive-practice">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hive-practice"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/hive-practice/" title="Hive-practice">Hive-practice</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.696Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">Hive高级用法
+实验目的
+熟悉hive QL语句实现表的各种连接方式，使用hiveserver2建立hive远程连接。
+实验内容
+一、表连接
+1.表连接（内连接，左外连接，右外连接和全外连接）
+
+hive 只支持等值连接，即 ON 子句中使用等号连接，不支持非等值连接。
+如果连接语句中有 WHERE 子句，会先执行 JOIN 子句，再执行 WHERE 子句。
+可以 JOIN 多个表
+
+启动 hadoop 并进入 hive
+12start-all.shhive
+建立连个表 stu 和 score, 分别从本地文件载入数据。
+12create table stu(id int, name string) row format delimited fields terminated by &#x27;,&#x27; stored as textfile;create table score(s_id int, score int) row format delimited fields terminated by &#x27;,&#x27; stored as textfile;
+
+12l ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/12/18/hbase/" title="hbase">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hbase"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/hbase/" title="hbase">hbase</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.694Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">hbase基础
+实验目的
+安装hbase并熟悉常用操作
+实验过程
+一、安装hbase
+- 建立shell脚本，以普通用户身份执行
+  1bash hbase_conf.sh
+
+
+shell 脚本
+12345678910111213141516171819#!/bin/bash# install jdkcp ~/big_data_tools/hbase1.4.10.tar.gz /apps/tar -xzvf /apps/hbase1.4.10.tar.gz -C /apps/rm -rf /apps//hbase1.4.10.tar.gz# add hbase to pathecho &#x27;HBASE_HOME=/apps/hbase&#x27; &gt;&gt; ~/.bashrcecho &#x27;export PATH=$HBASE_HOME/bin:$HBASE_HOME/sbin:$PATH&#x27; &gt;&gt; ~/.bashrc# config hbase cd /apps/hbase/confecho &#x27;export JAVA_HOME=/ap ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/12/18/hadoop_shell-and-java_API/" title="hadoop shell and java API">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hadoop shell and java API"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/hadoop_shell-and-java_API/" title="hadoop shell and java API">hadoop shell and java API</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.692Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">hadoop shell & java API
+实验目的
+熟悉hadoop 的shell 和java API
+实验过程
+一、shell api
+12345678910hadoop fs -cp &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;hadoop fs -mv &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;hadoop fs -rm &#x2F;input&#x2F;testfile1hadoop fs -rm -r &#x2F;input&#x2F;testfile1hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input&#x2F;hadoop fs -get &#x2F;input&#x2F;testfile1 &#x2F;data&#x2F;hadoop fs -mkdir -p &#x2F;input&#x2F;test&#x2F;testfile1hadoop fs -test -e &#x2F;in ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/12/18/Sqoop/" title="Sqoop">     <img class="post_bg" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Sqoop"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/12/18/Sqoop/" title="Sqoop">Sqoop</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2020-12-18T10:41:48.690Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="content">Sqoop
+实验目的
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+实验内容
+安装，配置Sqoop
+1234567891011121314151617181920212223242526272829#!/bin/bash                                                                if [ -d &#x27;/apps/sqoop&#x27; ];then    sudo rm -rf /apps/sqoopfi# 将Sqoop的安装包复制到/apps下，并解压sudo cp ~/big_data_tools/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz /apps/tar xzvf /apps/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C /apps/# 删除压缩包sudo rm -rf /apps/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz# 修改名称mv /apps/sqoop-1.4.7.b ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/sparkMLlib/" title="sparkMLlib."><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="sparkMLlib."/></a><div class="content"><a class="title" href="/2020/12/18/sparkMLlib/" title="sparkMLlib.">sparkMLlib.</a><time datetime="2020-12-18T10:41:48.708Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-streaming/" title="spark-Streaming"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-Streaming"/></a><div class="content"><a class="title" href="/2020/12/18/spark-streaming/" title="spark-Streaming">spark-Streaming</a><time datetime="2020-12-18T10:41:48.705Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-practice/" title="spark-practice"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-practice"/></a><div class="content"><a class="title" href="/2020/12/18/spark-practice/" title="spark-practice">spark-practice</a><time datetime="2020-12-18T10:41:48.703Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-install/" title="spark-install"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-install"/></a><div class="content"><a class="title" href="/2020/12/18/spark-install/" title="spark-install">spark-install</a><time datetime="2020-12-18T10:41:48.701Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/kafka/" title="kafka"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="kafka"/></a><div class="content"><a class="title" href="/2020/12/18/kafka/" title="kafka">kafka</a><time datetime="2020-12-18T10:41:48.699Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/12/"><span class="card-archive-list-date">December 2020</span><span class="card-archive-list-count">14</span></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">14</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"></div></div><div class="webinfo-item"><div class="item-name">Last Push :</div><div class="item-count" id="last-push-date" data-lastPushDate="2020-12-18T11:24:49.650Z"></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

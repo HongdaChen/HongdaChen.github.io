@@ -1,0 +1,410 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>hbase | Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="hbase基础 实验目的 安装hbase并熟悉常用操作 实验过程 一、安装hbase - 建立shell脚本，以普通用户身份执行   1bash hbase_conf.sh   shell 脚本 12345678910111213141516171819#!&#x2F;bin&#x2F;bash# install jdkcp ~&#x2F;big_data_tools&#x2F;hbase1.4.10.tar.gz &#x2F;apps&#x2F;tar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hbase">
+<meta property="og:url" content="http://example.com/2020/12/18/hbase/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="hbase基础 实验目的 安装hbase并熟悉常用操作 实验过程 一、安装hbase - 建立shell脚本，以普通用户身份执行   1bash hbase_conf.sh   shell 脚本 12345678910111213141516171819#!&#x2F;bin&#x2F;bash# install jdkcp ~&#x2F;big_data_tools&#x2F;hbase1.4.10.tar.gz &#x2F;apps&#x2F;tar">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2020-12-18T10:41:48.694Z">
+<meta property="article:modified_time" content="2020-12-18T10:41:48.694Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2020/12/18/hbase/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}
+
+// https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
+const getScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script')
+  script.src = url
+  script.async = true
+  script.onerror = reject
+  script.onload = script.onreadystatechange = function() {
+    const loadState = this.readyState
+    if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+    script.onload = script.onreadystatechange = null
+    resolve()
+  }
+  document.head.appendChild(script)
+})</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-18 18:41:48'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a></div></div></div><hr/></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Hexo</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">hbase</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-12-18T10:41:48.694Z" title="Created 2020-12-18 18:41:48">2020-12-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-12-18T10:41:48.694Z" title="Updated 2020-12-18 18:41:48">2020-12-18</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1><center>hbase基础</center></h1>
+<h2>实验目的</h2>
+安装hbase并熟悉常用操作
+<h2>实验过程</h2>
+<h3>一、安装hbase</h3>
+- 建立shell脚本，以普通用户身份执行
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash hbase_conf.sh</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>shell 脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> install jdk</span></span><br><span class="line">cp ~/big_data_tools/hbase1.4.10.tar.gz /apps/</span><br><span class="line">tar -xzvf /apps/hbase1.4.10.tar.gz -C /apps/</span><br><span class="line">rm -rf /apps//hbase1.4.10.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> add hbase to path</span></span><br><span class="line">echo &#x27;HBASE_HOME=/apps/hbase&#x27; &gt;&gt; ~/.bashrc</span><br><span class="line">echo &#x27;export PATH=$HBASE_HOME/bin:$HBASE_HOME/sbin:$PATH&#x27; &gt;&gt; ~/.bashrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> config hbase</span> </span><br><span class="line">cd /apps/hbase/conf</span><br><span class="line">echo &#x27;export JAVA_HOME=/apps/java&#x27; &gt;&gt; hbase-env.sh</span><br><span class="line">echo &#x27;export HBASE_MANAGES_ZK=true&#x27; &gt;&gt; hbase-env.sh</span><br><span class="line">echo &#x27;export HBASE_CLASSPATH=/apps/hbase/conf&#x27; &gt;&gt; hbase-env.sh</span><br><span class="line">cp -f ~/big_data_tools/conf_hbase/hbase-site.xml /apps/hbase/conf/</span><br><span class="line">mkdir -p /data/tmp/zookeeper-hbase</span><br><span class="line"></span><br><span class="line">sudo reboot      </span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>~/big_data_tools/conf_hbase/hbase-site.xml</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> &lt;configuration&gt;                                                                  </span><br><span class="line"> &lt;property&gt;</span><br><span class="line">     &lt;name&gt;hbase.master&lt;/name&gt;</span><br><span class="line">     &lt;value&gt;localhost&lt;/value&gt;</span><br><span class="line"> &lt;/property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">      &lt;name&gt;hbase.rootdir&lt;/name&gt;</span><br><span class="line">      &lt;value&gt;hdfs://localhost:9000/hbase&lt;/value&gt;</span><br><span class="line">  &lt;/property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">      &lt;name&gt;hbase.cluster.distributed&lt;/name&gt;</span><br><span class="line">      &lt;value&gt;true&lt;/value&gt;</span><br><span class="line">  &lt;/property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">      &lt;name&gt;hbase.zookeeper.quorum&lt;/name&gt;</span><br><span class="line">      &lt;value&gt;localhost&lt;/value&gt;</span><br><span class="line">  &lt;/property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">      &lt;name&gt;hbase.zookeeper.property.dataDir&lt;/name&gt;</span><br><span class="line">      &lt;value&gt;/data/tmp/zookeeper-hbase&lt;/value&gt;</span><br><span class="line">  &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>hbase.master：HBase 主节点地址。</li>
+<li>hbase.rootdir：HBase 文件在 HDFS 上的存储位置。</li>
+<li>hbase.cluster.distributed：HBase 是否为分布式模式。</li>
+<li>hbase.zookeeper.quorum：配置 ZooKeeper 服务器地址。</li>
+<li>hbase.zookeeper.property.dataDir：HBase 在 ZooKeeper 上存储数据的位置。</li>
+</ul>
+</li>
+<li>
+<p>启动 hbase</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start-all.sh</span><br><span class="line">start-hbase.sh</span><br></pre></td></tr></table></figure>
+<p><img src="/images/1603684102731.png" alt="1603684102731"></p>
+</li>
+</ul>
+<h3>二、熟悉hbase常用操作</h3>
+- 测试hbase,进入hbase shell接口
+<p><img src="/images/1603684415504.png" alt="1603684415504"></p>
+<ul>
+<li>
+<p>list 查看表</p>
+<p><img src="/images/1603684445271.png" alt="1603684445271"></p>
+</li>
+<li>
+<p>创建一张表 tb，表中含有一个列簇 mycf。</p>
+</li>
+</ul>
+<p><img src="/images/1603684492782.png" alt="1603684492782"></p>
+<ul>
+<li>HBase 在 HDFS 上的存储位置是在 hbase-site.xml 设置的，可以使用 HDFS shell 命令进 行查看</li>
+</ul>
+<p><img src="/images/1603684553447.png" alt="1603684553447"></p>
+<ul>
+<li>
+<p>help</p>
+<p><img src="/images/1603684649100.png" alt="1603684649100"></p>
+</li>
+</ul>
+<h4>general命令</h4>
+- 查看服务状态
+<p><img src="/images/1603684748383.png" alt="1603684748383"></p>
+<ul>
+<li>
+<p>查看版本号</p>
+<p><img src="/images/1603684773276.png" alt="1603684773276"></p>
+</li>
+</ul>
+<h4>DDL操作（data defination language）定义、修改、查询</h4>
+- 创建一个表，包含两个列族
+<p><img src="/images/1603684900280.png" alt="1603684900280"></p>
+<ul>
+<li>
+<p>列出所有表</p>
+<p><img src="/images/1603684933889.png" alt="1603684933889"></p>
+</li>
+<li>
+<p>获取表的描述</p>
+<p><img src="/images/1603685365606.png" alt="1603685365606"></p>
+</li>
+<li>
+<p>删除一个列族</p>
+<p><img src="/images/1603688906830.png" alt="1603688906830"></p>
+</li>
+<li>
+<p>删除一个表，先 disable, 再 drop</p>
+<p><img src="/images/1603689047213.png" alt="1603689047213"></p>
+</li>
+<li>
+<p>查询表是否可用</p>
+<p><img src="/images/1603689125724.png" alt="1603689125724"></p>
+</li>
+</ul>
+<h4>DML操作(data manupulation language)增、删、改、查</h4>
+- 创建一个具有三个列族(name,address,info)的表students
+<p><img src="/images/1603689464049.png" alt="1603689464049"></p>
+<ul>
+<li>
+<p>插入数据（put）</p>
+<p><img src="/images/1603689664259.png" alt="1603689664259"></p>
+</li>
+<li>
+<p>获取数据（get）</p>
+<ul>
+<li>获取 students 表的 xiaoming 行的所有数据</li>
+</ul>
+<p><img src="/images/1603689759984.png" alt="1603689759984"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族的所有数据</li>
+</ul>
+<p><img src="/images/1603689849355.png" alt="1603689849355"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族中 city 列的数据</li>
+</ul>
+<p><img src="/images/1603689895403.png" alt="1603689895403"></p>
+</li>
+<li>
+<p>更新一条记录（put）</p>
+<ul>
+<li>更新 students 表的 xiaoming 行、address 列族中 province 列的值</li>
+</ul>
+<p><img src="/images/1603690020203.png" alt="1603690020203"></p>
+<ul>
+<li>查看更新的结果</li>
+</ul>
+<p><img src="/images/1603690059663.png" alt="1603690059663"></p>
+</li>
+<li>
+<p>全表扫描（scan）</p>
+<p><img src="/images/1603690098444.png" alt="1603690098444"></p>
+</li>
+<li>
+<p>删除一列（delete）</p>
+<ul>
+<li>删除 students 表 xiaoming 行的 address 列族的列 city</li>
+</ul>
+<p><img src="/images/1603690263254.png" alt="1603690263254"></p>
+<ul>
+<li>查看操作结果</li>
+</ul>
+<p><img src="/images/1603690364530.png" alt="1603690364530"></p>
+</li>
+<li>
+<p>删除行的所有单元格（deleteall）</p>
+<ul>
+<li>使用 deleteall 命令删除 students 表 xiaoming 行的所有列</li>
+</ul>
+<p><img src="/images/1603690709013.png" alt="dd"></p>
+</li>
+<li>
+<p>统计表中的行数</p>
+<p><img src="/images/1603690974518.png" alt="1603690974518"></p>
+</li>
+<li>
+<p>清空整张表</p>
+<p><img src="/images/1603691074155.png" alt="1603691074155"></p>
+</li>
+<li>
+<p>存储多各版本的数据 创建的表，默认列族的 VERSIONS=1，也就是只会存取一个版本的列数据，当再次插入的 时候，后面的值会覆盖前面的值</p>
+</li>
+</ul>
+<p><img src="/images/1603691262153.png" alt="1603691262153"></p>
+<ul>
+<li>修改表结构，让表支持存储 3 个本版</li>
+</ul>
+<p><img src="/images/1603691355303.png" alt="1603691355303"></p>
+<p><img src="/images/1603691377795.png" alt="1603691377795"></p>
+<ul>
+<li>
+<p>插入三行数据</p>
+<p><img src="/images/1603691457623.png" alt="1603691457623"></p>
+</li>
+<li>
+<p>一次去除三个数据</p>
+<p><img src="/images/1603691528463.png" alt="1603691528463"></p>
+</li>
+</ul>
+<h3>三、hbase的API</h3>
+<ul>
+<li>
+<p>新建项目 hbase_api</p>
+<p><img src="/images/1603860576873.png" alt="1603860576873"></p>
+</li>
+<li>
+<p>将 HBase 目录 /apps/hbase/lib 中所 有的 jar 包和 /apps/hbase/lib/client-facing-thirdparty 下的所有 jar 包导入到 hbase 的 工程当中。</p>
+</li>
+<li>
+<p>将以上 jar 包先导入到～/big_data_tools/hbase_lib/</p>
+</li>
+</ul>
+<p><img src="/images/1603861069752.png" alt="1603861069752"></p>
+<ul>
+<li>导入 jar 包</li>
+</ul>
+<p><img src="/images/1603861286795.png" alt="1603861286795"></p>
+<ul>
+<li>
+<p>运行 as java</p>
+<p><img src="/images/1603861510250.png" alt="1603861510250"></p>
+</li>
+</ul>
+<h3>四、将tsv文件存入hbase</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -mkdir /input/music/</span><br><span class="line">hadoop fs -put ~/music.txt /input/music/</span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用 HBase 提供的 importtsv 工具在 HBase 上创建表 music, 并指定列族和列。</li>
+</ul>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop jar /apps/hbase/lib/hbase-server-1.4.10.jar importtsv -Dimporttsv.bulk.output=/user/li -Dimporttsv.columns=HBASE_ROW_KEY,info:name,info:singer,info:gender,info:ryghme,info:terminal music /input/music/</span><br></pre></td></tr></table></figure>
+<ul>
+<li><img src="/images/1603862187841.png" alt="1603862187841"></li>
+</ul>
+<p>​       此时数据还没有存入 HBase，数据暂存在 HDFS 上的 /user/chen/tmp</p>
+<ul>
+<li>
+<p><img src="/images/1603864669150.png" alt="1603864669150"></p>
+</li>
+<li>
+<p>要把数据存入 HBase，还需要调用 HBase 提供的 completebulkload 工具</p>
+</li>
+</ul>
+<p><img src="/images/1603865004256.png" alt="1603865004256"></p>
+<ul>
+<li>
+<p>查看表中数据</p>
+<p><img src="/images/1603865032469.png" alt="1603865032469"></p>
+</li>
+<li>
+<p>创建 namelist 用于存储 mapreduce 的结果</p>
+<p><img src="/images/1603865151095.png" alt="1603865151095"></p>
+</li>
+<li>
+<p>新建项目 hbase_mapreduce</p>
+<p><img src="/images/1603865489410.png" alt="1603865489410"></p>
+</li>
+<li>
+<p>导入新的 jar 包</p>
+<p><img src="/images/1603865467696.png" alt="1603865467696"></p>
+</li>
+<li>
+<p>run as hadoop</p>
+<p><img src="/images/1603865580989.png" alt="1603865580989"></p>
+</li>
+<li>
+<p>查看结果</p>
+<p><img src="/images/1603865645364.png" alt="1603865645364"></p>
+</li>
+<li>
+<p>浏览器查看 localhost:16010</p>
+<p><img src="/images/1603865804764.png" alt="1603865804764"></p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">John Doe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2020/12/18/hbase/">http://example.com/2020/12/18/hbase/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/12/18/hive-practice/"><img class="prev-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">Hive-practice</div></div></a></div><div class="next-post pull-right"><a href="/2020/12/18/hadoop_shell-and-java_API/"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">hadoop shell and java API</div></div></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="card-content"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">hbase基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.1.</span> <span class="toc-text">实验目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.2.</span> <span class="toc-text">实验过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.2.1.</span> <span class="toc-text">一、安装hbase</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.2.2.</span> <span class="toc-text">二、熟悉hbase常用操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">general命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">DDL操作（data defination language）定义、修改、查询</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">DML操作(data manupulation language)增、删、改、查</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.2.3.</span> <span class="toc-text">三、hbase的API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.2.4.</span> <span class="toc-text">四、将tsv文件存入hbase</span></a></li></ol></li></ol></li></ol></div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/sparkMLlib/" title="sparkMLlib."><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="sparkMLlib."/></a><div class="content"><a class="title" href="/2020/12/18/sparkMLlib/" title="sparkMLlib.">sparkMLlib.</a><time datetime="2020-12-18T10:41:48.708Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-streaming/" title="spark-Streaming"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-Streaming"/></a><div class="content"><a class="title" href="/2020/12/18/spark-streaming/" title="spark-Streaming">spark-Streaming</a><time datetime="2020-12-18T10:41:48.705Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-practice/" title="spark-practice"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-practice"/></a><div class="content"><a class="title" href="/2020/12/18/spark-practice/" title="spark-practice">spark-practice</a><time datetime="2020-12-18T10:41:48.703Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/spark-install/" title="spark-install"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="spark-install"/></a><div class="content"><a class="title" href="/2020/12/18/spark-install/" title="spark-install">spark-install</a><time datetime="2020-12-18T10:41:48.701Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/18/kafka/" title="kafka"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="kafka"/></a><div class="content"><a class="title" href="/2020/12/18/kafka/" title="kafka">kafka</a><time datetime="2020-12-18T10:41:48.699Z" title="Created 2020-12-18 18:41:48">2020-12-18</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>

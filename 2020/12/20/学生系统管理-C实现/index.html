@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    大数据 |  Aikedaer
+    学生系统管理-C实现 |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -44,170 +44,392 @@
       
     <main class="content on">
       <section class="outer">
-  
-  <article class="articles">
+  <article
+  id="post-学生系统管理-C实现"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-    
-    <h1 class="page-type-title">大数据</h1>
-    
-    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  学生系统管理-C实现
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/" class="article-date">
+  <time datetime="2020-12-20T13:33:22.171Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/C%E8%AF%AD%E8%A8%80/">C语言</a>
+  </div>
   
-  
-  
-  
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2020" class="archive-year">2020</a>
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">957</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">5 分钟</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
-    <div class="archives">
       
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/20/Hadoop-Streaming/" class="archive-article-date">
-  <time datetime="2020-12-20T01:20:33.022Z" itemprop="datePublished">12/20</time>
-</a>
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
        
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/20/Hadoop-Streaming/"
-    >hadoop-streaming</a> 
-</h2>
+  <p>C 语言链表实现学生管理系统</p>
+<p>修改成绩并重新排序流程图</p>
+<p><img src="/images/1608471473621.png" alt="ss"></p>
+<pre class="line-numbers language-none"><code class="language-none">#include &quot;stdio.h&quot;
+#include &quot;stdlib.h&quot;
+#include &quot;string.h&quot;
+
+struct Student
+&#123;
+	unsigned long	ID;
+	char			Name[21];
+	float			Score;
+&#125;;
+
+struct Node
+&#123;
+	struct Student	data;
+	struct Node *	next;
+&#125;;
+
+int Count&#x3D;0;
+struct Node * H&#x3D;NULL;
+
+struct Node * Insert(struct Node * Head, struct Node * pNode)
+&#123;
+	struct Node * p&#x3D;Head,*q&#x3D;Head;
+
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		Head&#x3D;pNode;
+		
+	&#125;
+	else 
+	&#123;
+		while(p)
+		&#123;
+			if (pNode-&gt;data.Score &lt; p-&gt;data.Score)
+			&#123;
+				q&#x3D;p;
+				p&#x3D;p-&gt;next;
+			&#125;
+			else
+			&#123;
+				if (p&#x3D;&#x3D;Head)
+				&#123;
+					Head&#x3D;pNode;
+					pNode-&gt;next&#x3D;p;
+
+				&#125;
+				else
+				&#123;
+					q-&gt;next&#x3D;pNode;
+					pNode-&gt;next&#x3D;p;
+				    
+				&#125;
+				break;
+			&#125;
+		&#125;
+		if (p&#x3D;&#x3D;NULL)
+		&#123;
+			q-&gt;next&#x3D;pNode;
+		&#125;
+	&#125;
+	return Head;
+&#125;
+
+void Display(struct Node * Head)
+&#123;
+	if (Head&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;当前没有学生成绩信息！\n&quot;);
+		return;
+	&#125;
+
+	struct Node * p&#x3D;Head;
+	for (int i&#x3D;0;i&lt;Count;i++)
+	&#123;
+		printf(&quot;学号：%lu\t姓名：%s\t成绩：%.1f\n&quot;,p-&gt;data.ID,p-&gt;data.Name,p-&gt;data.Score);
+		p&#x3D;p-&gt;next;
+	&#125;
+&#125;
+
+void Add() 
+&#123;
+	unsigned long ID;
+	char Name[21];
+	float Score;
+	struct Node * Head&#x3D;NULL;
+
+	printf(&quot;请输入学号：&quot;);
+	scanf(&quot;%lu&quot;,&amp;ID);
+
+	while (ID)
+	&#123;
+		printf(&quot;请输入姓名：&quot;);
+		scanf(&quot;%s&quot;,Name);
+		printf(&quot;请输入成绩：&quot;);
+		scanf(&quot;%f&quot;,&amp;Score);
+
+		struct Node * pNew&#x3D;(struct Node *) malloc(sizeof (struct Node));
+		pNew-&gt;data.ID&#x3D;ID;
+		strcpy(pNew-&gt;data.Name,Name);
+		pNew-&gt;data.Score&#x3D;Score;
+		pNew-&gt;next&#x3D;NULL;
+
+		Count++;
+
+		Head&#x3D;Insert(Head,pNew);
+
+		printf(&quot;请输入学号：&quot;);
+		scanf(&quot;%lu&quot;,&amp;ID);
+	&#125;
+
+	H&#x3D;Head;
+&#125;
+
+
+void Search(struct Node * Head)
+&#123;
+	char Name[21];
+	int i&#x3D;0;
+	struct Node * p&#x3D;Head;
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;当前没有学生成绩信息！\n&quot;);
+		return;
+	&#125;
+	printf(&quot;请输入姓名：&quot;);
+	scanf(&quot;%s&quot;,Name);
+	while(p)
+	&#123;
+		for(i&#x3D;0;Name[i]!&#x3D;0;i++)
+		&#123;
+			if(Name[i]!&#x3D;p-&gt;data.Name[i])
+			break;
+		&#125;
+		if(Name[i])
+		p&#x3D;p-&gt;next;
+		else
+		&#123;
+			printf(&quot;%.2f\n&quot;,p-&gt;data.Score);
+			return ;	
+		&#125;
+		
+	&#125;
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;无当前学生信息\n&quot;);
+		return;
+	&#125;
+	
+&#125;
+
+void Change(struct Node * Head)
+&#123;
+	unsigned long ID;
+	struct Node *m&#x3D;Head,*n&#x3D;Head,*d&#x3D;Head;
+	float Score;
+	printf(&quot;请输入学号：&quot;);
+	scanf(&quot;%lu&quot;,&amp;ID);
+	printf(&quot;请输入成绩：&quot;);
+	scanf(&quot;%f&quot;,&amp;Score);
+	while(m)
+	&#123;
+		if(ID&#x3D;&#x3D;m-&gt;data.ID)
+		&#123;
+			if(m&#x3D;&#x3D;Head)
+			&#123;
+				m-&gt;data.Score&#x3D;Score;
+				Head&#x3D;m-&gt;next;
+			
+			&#125;
+			else if(m-&gt;next&#x3D;&#x3D;NULL)
+			&#123;
+				n-&gt;next&#x3D;NULL;
+				m-&gt;data.Score&#x3D;Score;
+			&#125;
+			else
+			&#123;
+				d&#x3D;m-&gt;next;
+			    m-&gt;data.Score&#x3D;Score;
+			    n-&gt;next&#x3D;d;
+			&#125;
+			Head&#x3D;Insert(Head,m);
+			H&#x3D;Head;
+			return;
+		&#125;
+		else
+		&#123;
+			n&#x3D;m;
+			m&#x3D;m-&gt;next;
+		&#125;	
+	&#125;
+	if(m&#x3D;&#x3D;NULL)
+	printf(&quot;无当前学生信息\n&quot;);
+	return;
+&#125;
+
+int main()
+&#123;
+	
+	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	printf(&quot;&lt;                   学生管理系统                          &gt;\n&quot;);
+ 	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
+	int a&#x3D;0;
+	scanf(&quot;%d&quot;,&amp;a);
+	while (a)
+	&#123;
+
+		switch(a)
+		&#123;
+			case 1:
+				Add(); 
+				break;
+			case 2:
+				Display(H);
+				break;
+			case 3:
+				Search(H);
+				break;
+			case 4:
+				Change(H);
+				break;
+		
+		&#125;
+    printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
+	scanf(&quot;%d&quot;,&amp;a);
+
+	 &#125; 
+	 printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	return 0;
+&#125;</code></pre>
+<img src="https://img-blog.csdnimg.cn/20190627224645441.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom: 33%;" />
+<ul>
+<li></li>
+</ul>
  
-
-    </header>
-    
+      <!-- reward -->
       
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/20/spark-streaming/" class="archive-article-date">
-  <time datetime="2020-12-20T01:20:08.922Z" itemprop="datePublished">12/20</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/20/spark-streaming/"
-    >spark-Streaming</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/20/kafka/" class="archive-article-date">
-  <time datetime="2020-12-20T01:19:42.742Z" itemprop="datePublished">12/20</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/20/kafka/"
-    >kafka</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/20/Sqoop/" class="archive-article-date">
-  <time datetime="2020-12-20T01:19:12.919Z" itemprop="datePublished">12/20</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/20/Sqoop/"
-    >Sqoop</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/12/20/Flume/" class="archive-article-date">
-  <time datetime="2020-12-20T01:06:26.560Z" itemprop="datePublished">12/20</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/12/20/Flume/"
-    >flume</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
       
     </div>
-  </div>
-  
-  
-
-  
-  <nav class="page-nav">
     
-    <a class="extend prev" rel="prev" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">上一页</a><a class="page-number" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">1</a><span class="page-number current">2</span>
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag">C语言</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/12/20/hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">hadoop伪分布式</div>
+      </a>
+    
   </nav>
+
   
+   
+  
+</article>
+
 </section>
       <footer class="footer">
   <div class="outer">
@@ -357,6 +579,23 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">

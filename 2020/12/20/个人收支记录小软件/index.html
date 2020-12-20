@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    auto scripts |  Aikedaer
+    个人收支记录小软件 |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-auto_install"
+  id="post-个人收支记录小软件"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,18 +56,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  auto scripts
+  个人收支记录小软件
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/20/auto_install/" class="article-date">
-  <time datetime="2020-12-20T01:35:31.392Z" itemprop="datePublished">2020-12-20</time>
+      <a href="/2020/12/20/%E4%B8%AA%E4%BA%BA%E6%94%B6%E6%94%AF%E8%AE%B0%E5%BD%95%E5%B0%8F%E8%BD%AF%E4%BB%B6/" class="article-date">
+  <time datetime="2020-12-20T13:08:40.983Z" itemprop="datePublished">2020-12-20</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+    <a class="article-category-link" href="/categories/java%E7%BB%83%E4%B9%A0/">java练习</a>
   </div>
   
 <div class="word_count">
@@ -75,7 +75,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">2.2k</span>
+            <span class="post-count">571</span>
         </span>
     </span>
 
@@ -84,191 +84,142 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">13 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>安装并配置 hadoop,eclipse</p>
-<pre class="line-numbers language-none"><code class="language-none">if [ -d &#39;&#x2F;apps&#39; ];then
-    sudo rm -rf &#x2F;apps
-fi
-if [ -d &#39;&#x2F;data&#39; ];then
-    sudo rm -rf &#x2F;data
-fi
-sudo rm -rf ~&#x2F;.ssh&#x2F;*
-# clear env
-sed -i &#39;&#x2F;JAVA_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-sed -i &#39;&#x2F;HADOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+  <h3 id="效果展示"><a class="markdownIt-Anchor" href="#效果展示">#</a> 效果展示</h3>
+<p><img src="https://img-blog.csdnimg.cn/20200807191617404.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200807191649818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="utilityjava"><a class="markdownIt-Anchor" href="#utilityjava">#</a> Utility.java</h3>
+<pre class="line-numbers language-none"><code class="language-none">import java.util.*;
+public class Utility&#123;
 
-mkdir apps
-mkdir data
+        private static Scanner scanner &#x3D; new Scanner(System.in);
 
-sudo mv apps &#x2F;
-sudo mv data &#x2F;
-# install openssh-server
-sudo apt -y update 
-sudo apt -y upgrade 
-echo &quot;install vim ...&quot;
-sudo apt -y install vim
-echo &quot;install openssh-server&quot;
-sudo apt -y install openssh-server
-ssh-keygen -t rsa 
-cp ~&#x2F;.ssh&#x2F;id_rsa.pub ~&#x2F;.ssh&#x2F;authorized_keys
+        public static char readMenuSelection()&#123;
+                char c;
+                for(; ; )&#123;
+                        String str &#x3D; readKeyBoard(1);
+                        c &#x3D; str.charAt(0);
+                        if (c !&#x3D;&#39;1&#39; &amp;&amp; c !&#x3D; &#39;2&#39; &amp;&amp; c !&#x3D; &#39;3&#39; &amp;&amp; c !&#x3D; &#39;4&#39;)&#123;
+                                System.out.println(&quot;选择错误，请重新输入：&quot;);
+                        &#125;else break;
+                &#125;
+                return c;
+        &#125;
 
-# install jdk
-cp ~&#x2F;big_data_tools&#x2F;jdk-8u191-linux-x64.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;jdk1.8.0_191 &#x2F;apps&#x2F;java
-rm -rf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  
+        public static int readNumber()&#123;
+                int n;
+                for(; ; )&#123;
+                        String str &#x3D; readKeyBoard(4);
+                        try&#123;
+                                n &#x3D; Integer.parseInt(str);
+                                break;
+                        &#125;catch(NumberFormatException e)&#123;
+                                System.out.println(&quot;数字输入错误，请重新输入：&quot;);
+                        &#125;
+                &#125;
+                return n;
+        &#125;
 
-# add jdk to path
-echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$JAVA_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+        public static String readString()&#123;
+                String str &#x3D; readKeyBoard(8);
+                return str;
+        &#125;
+public static char readConfirmSelection()&#123;
+                char c;
+                for(; ; )&#123;
+                        String str &#x3D; readKeyBoard(1).toUpperCase();
+                        c &#x3D; str.charAt(0);
+                        if(c &#x3D;&#x3D; &#39;Y&#39; || c &#x3D;&#x3D; &#39;N&#39;)&#123;
+                                break;
+                        &#125;else&#123;
+                                System.out.print(&quot;选择错误，请重新输入：&quot;);
+                        &#125;
+                &#125;
+                return c;
+        &#125;
 
-# install hadoop
-cp ~&#x2F;big_data_tools&#x2F;hadoop-3.0.0.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;hadoop-3.0.0 &#x2F;apps&#x2F;hadoop
-rm -rf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz 
+        public static String readKeyBoard(int limit)&#123;
+                label:for (; ; )&#123;
+                        String str &#x3D; scanner.next();
+                        if(str.length() &gt; limit)&#123;
+                                System.out.println(&quot;输入过长，请重新出入：&quot;);
+                                continue label;
+                        &#125;else&#123;
+                                return str;
+                        &#125;
+                &#125;
+        &#125;
+&#125;
+                                                    </code></pre>
+<h3 id="familyaccountjava"><a class="markdownIt-Anchor" href="#familyaccountjava">#</a> FamilyAccount.java</h3>
+<pre class="line-numbers language-none"><code class="language-none">class FamilyAccount&#123;
+        public static void main(String[] args)&#123;
+                boolean isFlag &#x3D; true;
+                int balance &#x3D; 12000;
+                String detail &#x3D; (&quot;收支\t交易额度\t账户剩余\t交易说明\n收入\t&quot;+balance+&quot;\t\t&quot;+balance+&quot;\t\t&quot;+&quot;家里寄来\n&quot;);
+                while(isFlag)&#123;
+                        System.out.println();
+                        System.out.println(&quot;------------家庭收支记账软件--------------&quot;);
+                        System.out.println(&quot;             1 收支明细&quot;);
+                        System.out.println(&quot;             2 登记收入&quot;);
+                        System.out.println(&quot;             3 登记支出&quot;);
+                        System.out.println(&quot;             4 退出&quot;);
+                        System.out.print(&quot;             请选择&lt;1-4&gt;:&quot;);
 
-# add hadoop to path
-echo &#39;export HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-# config hadoop
-#cp -f ~&#x2F;big_data_tools&#x2F;conf_hadoop&#x2F;* &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hadoop.tmp.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;tmp&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;fs.defaultFS&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;dfs.namenode.name.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;name&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.datanode.data.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;data&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.replication&lt;\&#x2F;name&gt;&lt;value&gt;1&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.permissions.enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hdfs-site.xml
-
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;mapreduce.framework.name&lt;\&#x2F;name&gt;&lt;value&gt;yarn&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml
-
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;yarn.nodemanager.aux-services&lt;\&#x2F;name&gt;&lt;value&gt;mapreduce_shuffle&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-check-enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;\&#x2F;name&gt;&lt;value&gt;5&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml
-
-sed -i &quot;54,54s&#x2F;.*&#x2F;export JAVA_HOME&#x3D;\&#x2F;apps\&#x2F;java&#x2F;g&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;tmp
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs
-
-export PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;bin:$PATH
-
-hadoop namenode -format
-
-# install eclipse
-cp ~&#x2F;big_data_tools&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz -C &#x2F;apps&#x2F;
-cp ~&#x2F;big_data_tools&#x2F;hadoop-eclipse-plugin-2.6.0.jar &#x2F;apps&#x2F;eclipse&#x2F;dropins&#x2F;
-rm -rf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz
-sudo reboot</code></pre>
-<p>安装并配置 hbase</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-# install hbase
-
-if [-d &#39;&#x2F;apps&#x2F;hbase&#39;];then
-    sudo rm -rf &#x2F;apps&#x2F;hbase
-fi
-
-cp ~&#x2F;big_data_tools&#x2F;hbase-1.4.0-bin.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz -C &#x2F;apps&#x2F;
-rm -rf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz 
-mv &#x2F;apps&#x2F;hbase-1.4.0 &#x2F;apps&#x2F;hbase
-# clear env
-if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&#39; ];then
-    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
-fi
-sed -i &#39;&#x2F;HBASE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-
-# add hbase to path
-echo &#39;export HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-# config hbase 
-echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hbase.master&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.rootdir&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000\&#x2F;hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.cluster.distributed&lt;\&#x2F;name&gt;&lt;value&gt;true&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.quorum&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.property.dataDir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;zookeeper-hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-site.xml
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
-
-sudo reboot</code></pre>
-<p>安装并配置 hive</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-if [ -d &#39;&#x2F;apps&#x2F;hive&#39;  ];then
-    sudo rm -rf &#x2F;apps&#x2F;hive
-fi
-if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp&#39; ];then
-    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
-fi
-# clear env
-sed -i &#39;&#x2F;HIVE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-
-cp ~&#x2F;big_data_tools&#x2F;apache-hive-2.3.5-bin.tar.gz &#x2F;apps&#x2F;
-tar zxvf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;apache-hive-2.3.5-bin &#x2F;apps&#x2F;hive 
-rm -rf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz
-
-# add hive to path
-echo &#39;export HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HIVE_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;hive&#x2F;lib&#x2F;
-# config hive
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-default.xml.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
-
-sed -i &quot;s&#x2F;\$&#123;system:java.io.tmpdir&#125;&#x2F;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-sed -i &quot;s&#x2F;\$&#123;system:user.name&#125;&#x2F;root&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-sed -i &quot;545,545s&#x2F;.*&#x2F;&lt;value&gt;jdbc:mysql:\&#x2F;\&#x2F;localhost:3306\&#x2F;hive?createDatabaseIfNotExsit&#x3D;true;characterEncoding&#x3D;latin1\&amp;useSSL&#x3D;false&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;1020,1020s&#x2F;.*&#x2F;&lt;value&gt;com.mysql.jdbc.Driver&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;1045,1045s&#x2F;.*&#x2F;&lt;value&gt;root&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;530,530s&#x2F;.*&#x2F;&lt;value&gt;123456&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-# 
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh 
-echo &#39;HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
-echo &#39;export HIVE_CONF_DIR&#x3D;&#x2F;apps&#x2F;hive&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
-# logger
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
-
-sed -i &quot;24,24s&#x2F;.*&#x2F;property.hive.log.dir&#x3D;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp\&#x2F;log&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
-
-# restart
-sudo reboot</code></pre>
-<p>安装并配置 mysql</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-sudo apt -y update
-sudo apt -y upgrade
-sudo apt -y install mysql-server
-
-sudo service mysql restart
+                        char selection &#x3D; Utility.readMenuSelection();
+                        switch(selection)&#123;
+                                case &#39;1&#39;:
+                                        System.out.print(detail);
+                                        break;
+                                case &#39;2&#39;:
+                                        System.out.print(&quot;收入金额：&quot;);
+                                        int money1 &#x3D; Utility.readNumber();
+                                        System.out.print(&quot;备注：&quot;);
+                                        String info1 &#x3D; Utility.readString();
+                                        balance &#x3D; balance + money1;
+                                        detail +&#x3D; (&quot;收入\t&quot;+money1+&quot;\t\t&quot;+balance+&quot;\t\t&quot;+info1+&quot;\n&quot;);
+                                        System.out.println(&quot;---------------完成----------------&quot;);
+                                        break;
+                                case &#39;3&#39;:
+                                        System.out.print(&quot;支出金额：&quot;);
+                                        int money2 &#x3D; Utility.readNumber();
+                                        System.out.print(&quot;备注：&quot;);
+                                        String info2 &#x3D; Utility.readString();
+                                        balance &#x3D; balance - money2;
+                                        detail +&#x3D; (&quot;支出\t&quot;+money2+&quot;\t\t&quot;+balance+&quot;\t\t&quot;+info2+&quot;\n&quot;);
+                                        System.out.println(&quot;---------------完成----------------&quot;);
+                                        break;
+                                case &#39;4&#39;:
+                                        System.out.print(&quot;确认是否退出（Y&#x2F;N）:&quot;);
+                                        char confirm &#x3D; Utility.readConfirmSelection();
+										 if (confirm &#x3D;&#x3D; &#39;Y&#39;)&#123;
+                                                isFlag &#x3D; false;
+                                       &#125;        
+                        &#125;
+                &#125;
+        &#125;
 
 
-sudo mysql&lt;&lt;EOF
-update mysql.user set authentication_string&#x3D;PASSWORD(&#39;123456&#39;),plugin&#x3D;&#39;mysql_native_password&#39; where user&#x3D;&#39;root&#39;;
-
-create database hive CHARACTER SET latin1;
-
-grant all privileges on *.* to root@&#39;%&#39; identified by &#39;123456&#39;;
-flush privileges;
-EOF
-exit;
-
-sed -i &quot;43,43s&#x2F;.*&#x2F;#bind-address&#x3D;127.0.0.1&#x2F;g&quot; &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf
-
-service mysql restart
-
-# init meta database
-schematool -dbType mysql -initSchema</code></pre>
-<p style="color:red">如果是重新安装hive，mysql不用重装的情况下，运行完hive_install_config.sh后需要将mysql中的hive数据库删除，重新建立hive数据库，之后再退出mysql在终端执行初始化元数据库的命令schematool -dbType mysql -initSchema。运行hbase shell前要先启动hadoop和hbase。运行hive之前要先启动hadoop</p>
+&#125;
+</code></pre>
+<ul>
+<li>注意点：<br>
+<img src="https://img-blog.csdnimg.cn/20200807215357472.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+</ul>
  
       <!-- reward -->
       
@@ -339,12 +290,12 @@ schematool -dbType mysql -initSchema</code></pre>
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/auto_install/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/%E4%B8%AA%E4%BA%BA%E6%94%B6%E6%94%AF%E8%AE%B0%E5%BD%95%E5%B0%8F%E8%BD%AF%E4%BB%B6/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scripts/" rel="tag">scripts</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li></ul>
 
     </footer>
   </div>
@@ -352,19 +303,19 @@ schematool -dbType mysql -initSchema</code></pre>
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+      <a href="/2020/12/20/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E5%8E%8B%E7%BC%A9/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            疯狂java部分视频笔记
+            稀疏矩阵压缩java实现
           
         </div>
       </a>
     
     
-      <a href="/2020/12/20/spark-practice/" class="article-nav-link">
+      <a href="/2020/12/20/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">spark-practice</div>
+        <div class="article-nav-title">疯狂java部分视频笔记</div>
       </a>
     
   </nav>

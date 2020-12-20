@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hello World |  Aikedaer
+    hbase |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-hello-world"
+  id="post-hbase"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,22 +56,26 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hello World
+  hbase
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>   
+      <a href="/2020/12/20/hbase/" class="article-date">
+  <time datetime="2020-12-20T01:22:23.902Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">76</span>
+            <span class="post-count">1.1k</span>
         </span>
     </span>
 
@@ -80,7 +84,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">4 分钟</span>
         </span>
     </span>
 </div>
@@ -95,20 +99,290 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+  <h1><center>hbase基础</center></h1>
+<h2>实验目的</h2>
+安装hbase并熟悉常用操作
+<h2>实验过程</h2>
+<h3>一、安装hbase</h3>
+- 建立shell脚本，以普通用户身份执行
+  <pre class="line-numbers language-none"><code class="language-none">bash hbase_conf.sh</code></pre>
+<ul>
+<li>
+<p>shell 脚本</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash
+# install jdk
+cp ~&#x2F;big_data_tools&#x2F;hbase1.4.10.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hbase1.4.10.tar.gz -C &#x2F;apps&#x2F;
+rm -rf &#x2F;apps&#x2F;&#x2F;hbase1.4.10.tar.gz
+
+# add hbase to path
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hbase 
+cd &#x2F;apps&#x2F;hbase&#x2F;conf
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; hbase-env.sh
+echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; hbase-env.sh
+echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; hbase-env.sh
+cp -f ~&#x2F;big_data_tools&#x2F;conf_hbase&#x2F;hbase-site.xml &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+
+sudo reboot      </code></pre>
+</li>
+<li>
+<p>~/big_data_tools/conf_hbase/hbase-site.xml</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"> &lt;configuration&gt;                                                                  
+ &lt;property&gt;
+     &lt;name&gt;hbase.master&lt;&#x2F;name&gt;
+     &lt;value&gt;localhost&lt;&#x2F;value&gt;
+ &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.rootdir&lt;&#x2F;name&gt;
+      &lt;value&gt;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;hbase&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.cluster.distributed&lt;&#x2F;name&gt;
+      &lt;value&gt;true&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.zookeeper.quorum&lt;&#x2F;name&gt;
+      &lt;value&gt;localhost&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.zookeeper.property.dataDir&lt;&#x2F;name&gt;
+      &lt;value&gt;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+&lt;&#x2F;configuration&gt;</code></pre>
+<ul>
+<li>hbase.master：HBase 主节点地址。</li>
+<li>hbase.rootdir：HBase 文件在 HDFS 上的存储位置。</li>
+<li>hbase.cluster.distributed：HBase 是否为分布式模式。</li>
+<li>hbase.zookeeper.quorum：配置 ZooKeeper 服务器地址。</li>
+<li>hbase.zookeeper.property.dataDir：HBase 在 ZooKeeper 上存储数据的位置。</li>
+</ul>
+</li>
+<li>
+<p>启动 hbase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh
+start-hbase.sh</code></pre>
+<p><img src="/images/1603684102731.png" alt="1603684102731"></p>
+</li>
+</ul>
+<h3>二、熟悉hbase常用操作</h3>
+- 测试hbase,进入hbase shell接口
+<p><img src="/images/1603684415504.png" alt="1603684415504"></p>
+<ul>
+<li>
+<p>list 查看表</p>
+<p><img src="/images/1603684445271.png" alt="1603684445271"></p>
+</li>
+<li>
+<p>创建一张表 tb，表中含有一个列簇 mycf。</p>
+</li>
+</ul>
+<p><img src="/images/1603684492782.png" alt="1603684492782"></p>
+<ul>
+<li>HBase 在 HDFS 上的存储位置是在 hbase-site.xml 设置的，可以使用 HDFS shell 命令进 行查看</li>
+</ul>
+<p><img src="/images/1603684553447.png" alt="1603684553447"></p>
+<ul>
+<li>
+<p>help</p>
+<p><img src="/images/1603684649100.png" alt="1603684649100"></p>
+</li>
+</ul>
+<h4>general命令</h4>
+- 查看服务状态
+<p><img src="/images/1603684748383.png" alt="1603684748383"></p>
+<ul>
+<li>
+<p>查看版本号</p>
+<p><img src="/images/1603684773276.png" alt="1603684773276"></p>
+</li>
+</ul>
+<h4>DDL操作（data defination language）定义、修改、查询</h4>
+- 创建一个表，包含两个列族
+<p><img src="/images/1603684900280.png" alt="1603684900280"></p>
+<ul>
+<li>
+<p>列出所有表</p>
+<p><img src="/images/1603684933889.png" alt="1603684933889"></p>
+</li>
+<li>
+<p>获取表的描述</p>
+<p><img src="/images/1603685365606.png" alt="1603685365606"></p>
+</li>
+<li>
+<p>删除一个列族</p>
+<p><img src="/images/1603688906830.png" alt="1603688906830"></p>
+</li>
+<li>
+<p>删除一个表，先 disable, 再 drop</p>
+<p><img src="/images/1603689047213.png" alt="1603689047213"></p>
+</li>
+<li>
+<p>查询表是否可用</p>
+<p><img src="/images/1603689125724.png" alt="1603689125724"></p>
+</li>
+</ul>
+<h4>DML操作(data manupulation language)增、删、改、查</h4>
+- 创建一个具有三个列族(name,address,info)的表students
+<p><img src="/images/1603689464049.png" alt="1603689464049"></p>
+<ul>
+<li>
+<p>插入数据（put）</p>
+<p><img src="/images/1603689664259.png" alt="1603689664259"></p>
+</li>
+<li>
+<p>获取数据（get）</p>
+<ul>
+<li>获取 students 表的 xiaoming 行的所有数据</li>
+</ul>
+<p><img src="/images/1603689759984.png" alt="1603689759984"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族的所有数据</li>
+</ul>
+<p><img src="/images/1603689849355.png" alt="1603689849355"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族中 city 列的数据</li>
+</ul>
+<p><img src="/images/1603689895403.png" alt="1603689895403"></p>
+</li>
+<li>
+<p>更新一条记录（put）</p>
+<ul>
+<li>更新 students 表的 xiaoming 行、address 列族中 province 列的值</li>
+</ul>
+<p><img src="/images/1603690020203.png" alt="1603690020203"></p>
+<ul>
+<li>查看更新的结果</li>
+</ul>
+<p><img src="/images/1603690059663.png" alt="1603690059663"></p>
+</li>
+<li>
+<p>全表扫描（scan）</p>
+<p><img src="/images/1603690098444.png" alt="1603690098444"></p>
+</li>
+<li>
+<p>删除一列（delete）</p>
+<ul>
+<li>删除 students 表 xiaoming 行的 address 列族的列 city</li>
+</ul>
+<p><img src="/images/1603690263254.png" alt="1603690263254"></p>
+<ul>
+<li>查看操作结果</li>
+</ul>
+<p><img src="/images/1603690364530.png" alt="1603690364530"></p>
+</li>
+<li>
+<p>删除行的所有单元格（deleteall）</p>
+<ul>
+<li>使用 deleteall 命令删除 students 表 xiaoming 行的所有列</li>
+</ul>
+<p><img src="/images/1603690709013.png" alt="dd"></p>
+</li>
+<li>
+<p>统计表中的行数</p>
+<p><img src="/images/1603690974518.png" alt="1603690974518"></p>
+</li>
+<li>
+<p>清空整张表</p>
+<p><img src="/images/1603691074155.png" alt="1603691074155"></p>
+</li>
+<li>
+<p>存储多各版本的数据 创建的表，默认列族的 VERSIONS=1，也就是只会存取一个版本的列数据，当再次插入的 时候，后面的值会覆盖前面的值</p>
+</li>
+</ul>
+<p><img src="/images/1603691262153.png" alt="1603691262153"></p>
+<ul>
+<li>修改表结构，让表支持存储 3 个本版</li>
+</ul>
+<p><img src="/images/1603691355303.png" alt="1603691355303"></p>
+<p><img src="/images/1603691377795.png" alt="1603691377795"></p>
+<ul>
+<li>
+<p>插入三行数据</p>
+<p><img src="/images/1603691457623.png" alt="1603691457623"></p>
+</li>
+<li>
+<p>一次去除三个数据</p>
+<p><img src="/images/1603691528463.png" alt="1603691528463"></p>
+</li>
+</ul>
+<h3>三、hbase的API</h3>
+<ul>
+<li>
+<p>新建项目 hbase_api</p>
+<p><img src="/images/1603860576873.png" alt="1603860576873"></p>
+</li>
+<li>
+<p>将 HBase 目录 /apps/hbase/lib 中所 有的 jar 包和 /apps/hbase/lib/client-facing-thirdparty 下的所有 jar 包导入到 hbase 的 工程当中。</p>
+</li>
+<li>
+<p>将以上 jar 包先导入到～/big_data_tools/hbase_lib/</p>
+</li>
+</ul>
+<p><img src="/images/1603861069752.png" alt="1603861069752"></p>
+<ul>
+<li>导入 jar 包</li>
+</ul>
+<p><img src="/images/1603861286795.png" alt="1603861286795"></p>
+<ul>
+<li>
+<p>运行 as java</p>
+<p><img src="/images/1603861510250.png" alt="1603861510250"></p>
+</li>
+</ul>
+<h3>四、将tsv文件存入hbase</h3>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input&#x2F;music&#x2F;
+hadoop fs -put ~&#x2F;music.txt &#x2F;input&#x2F;music&#x2F;</code></pre>
+<ul>
+<li>调用 HBase 提供的 importtsv 工具在 HBase 上创建表 music, 并指定列族和列。</li>
+</ul>
+  <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop jar &#x2F;apps&#x2F;hbase&#x2F;lib&#x2F;hbase-server-1.4.10.jar importtsv -Dimporttsv.bulk.output&#x3D;&#x2F;user&#x2F;li -Dimporttsv.columns&#x3D;HBASE_ROW_KEY,info:name,info:singer,info:gender,info:ryghme,info:terminal music &#x2F;input&#x2F;music&#x2F;</code></pre>
+<ul>
+<li><img src="/images/1603862187841.png" alt="1603862187841"></li>
+</ul>
+<p>​       此时数据还没有存入 HBase，数据暂存在 HDFS 上的 /user/chen/tmp</p>
+<ul>
+<li>
+<p><img src="/images/1603864669150.png" alt="1603864669150"></p>
+</li>
+<li>
+<p>要把数据存入 HBase，还需要调用 HBase 提供的 completebulkload 工具</p>
+</li>
+</ul>
+<p><img src="/images/1603865004256.png" alt="1603865004256"></p>
+<ul>
+<li>
+<p>查看表中数据</p>
+<p><img src="/images/1603865032469.png" alt="1603865032469"></p>
+</li>
+<li>
+<p>创建 namelist 用于存储 mapreduce 的结果</p>
+<p><img src="/images/1603865151095.png" alt="1603865151095"></p>
+</li>
+<li>
+<p>新建项目 hbase_mapreduce</p>
+<p><img src="/images/1603865489410.png" alt="1603865489410"></p>
+</li>
+<li>
+<p>导入新的 jar 包</p>
+<p><img src="/images/1603865467696.png" alt="1603865467696"></p>
+</li>
+<li>
+<p>run as hadoop</p>
+<p><img src="/images/1603865580989.png" alt="1603865580989"></p>
+</li>
+<li>
+<p>查看结果</p>
+<p><img src="/images/1603865645364.png" alt="1603865645364"></p>
+</li>
+<li>
+<p>浏览器查看 localhost:16010</p>
+<p><img src="/images/1603865804764.png" alt="1603865804764"></p>
+</li>
+</ul>
  
       <!-- reward -->
       
@@ -179,26 +453,33 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/18/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/hbase/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/" rel="tag">hbase</a></li></ul>
+
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/Flume/" class="article-nav-link">
+      <a href="/2020/12/20/hive_QL/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            flume
+            hive-QL
           
         </div>
       </a>
     
+    
+      <a href="/2020/12/20/Hadoop-develop/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">hadoop-develop</div>
+      </a>
     
   </nav>
 

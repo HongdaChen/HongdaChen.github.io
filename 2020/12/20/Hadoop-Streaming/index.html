@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hello World |  Aikedaer
+    hadoop-streaming |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-hello-world"
+  id="post-Hadoop-Streaming"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,22 +56,26 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hello World
+  hadoop-streaming
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>   
+      <a href="/2020/12/20/Hadoop-Streaming/" class="article-date">
+  <time datetime="2020-12-20T01:20:33.022Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">76</span>
+            <span class="post-count">2.2k</span>
         </span>
     </span>
 
@@ -80,7 +84,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">8 分钟</span>
         </span>
     </span>
 </div>
@@ -95,20 +99,226 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+  <h1><center>Hadoop Streaming</center></h1>
+<h2>实验目的</h2>
+了解hadoop streaming的作用，原理。使用hadoop streaming和python完成一个wordcount的任务
+<ul>
+<li>
+<p>hadoop streaming 作用:</p>
+<p>Hadoop 框架是用 Java 语言写的，也就是说，Hadoop 框架中运行的所有应用程序都要 用 Java 语言来写才能正常地在 Hadoop 集群中运行。如果不会 Java 语言怎么办？ Hadoop 提供了 Hadoop Streaming 这个编程工具，它允许用户使用任何可执行文件或 者脚本文件作为 Mapper 和 Reducer，因此我们可以选择自己熟悉的编程语言，编写 Mapper 和 Reducer 程序来使用 Hadoop 集群。</p>
+</li>
+<li>
+<p>hadoop streaming 原理：</p>
+<p>Streaming 的原理是用 Java 实现一个包装用户程序的 MapReduce 程序，该程序负责调 用 MapReduce Java 接口获取 key/value 对输入，创建一个新的进程启动包装的用户程 序，将数据通过管道传递给包装的用户程序处理，然后调用 MapReduce Java 接口将用户 程序的输出切分成 key/value 对输出。</p>
+</li>
+</ul>
+<h2>实验内容</h2>
+<h3>一、使用python 实现mapper和reducer</h3>
+<h4>项目目录</h4>
+![1602501583233](/images/1602501583233.png)
+<p style="color:red">mapper.py</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
+  
+for line in sys.stdin:
+    line &#x3D; line.strip().split(&#39; &#39;) # strip去除文件前后的空格，split(&#39; &#39;)以空格分割
+    for word in line:
+        if word.strip() !&#x3D; &quot;&quot;:
+            print(&quot;%s\t%s&quot;%(word, 1))</code></pre>
+<p style="color:red">reducer.py</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
+current_word &#x3D; None
+count_pool &#x3D; []
+sum &#x3D; 0
+
+for line in sys.stdin:
+    word, val &#x3D; line.strip().split(&#39;\t&#39;)
+
+    if current_word &#x3D;&#x3D; None:
+        current_word &#x3D; word
+
+    if current_word !&#x3D; word:
+        for count in count_pool:
+            sum +&#x3D; count
+
+        print(&quot;%s\t%s&quot;%(current_word, sum))
+        current_word &#x3D; word
+        count_pool &#x3D; []
+        sum &#x3D; 0
+
+    count_pool.append(int(val))
+
+for count in count_pool:
+    sum +&#x3D; count
+
+print(&quot;%s\t%s&quot;%(current_word, str(sum)))</code></pre>
+<p style="color:red">testfile</p>
+<pre class="line-numbers language-txt" data-language="txt"><code class="language-txt">hello big data
+hello hadoop
+hello mapreduce</code></pre>
+<h4>shell测试</h4>
+命令行
+<pre class="line-numbers language-none"><code class="language-none">cat testfile | python3 mapper.py | sort -t &#39; &#39; -k 1 | python3 reducer.py </code></pre>
+<p>参数解释：</p>
+<ul>
+<li>mapper.py 接收 testfile 的文件内容，输出两列，一列是词，一列是 1</li>
+<li>sort 是 shell 命令，-t：表示指定分割符。-k：表示排序时指定的键是在分割后的哪个 field。</li>
+<li>测试无误后就可以放在 Hadoop 集群上运行了。</li>
+</ul>
+<p>输出结果:</p>
+<pre class="line-numbers language-none"><code class="language-none">big     1
+data    1
+hadoop  1
+hello   3
+mapreduce       1</code></pre>
+<h4>放入hadoop集群</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 启动hadoop
+start-all.sh</code></pre>
+hadoop 运行的命令格式：
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">$HADOOP_HOME&#x2F;bin&#x2F;hadoop jar hadoop-streaming.jar [options]</code></pre>
+<p>参数解释：</p>
+<ul>
+<li>
+<p>-input <path>:  指定作业输入，path 可以是文件或者目录，可以使用 * 通配符，-input 选项可以使用多次指定多个文件或目录作为输入。</p>
+</li>
+<li>
+<p>-output <path>:  指定作业输出目录，path 必须不存在，而且执行作业的用户必须有创 建该目录的权限，-output 只能使用一次。</p>
+</li>
+<li>
+<p>-mapper:  指定 mapper 可执行程序或 Java 类，必须指定且唯一。</p>
+</li>
+<li>
+<p>-reducer:  指定 reducer 可执行程序或 Java 类，必须指定且唯一 。</p>
+</li>
+<li>
+<p>-file：向计算节点分发<span style="color:blue">本地文件</span>。</p>
+</li>
+<li>
+<p>,-cacheFile: 向计算节点分发<span style="color:blue">HDFS 文件</span>。</p>
+</li>
+<li>
+<p>-cacheArchive: 向计算节点分发<span style="color:blue">HDFS 压缩文件 </span>。</p>
+</li>
+<li>
+<p>-numReduceTasks：指定 reducer 的个数，如果设置 - numReduceTasks 0 或者 reducer NONE 则没有 reducer 程序，mapper 的输出直接作为整个作业的输出。</p>
+</li>
+<li>
+<p>-jobconf /-D NAME=VALUE：指定作业参数，NAME 是参数名，VALUE 是参数值，可 以指定的参数参考 hadoop-default.xml。</p>
+</li>
+</ul>
+<p>可以通过以下命令查看完整的命令参数介绍</p>
+<p style="color:purple"> hadoop jar /apps/hadoop/share/hadoop/tools/lib/hadoop-streaming3.0.0.jar --help </p>
+为了方便运行，将相关配置参数写入shell脚本: vim run.sh
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+STREAMING_JAR_PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;tools&#x2F;lib&#x2F;hadoop-streaming-3.0.0.jar
+
+INPUT_FILE_PATH&#x3D;&quot;&#x2F;input&#x2F;wordcount&#x2F;testfile*&quot;
+OUTPUT_PATH&#x3D;&quot;&#x2F;output&#x2F;streaming&#x2F;wordcount&quot;                                               
+
+if hadoop fs -test -d $OUTPUT_PATH
+then
+hadoop fs -rm -r -skipTrash $OUTPUT_PATH
+fi
+# 注意-file指定的参数后面不能有空格
+hadoop jar $STREAMING_JAR_PATH \
+-D mapred.job.name&#x3D;&quot;WordCount&quot; \
+-file ~&#x2F;day04&#x2F;mapper.py\
+-file ~&#x2F;day04&#x2F;reducer.py \
+-input $INPUT_FILE_PATH \
+-output $OUTPUT_PATH \
+-mapper &quot;python3 mapper.py&quot; \
+-reducer &quot;python3 reducer.py&quot;</code></pre>
+<p>运行：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">bash run.sh</code></pre>
+<p>解释：</p>
+<p>从上面的过程可以看出，Mapper 和 Reducer 都是可执行文件，它们从标准输入读入数据
+（一行一行读）， 并把计算结果发给标准输出。Streaming 工具会创建一个
+Map/Reduce 作业， 并把它发送给合适的集群，同时监视这个作业的整个执行过程。
+如果一个可执行文件被用于 Mapper，则在 Mapper 初始化时， 每一个 Mapper 任务会
+把这个可执行文件作为一个单独的进程启动。 Mapper 任务运行时，它把输入切分成行并
+把每一行提供给可执行文件进程的标准输入。 同时，Mapper 收集可执行文件进程标准输
+出的内容，并把收到的每一行内容转化成 key/value 对，作为 Mapper 的输出。 默认情
+况下，一行中第一个 Tab 之前的部分作为 Key，之后的（不包括 Tab）作为 Value。 如
+果没有 Tab，整行作为 Key 值，Value 值为 null。不过，这可以定制。
+如果一个可执行文件被用于 Reducer，每个 Reducer 任务会把这个可执行文件作为一个
+单独的进程启动。 Reducer 任务运行时，它把输入切分成行并把每一行提供给可执行文
+件进程的标准输入。 同时，Reducer 收集可执行文件进程标准输出的内容，并把每一行
+内容转化成 Key/Value 对，作为 Reducer 的输出。 默认情况下，一行中第一个 Tab 之前
+的部分作为 Key，之后的（不包括 Tab）作为 Value。</p>
+<h3>二、计算微博的TF-IDF</h3>
+TF-IDF 是一种统计方法，用以评估一个词对语料库中一篇文档的重要程度。词的重要性随 着它在文档中出现的次数成正比增加，但同时会随着它在语料库中出现的文档数降低。
+<p>TFIDF 综合考虑两方面的重要性：</p>
+<ul>
+<li>
+<p>TF (Term Frequency)：词频指的是某一个给定的词语在一篇文档中出现的次数。</p>
+</li>
+<li>
+<p>IDF (Inverse Document Frequency)：逆文档频率是一个词语普遍重要性的度量。某 一特定词语的 IDF，由总文档数目除以出现该词的文档数，再将得到的商取对数得到   𝐼𝐷𝐹 = log ( 𝑁/ 𝐷𝐹)</p>
+</li>
+</ul>
+<p>其中 N 语料总的文档数，DF 为出现某个词的文档数。</p>
+<p>TF-ID 计算公式为 :  𝑇𝐹 − 𝐼𝐷𝐹 = 𝑇𝐹 × log (𝑁 /𝐷𝐹)</p>
+<p>微博数据：tf_idf</p>
+<pre class="line-numbers language-none"><code class="language-none">小时光***糖你好 我最近发现我的华为p10后置摄像头照相模糊。这个对于我个只会手机支付身上不&gt;
+小媳***结成风5  我的P10耗电太快
+人***花u    凤凰古镇
+全***信他   360全景图  教你手机拍微博全景图哦。
+你说***了没 想去拍茶卡盐湖，一望无际
+路***锡 岳麓山
+让***忧1    世界任你拍
+小***峰 我想去拍青海湖！华为P10plus有了，能送个机票吗
+19***潮 喜马拉雅
+leo***海    最想和她在长江大桥上一起拍摄全景～
+花生***商   我微薄有【落霞脆】冬枣转发抽奖哦，欢迎前来围观
+愿我***有但是   想去大草原
+EX***的 我用的去年买的华为 nova现在用着挺好的，以后也会继续支持华为手机的，我想去杭州西&gt;
+捕风***冷   西藏，超漂亮的！！！而且已经去过了，可惜评论不能发图，不是会员
+Msh***kp    香港
+ting***15   北京 北京 上海
+没钱***食了 天安门？
+御***殿 华山
+梁天***博   全景
+星***R  迪士尼
+毛***狼叼走 转发微博
+滑***师 站在鼓楼紫峰大厦楼顶拍一张</code></pre>
+<p>分析：</p>
+<p>从 TF-IDF 的计算公式可知，要计算一个词在一条微博中的 TF-IDF，我们需要统计这个词 在这条微博出现的次数，也就是这个词针对这个微博的 TF。注意 TF 是一个局部量，不同 微博中同一个词的 TF 可能是不同的。还需要统计这个词的 DF，也就是在语料中的多少篇 微博中出现过，这是一个全局量。另外还需要总的微博条数 N。针对需要计算的量，我们 将计算过程分为三个子任务，每个任务由一个 MapRecude 完成。如下图所示：</p>
+<p><img src="/images/1602503296250.png" alt="1602503296250"></p>
+<p><strong>操作流程：</strong></p>
+<ul>
+<li>项目目录：</li>
+</ul>
+<p><img src="/images/1602503528671.png" alt="1602503528671"></p>
+<ul>
+<li>导入 jar 包</li>
+</ul>
+<p><span style="color:red">包 org.wltea.analyzer.core.IKSegmenter 找不到</span></p>
+<p>将 big_data_tools 下的<span style="color:red">IKAnalyzer2012_u6.jar</span>复制到 hadoop3lib 下，再次 build path-&gt;config build path-&gt;library-&gt;add external jars 将其加入。</p>
+<p><img src="/images/1602503850492.png" alt="1602503850492"></p>
+<ul>
+<li>打 jar 包</li>
+</ul>
+<p><img src="/images/1602503936735.png" alt="1602503936735"></p>
+<p><img src="/images/1602503993037.png" alt="1602503993037"></p>
+<p><img src="/images/1602504104307.png" alt="1602504104307"></p>
+<ul>
+<li>
+<p>放入输入文件</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put tf_idf &#x2F;input&#x2F;files&#x2F;</code></pre>
+</li>
+<li>
+<p>运行</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.tf_idf.FirstJob</code></pre>
+</li>
+<li>
+<p>查看结果</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -cat &#x2F;output&#x2F;tf_idf&#x2F;output1&#x2F;part-r-00000</code></pre>
+<p><img src="/images/1602504447556.png" alt="1602504447556"></p>
+</li>
+<li>
+<p>输出目录</p>
+<p><img src="/images/1602504535992.png" alt="1602504535992"></p>
+</li>
+</ul>
  
       <!-- reward -->
       
@@ -179,26 +389,33 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/18/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/Hadoop-Streaming/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li></ul>
+
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/Flume/" class="article-nav-link">
+      <a href="/2020/12/20/hadoop_shell-and-java_API/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            flume
+            hadoop shell and java API
           
         </div>
       </a>
     
+    
+      <a href="/2020/12/20/spark-streaming/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">spark-Streaming</div>
+      </a>
     
   </nav>
 

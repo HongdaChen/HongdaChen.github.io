@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Hive-practice |  Aikedaer
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="Aikedaer" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-hive-practice"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Hive-practice
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/20/hive-practice/" class="article-date">
+  <time datetime="2020-12-20T01:21:03.678Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.1k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">9 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1><center>Hive高级用法</center></h1>
+<h2>实验目的</h2>
+熟悉hive QL语句实现表的各种连接方式，使用hiveserver2建立hive远程连接。
+<h2>实验内容</h2>
+<h3>一、表连接</h3>
+1.表连接（内连接，左外连接，右外连接和全外连接）
+<ul>
+<li>hive 只支持等值连接，即 ON 子句中使用等号连接，不支持非等值连接。</li>
+<li>如果连接语句中有 WHERE 子句，会先执行 JOIN 子句，再执行 WHERE 子句。</li>
+<li>可以 JOIN 多个表</li>
+</ul>
+<p>启动 hadoop 并进入 hive</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh
+hive</code></pre>
+<p>建立连个表 stu 和 score, 分别从本地文件载入数据。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table stu(id int, name string) row format delimited fields terminated by &#39;,&#39; stored as textfile;
+create table score(s_id int, score int) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1604892759358.png" alt="1604892759358"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">load data local inpath &#39;&#x2F;data&#x2F;stu.csv&#39; into table stu;
+load data local inpath &#39;&#x2F;data&#x2F;score.csv&#39; into table score;</code></pre>
+<p>表中数据</p>
+<p><img src="/images/1604892903366.png" alt="1604892903366"></p>
+<p>内连接（两个表的交集）</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu join score on stu.id&#x3D;score.s_id;</code></pre>
+<p><img src="/images/1604893143606.png" alt="1604893143606"></p>
+<p>左外连接（以左表为准显示，右表没有对应的补 NULL）left outer</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu left outer join score on stu.id&#x3D;score.s_id;</code></pre>
+<p><img src="/images/1604893265259.png" alt="1604893265259"></p>
+<p>右连接（以右表为准，左表没有对应的补 NULL） right outer</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu right outer join score on stu.id&#x3D;score.s_id;</code></pre>
+<p><img src="/images/1604893550556.png" alt="1604893550556"></p>
+<p>全外连接（两个表的并集）full outer</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu full outer join score on stu.id&#x3D;score.s_id;</code></pre>
+<p><img src="/images/1604893740149.png" alt="1604893740149"></p>
+<p>左半连接（相当于内连接后去掉右表数据）left semi</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu left semi join score on stu.id&#x3D;score.s_id;</code></pre>
+<p><img src="/images/1604893921784.png" alt="1604893921784"></p>
+<p>相当于下面 in，而且这条执行的更快。1.59s</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from stu where id in (select s_id from score);</code></pre>
+<p><img src="/images/1604894047611.png" alt="1604894047611"></p>
+<h3>二、Hive的连接</h3>
+**CLI连接**
+<p>在命令行直接执行 hive 相当于执行 hive --service cli;</p>
+<p>使用 hive --help 可以看 hive 命令能够启动哪些服务；</p>
+<p>通过 hive --service serviceName --help  可以查看某个具体命令的使用方式。</p>
+<p><img src="/images/1604894302464.png" alt="1604894302464"></p>
+<p><img src="/images/1604894323731.png" alt="1604894323731"></p>
+<p><strong>HiveServer2</strong></p>
+<p>HiveServer 允许远程客户端可以使用各种编程语言向 Hive 提交请求并检索结果。 HiveServer2 是 HiveServer 改进版本，提供了新的 ThriftAPI 来处理 JDBC 或者 ODBC 客 户端，可以进行 Kerberos 身份验证，支持多个客户端并发。</p>
+<p><strong>Beeline</strong></p>
+<p>HiveServer2 提供了新的 CLI：BeeLine，它是基于 SQLLine CLI 的 JDBC 客户端。Hive CLI 与 Beeline 均为控制台命令行操作模式，区别在于 Hive CLI 只能操作本地 Hive 服务， 而 Beeline 可以通过 JDBC 连接远程服 。</p>
+<p>Beeline 使用密码登录 Hive，需要设置用户名和密码，在 hive-site.xml 4489 行和 4494 行做如下修改，将两处的值 anonymous，改为自己的用户名和密码。</p>
+<p>/apps/hive/conf/hive-site.xml</p>
+<p><img src="/images/1604894457933.png" alt="1604894457933"></p>
+<p>在 /apps/hadoop/etc/hadoop/core-site.xml 中添加配置</p>
+<ul>
+<li>hadoop.proxyuser.chen.hosts 表示代理用户 chen 的所属组在任意节点都能访问 HDFS 集群</li>
+<li>hadoop.proxyuser.chen.groups 表示任意节点使用 Hadoop 集群的代理用户 chen 都能访问 HDFS 集群</li>
+</ul>
+<p><img src="/images/1604894745677.png" alt="1604894745677"></p>
+<p>在做完以上配置后，hadoop 需要重启。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">stop-all.sh
+start-all.sh</code></pre>
+<p>后台启动 hiveserver2</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hiveserver2 &amp;</code></pre>
+<p>等待几秒钟后，可以看到 RunJar 这个进程。</p>
+<p><img src="/images/1604895008985.png" alt="1604895008985"></p>
+<p>另一个终端</p>
+<p>第一种连接方式：</p>
+<p><img src="/images/1604895137140.png" alt="1604895137140"></p>
+<p>第二种连接方式：</p>
+<p>直接在命令行执行</p>
+<ul>
+<li>-u 指定元数据库的链接信息</li>
+<li>-n 指定用户名</li>
+<li>-p 指定密码</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">beeline -u jdbc:hive2:&#x2F;&#x2F;ubuntu:10000&#x2F;default -n chen -p 123456</code></pre>
+<p><img src="/images/1604917449601.png" alt="1604917449601"></p>
+<p>远程登录成功</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">show databases;</code></pre>
+<p><img src="/images/1604917661571.png" alt="1604917661571"></p>
+<p><strong>Beeline 管理命令</strong></p>
+<p>beeline 执行查询都是正常的 SQL 输入，管理命令，比如进行连接，中断，退出，命令前需要加！不需要终止符。</p>
+<ul>
+<li>!connect url     连接不同的 hiveserver2 服务器</li>
+<li>!exit                 退出 shell</li>
+<li>!help                显示全部管理命令</li>
+</ul>
+<p><img src="/images/1604917928517.png" alt="1604917928517"></p>
+<p><img src="/images/1604917956138.png" alt="1604917956138"></p>
+<p><strong>hiveserver2 webUI 界面</strong></p>
+<p><img src="/images/1604918501621.png" alt="1604918501621"></p>
+<h3>三、Hive JDBC</h3>
+类似于java访问关系型数据库，主要是URL和驱动不一样，而且主要是查询数据，不可以删除和更新数据。
+<p>hive JDBC 的连接参数如下：</p>
+<p>驱动名：org.apache.hive.jdbc.HiveDriver</p>
+<p>连接字符串：jdbc:hive2:// 主机：端口 / 数据库名（默认数据库是 default）</p>
+<p>HiveService.java</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">package dsd.hive;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.apache.log4j.Logger;
+
+public class HiveService &#123;
+	static Logger logger &#x3D; Logger.getLogger(HiveService.class);
+	&#x2F;&#x2F; hive的jdbc驱动类
+	public static String dirverName &#x3D; &quot;org.apache.hive.jdbc.HiveDriver&quot;;
+	&#x2F;&#x2F; 连接hive的URL hive2版本需要的是jdbc:hive2，而不是 jdbc:hive
+	public static String url &#x3D; &quot;jdbc:hive2:&#x2F;&#x2F;localhost:10000&quot;;
+	&#x2F;&#x2F; 登录linux的用户名 一般会给权限大一点的用户，否则无法进行事务型操作
+	public static String user &#x3D; &quot;chen&quot;;
+	&#x2F;&#x2F; 登录linux的密码
+	public static String pass &#x3D; &quot;123456&quot;;
+
+	&#x2F;**
+	 * 创建连接
+	 * 
+	 * @return
+	 * @throws SQLException
+	 *&#x2F;
+	public static Connection getConn() &#123;
+		Connection conn &#x3D; null;
+		try &#123;
+			Class.forName(dirverName);
+			conn &#x3D; DriverManager.getConnection(url, user, pass);
+		&#125; catch (ClassNotFoundException e) &#123;
+			e.printStackTrace();
+		&#125; catch (SQLException e) &#123;
+			e.printStackTrace();
+		&#125;
+		return conn;
+	&#125;
+
+	&#x2F;**
+	 * 创建命令
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 *&#x2F;
+	public static Statement getStmt(Connection conn) throws SQLException &#123;
+		logger.debug(conn);
+		if (conn &#x3D;&#x3D; null) &#123;
+			logger.debug(&quot;this conn is null&quot;);
+		&#125;
+		return conn.createStatement();
+	&#125;
+
+	&#x2F;**
+	 * 关闭连接
+	 * 
+	 * @param conn
+	 *&#x2F;
+	public static void closeConn(Connection conn) &#123;
+		try &#123;
+			conn.close();
+		&#125; catch (SQLException e) &#123;
+			e.printStackTrace();
+		&#125;
+	&#125;
+
+	&#x2F;**
+	 * 关闭命令
+	 * 
+	 * @param stmt
+	 *&#x2F;
+	public static void closeStmt(Statement stmt) &#123;
+		try &#123;
+			stmt.close();
+		&#125; catch (SQLException e) &#123;
+			e.printStackTrace();
+		&#125;
+	&#125;
+&#125;</code></pre>
+<p>HiveTest.java</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">package dsd.hive;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.apache.log4j.Logger;
+
+public class HiveTest &#123;
+
+	static Logger logger &#x3D; Logger.getLogger(HiveTest.class);
+
+	public static void main(String[] args) &#123;
+
+		Connection conn &#x3D; HiveService.getConn();
+		Statement stmt &#x3D; null;
+		try &#123;
+
+			stmt &#x3D; HiveService.getStmt(conn);
+			stmt.execute(&quot;drop table if exists users&quot;);&#x2F;&#x2F; 需要拥有hdfs文件读写权限的用户才可以进行此操作
+			logger.debug(&quot;drop table is susscessful&quot;);
+
+			stmt.execute(&quot;create table users(user_id int, fname string,lname string )  row format delimited fields terminated by &#39;,&#39;&quot;);&#x2F;&#x2F; 需要拥有hdfs文件读写权限的用户才可以进行此操作
+			logger.debug(&quot;create table is susscessful&quot;);
+
+			stmt.execute(&quot;insert into users(user_id, fname,lname) values(100,&#39;hongda&#39;,&#39;chen&#39;)&quot;);&#x2F;&#x2F; 需要拥有hdfs文件读写权限的用户才可以进行此操作
+			logger.debug(&quot;insert is susscessful&quot;);
+
+			stmt.execute(&quot;load data local inpath &#39;&#x2F;home&#x2F;chen&#x2F;hive_higher&#x2F;user.txt&#39; overwrite into table users&quot;);&#x2F;&#x2F; 需要拥有hdfs文件读写权限的用户才可以进行此操作
+			logger.debug(&quot;load data is susscessful&quot;);
+
+			String sql &#x3D; &quot;select * from users&quot;;
+
+			ResultSet res &#x3D; null;
+			res &#x3D; stmt.executeQuery(sql);
+
+			ResultSetMetaData meta &#x3D; res.getMetaData();   &#x2F;&#x2F;fields name
+
+			for (int i &#x3D; 1; i &lt;&#x3D; meta.getColumnCount(); i++) &#123;
+				System.out.print(meta.getColumnName(i) + &quot;\t&quot;);
+			&#125;
+			System.out.println();
+			while (res.next()) &#123;
+				System.out.print(res.getInt(1) + &quot;\t\t&quot;);
+				System.out.print(res.getString(2) + &quot;\t\t&quot;);
+				System.out.print(res.getString(3));
+				System.out.println();
+			&#125;
+
+			sql &#x3D; &quot;show tables &quot;;
+			System.out.println(&quot;\nRunning: &quot; + sql);
+			res &#x3D; stmt.executeQuery(sql);
+			while (res.next()) &#123;
+				System.out.println(res.getString(1));
+			&#125;
+			&#x2F;&#x2F; describe table
+			sql &#x3D; &quot;describe users&quot;;
+			System.out.println(&quot;\nRunning: &quot; + sql);
+			res &#x3D; stmt.executeQuery(sql);
+			while (res.next()) &#123;
+				System.out.println(res.getString(1) + &quot;\t&quot; + res.getString(2));
+			&#125;
+
+		&#125; catch (SQLException e) &#123;
+			e.printStackTrace();
+		&#125;
+		HiveService.closeStmt(stmt);
+		HiveService.closeConn(conn);
+	&#125;
+&#125;</code></pre>
+<p>建立 hive_api 项目。导入 /apps/hive/lib 下的所有 jar 包。启动 hiveserver2</p>
+<p>运行 HiveTest.java       run as javaApplication</p>
+<p><img src="/images/1604921028362.png" alt="1604921028362"></p>
+<p>eclipse 闪退的问题</p>
+<p>在 /apps/eclipse/eclipse.ini 修改 23 行为 512</p>
+<p><img src="/images/1604921130241.png" alt="1604921130241"></p>
+<h3>四、Hive UDF（user-defined functions）</h3>
+注意
+<ul>
+<li>自定义 UDF 需要继承 org.apache.hadoop.hive.ql.exec.UDF</li>
+<li>需要实现 evaluate 函数</li>
+<li>evaluate 函数支持重载</li>
+</ul>
+<p>新建工程【hive_udf】并创建包【sds.hive_udf】和类【StringExt】。将 Hive 安装目录下的 lib 文件夹中的全部 Jar 文件作为外部 Jar 文件导入。</p>
+<p>StringExt.java</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">package sds.hive_udf;
+
+import org.apache.hadoop.hive.ql.exec.UDF;
+
+&#x2F;**
+ * 自定义Hive函数，需要继承org.apache.hadoop.hive.ql.exec.UDF 并实现evaluate方法
+ * 
+ *&#x2F;
+public class StringExt extends UDF &#123;
+
+	public String evaluate(String name) &#123;
+		return &quot;Hello &quot; + name;
+	&#125;
+
+	&#x2F;&#x2F; 添加一个空的main方法是为了使用eclipse工具打成jar包时方便；
+	&#x2F;&#x2F; 如果没有main方法，不能使用eclipse工具可视化打成jar包
+	public static void main(String[] args) &#123;
+
+	&#125;
+&#125;</code></pre>
+<p><img src="/images/1604922034791.png" alt=""></p>
+<p>使用 add 命令将 Jar 包导入到 Hive 的 ClassPath，如果 jar 包 myudf.jar 放在 $HIVE_HOME/lib 目录下，这一步可以省略。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">add jar &#x2F;home&#x2F;chen&#x2F;project_jar&#x2F;myudf.jar</code></pre>
+<p><img src="/images/1604922154628.png" alt="1604922154628"></p>
+<p>创建临时函数</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create temporary function stringext as &#39;sds.hive_udf.StringExt&#39;;</code></pre>
+<p><img src="/images/1604922327579.png" alt="1604922327579"></p>
+<p>执行结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select fname,stringext(lname) from users;</code></pre>
+<p><img src="/images/1604922343534.png" alt="1604922343534"></p>
+<p>临时函数在 hive 退出后就会自动失效，永久函数的创建方法时将 jar 包上传 Hdfs。</p>
+<p><img src="/images/1604922576329.png" alt="1604922576329"></p>
+<p>创建永久函数</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create function stringext as &#39;sds.hive_udf.StringExt&#39; using jar &#39;hdfs:&#x2F;&#x2F;&#x2F;lib&#x2F;myudf.jar&#39;;</code></pre>
+<p><img src="/images/1604922745535.png" alt="1604922745535"></p>
+<p>打开 Mysql</p>
+<p>查看 FUNCS</p>
+<p><img src="/images/1604923040320.png" alt="1604923040320"></p>
+<p>可以看到函数 stringext 的信息已经注册。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/hive-practice/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hive/" rel="tag">hive</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2020/12/20/spark-install/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            spark-install
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/12/20/hadoop_shell-and-java_API/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">hadoop shell and java API</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2020
+        <i class="ri-heart-fill heart_icon"></i> Aikedaer
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Aikedaer"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>

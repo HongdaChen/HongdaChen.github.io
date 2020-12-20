@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    sparkMLlib. |  Aikedaer
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="Aikedaer" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-sparkMLlib"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  sparkMLlib.
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/20/sparkMLlib/" class="article-date">
+  <time datetime="2020-12-20T01:21:55.093Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">20 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="1准备工作"><a class="markdownIt-Anchor" href="#1准备工作">#</a> 1. 准备工作：</h2>
+<h1 id="一-准备工作"><a class="markdownIt-Anchor" href="#一-准备工作">#</a> 一、准备工作：</h1>
+<p>修改一下环境变量<br>
+<img src="/images/1608089023691.png" alt="1608089023691"></p>
+<p>激活环境变量</p>
+<p><img src="/images/1608089668111.png" alt="1608089668111"></p>
+<p>启动 hadoop</p>
+<p><img src="/images/1608089053188.png" alt="1608089053188"></p>
+<p>启动 spark</p>
+<p><img src="/images/1608089153780.png" alt="1608089153780"></p>
+<p>检查</p>
+<p><img src="/images/1608089188556.png" alt="1608089188556"></p>
+<p>上传数据</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -mkdir &#x2F;input&#x2F;mllib
+hadoop fs -put &#x2F;data&#x2F;train.tsv &#x2F;input&#x2F;mllib&#x2F;
+hadoop fs -put &#x2F;data&#x2F;test.tsv &#x2F;input&#x2F;mllib&#x2F;</code></pre>
+<p><img src="/images/1608089432021.png" alt="1608089432021"></p>
+<p>检查</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -ls &#x2F;input&#x2F;mllib</code></pre>
+<p><img src="/images/1608089497299.png" alt="1608089497299"></p>
+<p>启动 pyspark</p>
+<p>创建目录～/pyspark-workspace/mllib/，在该目录中启动 Pyspark，创建一个 Notebook。</p>
+<p><img src="/images/1608279666373.png" alt="1608279666373"></p>
+<h1 id="二-读取数据"><a class="markdownIt-Anchor" href="#二-读取数据">#</a> 二、 读取数据</h1>
+<p>读取 hdfs 上的 train.tsv 文件，并查看数据项</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark import SparkContext,SparkConf
+from pyspark.sql import SQLContext
+conf &#x3D; SparkConf()
+conf.setAppName(&#39;Streaming&#39;).set(&#39;spark.io.compression.codec&#39;,&#39;snappy&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc &#x3D; SparkContext(conf &#x3D; conf)
+sqlContext &#x3D; SQLContext(sc)</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">row_df &#x3D; sqlContext.read.format(&quot;csv&quot;)\
+.option(&quot;header&quot;,&quot;true&quot;)\
+.option(&quot;delimiter&quot;,&quot;\t&quot;)\
+.load(&quot;&#x2F;input&#x2F;mllib&#x2F;train.tsv&quot;)
+print(row_df.count())</code></pre>
+<pre><code>7395
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">row_df.printSchema()</code></pre>
+<pre><code>root
+ |-- url: string (nullable = true)
+ |-- urlid: string (nullable = true)
+ |-- boilerplate: string (nullable = true)
+ |-- alchemy_category: string (nullable = true)
+ |-- alchemy_category_score: string (nullable = true)
+ |-- avglinksize: string (nullable = true)
+ |-- commonlinkratio_1: string (nullable = true)
+ |-- commonlinkratio_2: string (nullable = true)
+ |-- commonlinkratio_3: string (nullable = true)
+ |-- commonlinkratio_4: string (nullable = true)
+ |-- compression_ratio: string (nullable = true)
+ |-- embed_ratio: string (nullable = true)
+ |-- framebased: string (nullable = true)
+ |-- frameTagRatio: string (nullable = true)
+ |-- hasDomainLink: string (nullable = true)
+ |-- html_ratio: string (nullable = true)
+ |-- image_ratio: string (nullable = true)
+ |-- is_news: string (nullable = true)
+ |-- lengthyLinkDomain: string (nullable = true)
+ |-- linkwordscore: string (nullable = true)
+ |-- news_front_page: string (nullable = true)
+ |-- non_markup_alphanum_characters: string (nullable = true)
+ |-- numberOfLinks: string (nullable = true)
+ |-- numwords_in_url: string (nullable = true)
+ |-- parametrizedLinkRatio: string (nullable = true)
+ |-- spelling_errors_ratio: string (nullable = true)
+ |-- label: string (nullable = true)
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">row_df.show(1)</code></pre>
+<pre><code>+--------------------+-----+--------------------+----------------+----------------------+-----------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------+----------+-------------+-------------+-----------+-----------+-------+-----------------+-------------+---------------+------------------------------+-------------+---------------+---------------------+---------------------+-----+
+|                 url|urlid|         boilerplate|alchemy_category|alchemy_category_score|avglinksize|commonlinkratio_1|commonlinkratio_2|commonlinkratio_3|commonlinkratio_4|compression_ratio|embed_ratio|framebased|frameTagRatio|hasDomainLink| html_ratio|image_ratio|is_news|lengthyLinkDomain|linkwordscore|news_front_page|non_markup_alphanum_characters|numberOfLinks|numwords_in_url|parametrizedLinkRatio|spelling_errors_ratio|label|
++--------------------+-----+--------------------+----------------+----------------------+-----------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------+----------+-------------+-------------+-----------+-----------+-------+-----------------+-------------+---------------+------------------------------+-------------+---------------+---------------------+---------------------+-----+
+|http://www.bloomb...| 4042|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;IBM...|        business|              0.789131|2.055555556|      0.676470588|      0.205882353|      0.047058824|      0.023529412|      0.443783175|          0|         0|   0.09077381|            0|0.245831182|0.003883495|      1|                1|           24|              0|                          5424|          170|              8|          0.152941176|          0.079129575|    0|
++--------------------+-----+--------------------+----------------+----------------------+-----------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------+----------+-------------+-------------+-----------+-----------+-------+-----------------+-------------+---------------+------------------------------+-------------+---------------+---------------------+---------------------+-----+
+only showing top 1 row
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">row_df.select(&#39;url&#39;,&#39;urlid&#39;,&#39;boilerplate&#39;,&#39;alchemy_category&#39;,&#39;alchemy_category_score&#39;,&#39;is_news&#39;,&#39;label&#39;).show(10)</code></pre>
+<pre><code>+--------------------+-----+--------------------+------------------+----------------------+-------+-----+
+|                 url|urlid|         boilerplate|  alchemy_category|alchemy_category_score|is_news|label|
++--------------------+-----+--------------------+------------------+----------------------+-------+-----+
+|http://www.bloomb...| 4042|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;IBM...|          business|              0.789131|      1|    0|
+|http://www.popsci...| 8471|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;The...|        recreation|              0.574147|      1|    1|
+|http://www.menshe...| 1164|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;Fru...|            health|              0.996526|      1|    1|
+|http://www.dumbli...| 6684|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;10 ...|            health|              0.801248|      1|    1|
+|http://bleacherre...| 9006|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;The...|            sports|              0.719157|      1|    0|
+|http://www.conven...| 7018|&quot;&#123;&quot;&quot;url&quot;&quot;:&quot;&quot;conve...|                 ?|                     ?|      ?|    0|
+|http://gofashionl...| 8685|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;fas...|arts_entertainment|               0.22111|      1|    1|
+|http://www.inside...| 3402|&quot;&#123;&quot;&quot;url&quot;&quot;:&quot;&quot;insid...|                 ?|                     ?|      ?|    0|
+|http://www.valetm...|  477|&quot;&#123;&quot;&quot;title&quot;&quot;:&quot;&quot;Val...|                 ?|                     ?|      1|    1|
+|http://www.howswe...| 6731|&quot;&#123;&quot;&quot;url&quot;&quot;:&quot;&quot;howsw...|                 ?|                     ?|      ?|    1|
++--------------------+-----+--------------------+------------------+----------------------+-------+-----+
+only showing top 10 rows
+</code></pre>
+<p>编写 DataFrames UDF 用户自定义函数，将数据中的？转换为 0</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.sql.functions import udf
+def replace_question(x):
+    return (&quot;0&quot; if x&#x3D;&#x3D;&quot;?&quot; else x)
+replace_question&#x3D;udf(replace_question)</code></pre>
+<p>导入 col 模块及 pyspark.sql.types 模块，后续可以使用 col 模块读取字段数据，使用 pyspark.sql.types 模块转换数据类型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.sql.functions import col
+import pyspark.sql.types</code></pre>
+<p>使用 replace_question UDF 用户自定义函数，将 row_df DataFrame 第 4 个字段至最后一个字<br>
+段转换为 double。其中，最后一个字段为 label，其余是 feature。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df &#x3D; row_df.select(
+    [&#39;url&#39;,&#39;alchemy_category&#39;]+
+    [replace_question(col(column)).cast(&quot;double&quot;).alias(column) for column in row_df.columns[4:]]
+)</code></pre>
+<p>说明: - 用 row_df.select 选取字段</p>
+<p>・选取字段 [‘url’,‘alchemy_category’], 不需要转换</p>
+<p>・for column in row_df.columns [4:] 读取第 4 个字段至最后一个字段</p>
+<p>・col (column) 读取字段数据并调用 replace_question 自定义函数删除问号 “？”</p>
+<p>・.cast (“double”) 转换为 double</p>
+<p>・.alias (column) 把别名设置为原来的字段名</p>
+<p>查看使用 replace_question UDF 转换后的字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df.printSchema()</code></pre>
+<pre><code>root
+ |-- url: string (nullable = true)
+ |-- alchemy_category: string (nullable = true)
+ |-- alchemy_category_score: double (nullable = true)
+ |-- avglinksize: double (nullable = true)
+ |-- commonlinkratio_1: double (nullable = true)
+ |-- commonlinkratio_2: double (nullable = true)
+ |-- commonlinkratio_3: double (nullable = true)
+ |-- commonlinkratio_4: double (nullable = true)
+ |-- compression_ratio: double (nullable = true)
+ |-- embed_ratio: double (nullable = true)
+ |-- framebased: double (nullable = true)
+ |-- frameTagRatio: double (nullable = true)
+ |-- hasDomainLink: double (nullable = true)
+ |-- html_ratio: double (nullable = true)
+ |-- image_ratio: double (nullable = true)
+ |-- is_news: double (nullable = true)
+ |-- lengthyLinkDomain: double (nullable = true)
+ |-- linkwordscore: double (nullable = true)
+ |-- news_front_page: double (nullable = true)
+ |-- non_markup_alphanum_characters: double (nullable = true)
+ |-- numberOfLinks: double (nullable = true)
+ |-- numwords_in_url: double (nullable = true)
+ |-- parametrizedLinkRatio: double (nullable = true)
+ |-- spelling_errors_ratio: double (nullable = true)
+ |-- label: double (nullable = true)
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df.select(&#39;url&#39;,&#39;alchemy_category&#39;,&#39;alchemy_category_score&#39;,&#39;is_news&#39;,&#39;label&#39;).show(10)</code></pre>
+<pre><code>+--------------------+------------------+----------------------+-------+-----+
+|                 url|  alchemy_category|alchemy_category_score|is_news|label|
++--------------------+------------------+----------------------+-------+-----+
+|http://www.bloomb...|          business|              0.789131|    1.0|  0.0|
+|http://www.popsci...|        recreation|              0.574147|    1.0|  1.0|
+|http://www.menshe...|            health|              0.996526|    1.0|  1.0|
+|http://www.dumbli...|            health|              0.801248|    1.0|  1.0|
+|http://bleacherre...|            sports|              0.719157|    1.0|  0.0|
+|http://www.conven...|                 ?|                   0.0|    0.0|  0.0|
+|http://gofashionl...|arts_entertainment|               0.22111|    1.0|  1.0|
+|http://www.inside...|                 ?|                   0.0|    0.0|  0.0|
+|http://www.valetm...|                 ?|                   0.0|    1.0|  1.0|
+|http://www.howswe...|                 ?|                   0.0|    0.0|  1.0|
++--------------------+------------------+----------------------+-------+-----+
+only showing top 10 rows
+</code></pre>
+<p>使用 randomSplit 将数据按照 7:3 的比例分成 train_df（训练数据）与 test_df（测试数据），并<br>
+且.cache () 暂存在内存中，加快后续程序运行的速度。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">train_df,test_df &#x3D; df.randomSplit([0.7,0.3])
+train_df.cache()
+test_df.cache()</code></pre>
+<pre><code>DataFrame[url: string, alchemy_category: string, alchemy_category_score: double, avglinksize: double, commonlinkratio_1: double, commonlinkratio_2: double, commonlinkratio_3: double, commonlinkratio_4: double, compression_ratio: double, embed_ratio: double, framebased: double, frameTagRatio: double, hasDomainLink: double, html_ratio: double, image_ratio: double, is_news: double, lengthyLinkDomain: double, linkwordscore: double, news_front_page: double, non_markup_alphanum_characters: double, numberOfLinks: double, numwords_in_url: double, parametrizedLinkRatio: double, spelling_errors_ratio: double, label: double]
+</code></pre>
+<h2 id="1stringindexer"><a class="markdownIt-Anchor" href="#1stringindexer">#</a> 1.StringIndexer</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.feature import StringIndexer</code></pre>
+<p>创建 StringIndexer</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">categoryIndexer &#x3D; StringIndexer(
+                        inputCol&#x3D;&#39;alchemy_category&#39;,
+                        outputCol&#x3D;&#39;alchemy_category_Index&#39;
+)</code></pre>
+<p>StringINdexer 使用 fit 方法生成 &quot;Transformer&quot;</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">categoryTransformer&#x3D;categoryIndexer.fit(df)</code></pre>
+<p>查看 categoryTransformer 的内容，categoryTransformer 的 label 属性其实就是网页分类的字<br>
+典</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">for i in range(0,len(categoryTransformer.labels)):
+    print(str(i)+&#39;:&#39;+categoryTransformer.labels[i])</code></pre>
+<pre><code>0:?
+1:recreation
+2:arts_entertainment
+3:business
+4:health
+5:sports
+6:culture_politics
+7:computer_internet
+8:science_technology
+9:gaming
+10:religion
+11:law_crime
+12:unknown
+13:weather
+</code></pre>
+<p>使用 categpryTransformer 将所有 df 转换为 df1</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df1 &#x3D; categoryTransformer.transform(df)</code></pre>
+<p>查看转换后的 df1 字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df1.columns</code></pre>
+<pre><code>['url',
+ 'alchemy_category',
+ 'alchemy_category_score',
+ 'avglinksize',
+ 'commonlinkratio_1',
+ 'commonlinkratio_2',
+ 'commonlinkratio_3',
+ 'commonlinkratio_4',
+ 'compression_ratio',
+ 'embed_ratio',
+ 'framebased',
+ 'frameTagRatio',
+ 'hasDomainLink',
+ 'html_ratio',
+ 'image_ratio',
+ 'is_news',
+ 'lengthyLinkDomain',
+ 'linkwordscore',
+ 'news_front_page',
+ 'non_markup_alphanum_characters',
+ 'numberOfLinks',
+ 'numwords_in_url',
+ 'parametrizedLinkRatio',
+ 'spelling_errors_ratio',
+ 'label',
+ 'alchemy_category_Index']
+</code></pre>
+<p>查看转换后的结果</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df1.select(&#39;alchemy_category&#39;,&#39;alchemy_category_Index&#39;).show(10)</code></pre>
+<pre><code>+------------------+----------------------+
+|  alchemy_category|alchemy_category_Index|
++------------------+----------------------+
+|          business|                   3.0|
+|        recreation|                   1.0|
+|            health|                   4.0|
+|            health|                   4.0|
+|            sports|                   5.0|
+|                 ?|                   0.0|
+|arts_entertainment|                   2.0|
+|                 ?|                   0.0|
+|                 ?|                   0.0|
+|                 ?|                   0.0|
++------------------+----------------------+
+only showing top 10 rows
+</code></pre>
+<h2 id="2onehotencoder"><a class="markdownIt-Anchor" href="#2onehotencoder">#</a> 2.OneHotEncoder</h2>
+<p>导入 onehotencoder 模块</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.feature import OneHotEncoder</code></pre>
+<p>创建 OneHotEncoder</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">encoder &#x3D; OneHotEncoder(dropLast&#x3D;False,
+                    inputCol&#x3D;&#39;alchemy_category_Index&#39;,
+                    outputCol&#x3D;&quot;alchemy_category_IndexVec&quot;)</code></pre>
+<p>OneHotEncoder 使用 transform 转换，结果是 df2，我们可以使用下列指令查看字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df2&#x3D;encoder.transform(df1)
+df2.columns</code></pre>
+<pre><code>['url',
+ 'alchemy_category',
+ 'alchemy_category_score',
+ 'avglinksize',
+ 'commonlinkratio_1',
+ 'commonlinkratio_2',
+ 'commonlinkratio_3',
+ 'commonlinkratio_4',
+ 'compression_ratio',
+ 'embed_ratio',
+ 'framebased',
+ 'frameTagRatio',
+ 'hasDomainLink',
+ 'html_ratio',
+ 'image_ratio',
+ 'is_news',
+ 'lengthyLinkDomain',
+ 'linkwordscore',
+ 'news_front_page',
+ 'non_markup_alphanum_characters',
+ 'numberOfLinks',
+ 'numwords_in_url',
+ 'parametrizedLinkRatio',
+ 'spelling_errors_ratio',
+ 'label',
+ 'alchemy_category_Index',
+ 'alchemy_category_IndexVec']
+</code></pre>
+<p>结果显示新增了 alchemy_category_IndexVec 字段</p>
+<p>查看转换后新增的字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df2.select(&quot;alchemy_category&quot;,&quot;alchemy_category_Index&quot;,
+           &quot;alchemy_category_IndexVec&quot;).show(10)</code></pre>
+<pre><code>+------------------+----------------------+-------------------------+
+|  alchemy_category|alchemy_category_Index|alchemy_category_IndexVec|
++------------------+----------------------+-------------------------+
+|          business|                   3.0|           (14,[3],[1.0])|
+|        recreation|                   1.0|           (14,[1],[1.0])|
+|            health|                   4.0|           (14,[4],[1.0])|
+|            health|                   4.0|           (14,[4],[1.0])|
+|            sports|                   5.0|           (14,[5],[1.0])|
+|                 ?|                   0.0|           (14,[0],[1.0])|
+|arts_entertainment|                   2.0|           (14,[2],[1.0])|
+|                 ?|                   0.0|           (14,[0],[1.0])|
+|                 ?|                   0.0|           (14,[0],[1.0])|
+|                 ?|                   0.0|           (14,[0],[1.0])|
++------------------+----------------------+-------------------------+
+only showing top 10 rows
+</code></pre>
+<h2 id="3vectorassembler"><a class="markdownIt-Anchor" href="#3vectorassembler">#</a> 3.VectorAssembler</h2>
+<p>VectorAssembler 可以将多个特征字段整合成一个特征的 Vector</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.feature import VectorAssembler</code></pre>
+<p>创建全部特征字段 List</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">assemblerInputs &#x3D; [&#39;alchemy_category_IndexVec&#39;]+row_df.columns[4:-1]
+assemblerInputs</code></pre>
+<pre><code>['alchemy_category_IndexVec',
+ 'alchemy_category_score',
+ 'avglinksize',
+ 'commonlinkratio_1',
+ 'commonlinkratio_2',
+ 'commonlinkratio_3',
+ 'commonlinkratio_4',
+ 'compression_ratio',
+ 'embed_ratio',
+ 'framebased',
+ 'frameTagRatio',
+ 'hasDomainLink',
+ 'html_ratio',
+ 'image_ratio',
+ 'is_news',
+ 'lengthyLinkDomain',
+ 'linkwordscore',
+ 'news_front_page',
+ 'non_markup_alphanum_characters',
+ 'numberOfLinks',
+ 'numwords_in_url',
+ 'parametrizedLinkRatio',
+ 'spelling_errors_ratio']
+</code></pre>
+<p>创建 VectorAssembler</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">assembler &#x3D; VectorAssembler(inputCols&#x3D;assemblerInputs,
+                            outputCol&#x3D;&quot;features&quot;)</code></pre>
+<p>运行 VectorAssembler 转换</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df3&#x3D;assembler.transform(df2)</code></pre>
+<p>查看整合后的新增字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df3.columns</code></pre>
+<pre><code>['url',
+ 'alchemy_category',
+ 'alchemy_category_score',
+ 'avglinksize',
+ 'commonlinkratio_1',
+ 'commonlinkratio_2',
+ 'commonlinkratio_3',
+ 'commonlinkratio_4',
+ 'compression_ratio',
+ 'embed_ratio',
+ 'framebased',
+ 'frameTagRatio',
+ 'hasDomainLink',
+ 'html_ratio',
+ 'image_ratio',
+ 'is_news',
+ 'lengthyLinkDomain',
+ 'linkwordscore',
+ 'news_front_page',
+ 'non_markup_alphanum_characters',
+ 'numberOfLinks',
+ 'numwords_in_url',
+ 'parametrizedLinkRatio',
+ 'spelling_errors_ratio',
+ 'label',
+ 'alchemy_category_Index',
+ 'alchemy_category_IndexVec',
+ 'features']
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df3.select(&#39;features&#39;).take(1)</code></pre>
+<pre><code>[Row(features=SparseVector(36, &#123;3: 1.0, 14: 0.7891, 15: 2.0556, 16: 0.6765, 17: 0.2059, 18: 0.0471, 19: 0.0235, 20: 0.4438, 23: 0.0908, 25: 0.2458, 26: 0.0039, 27: 1.0, 28: 1.0, 29: 24.0, 31: 5424.0, 32: 170.0, 33: 8.0, 34: 0.1529, 35: 0.0791&#125;))]
+</code></pre>
+<h2 id="4decisiontreeclassifier"><a class="markdownIt-Anchor" href="#4decisiontreeclassifier">#</a> 4.DecisionTreeClassifier</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.classification import DecisionTreeClassifier</code></pre>
+<p>运行 DesionTreeClassifier</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">dt &#x3D; DecisionTreeClassifier(labelCol&#x3D;&quot;label&quot;,featuresCol&#x3D;&quot;features&quot;,
+                           impurity&#x3D;&quot;gini&quot;,maxDepth&#x3D;10,maxBins&#x3D;14)</code></pre>
+<p>进行训练，之前创建的 dt 决策树分类，我们可以使用.fit () 方法进行训练，训练结果产生 dt_model<br>
+ 模型，之后可以使用 print 查看产生的模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">dt_model&#x3D;dt.fit(df3)
+print(dt_model)</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_2a7f3eec7817) of depth 10 with 653 nodes
+</code></pre>
+<p>进行预测，建立模型后就可以使用.trainform () 进行转换了，转换后会产生预测结果 df4/</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">df4&#x3D;dt_model.transform(df3)</code></pre>
+<h2 id="5-建立机器学习-pipeline-流程"><a class="markdownIt-Anchor" href="#5-建立机器学习-pipeline-流程">#</a> 5 建立机器学习 Pipeline 流程</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml import Pipeline
+from pyspark.ml.feature import StringIndexer, OneHotEncoder,VectorAssembler
+from pyspark.ml.classification import DecisionTreeClassifier</code></pre>
+<p>建立 pipeline</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">stringIndexer &#x3D; StringIndexer(inputCol&#x3D;&#39;alchemy_category&#39;,
+outputCol&#x3D;&quot;alchemy_category_Index&quot;)
+encoder &#x3D; OneHotEncoder(dropLast&#x3D;False,
+inputCol&#x3D;&#39;alchemy_category_Index&#39;,
+outputCol&#x3D;&quot;alchemy_category_IndexVec&quot;)
+assemblerInputs &#x3D;[&#39;alchemy_category_IndexVec&#39;] + row_df.columns[4:-1]
+assembler &#x3D; VectorAssembler(inputCols&#x3D;assemblerInputs, outputCol&#x3D;&quot;features&quot;)
+dt &#x3D; DecisionTreeClassifier(labelCol&#x3D;&quot;label&quot;,featuresCol&#x3D;&quot;features&quot;,impurity&#x3D;&quot;gini&quot;,
+                            maxDepth&#x3D;10, maxBins&#x3D;14)
+
+pipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler,dt ])</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">pipeline.getStages()</code></pre>
+<pre><code>[StringIndexer_bd31abc032f4,
+ OneHotEncoder_97883791e25c,
+ VectorAssembler_96032e56ba91,
+ DecisionTreeClassifier_07bfaed33184]
+</code></pre>
+<h2 id="6使用-pipeline-进行数据处理与训练"><a class="markdownIt-Anchor" href="#6使用-pipeline-进行数据处理与训练">#</a> 6. 使用 pipeline 进行数据处理与训练</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">pipelineModel &#x3D; pipeline.fit(train_df)</code></pre>
+<p>看训练完成后的决策树模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">pipelineModel.stages[3]</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_07bfaed33184) of depth 10 with 615 nodes
+</code></pre>
+<p>查看训练完后的决策树模型规则</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">print (pipelineModel.stages[3].toDebugString[:1000])</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_07bfaed33184) of depth 10 with 615 nodes
+  If (feature 31 &lt;= 1765.0)
+   If (feature 2 in &#123;1.0&#125;)
+    If (feature 26 &lt;= 0.201427045)
+     If (feature 20 &lt;= 0.484175714)
+      If (feature 29 &lt;= 21.5)
+       Predict: 0.0
+      Else (feature 29 &gt; 21.5)
+       If (feature 34 &lt;= 0.049220706)
+        If (feature 15 &lt;= 3.723642426)
+         If (feature 15 &lt;= 1.0132735585)
+          Predict: 1.0
+         Else (feature 15 &gt; 1.0132735585)
+          If (feature 20 &lt;= 0.4488383145)
+           Predict: 0.0
+          Else (feature 20 &gt; 0.4488383145)
+           Predict: 1.0
+        Else (feature 15 &gt; 3.723642426)
+         Predict: 1.0
+       Else (feature 34 &gt; 0.049220706)
+        If (feature 14 &lt;= 0.8503704999999999)
+         If (feature 29 &lt;= 65.5)
+          Predict: 1.0
+         Else (feature 29 &gt; 65.5)
+          Predict: 0.0
+        Else (feature 14 &gt; 0.8503704999999999)
+         Predict: 0.0
+     Else (feature 20 &gt; 0.484175714)
+      If (
+</code></pre>
+<h2 id="7使用-pipelinemodel-进行预测"><a class="markdownIt-Anchor" href="#7使用-pipelinemodel-进行预测">#</a> 7. 使用 pipelineModel 进行预测</h2>
+<p>使用 pipelineModel 的 transform 方法，传入 test_df 测试数据进行预测</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predicted&#x3D;pipelineModel.transform(test_df)</code></pre>
+<p>查看预测后的 Schema，发现新增了 3 个字段</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predicted.columns</code></pre>
+<pre><code>['url',
+ 'alchemy_category',
+ 'alchemy_category_score',
+ 'avglinksize',
+ 'commonlinkratio_1',
+ 'commonlinkratio_2',
+ 'commonlinkratio_3',
+ 'commonlinkratio_4',
+ 'compression_ratio',
+ 'embed_ratio',
+ 'framebased',
+ 'frameTagRatio',
+ 'hasDomainLink',
+ 'html_ratio',
+ 'image_ratio',
+ 'is_news',
+ 'lengthyLinkDomain',
+ 'linkwordscore',
+ 'news_front_page',
+ 'non_markup_alphanum_characters',
+ 'numberOfLinks',
+ 'numwords_in_url',
+ 'parametrizedLinkRatio',
+ 'spelling_errors_ratio',
+ 'label',
+ 'alchemy_category_Index',
+ 'alchemy_category_IndexVec',
+ 'features',
+ 'rawPrediction',
+ 'probability',
+ 'prediction']
+</code></pre>
+<p>看预测结果 DataFrame</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predicted.select(&#39;url&#39;,&#39;features&#39;,&#39;rawprediction&#39;,&#39;probability&#39;,&#39;label&#39;,&#39;prediction&#39;).show(10)</code></pre>
+<pre><code>+--------------------+--------------------+-------------+--------------------+-----+----------+
+|                 url|            features|rawprediction|         probability|label|prediction|
++--------------------+--------------------+-------------+--------------------+-----+----------+
+|http://1000awesom...|(36,[0,15,16,17,1...| [34.0,163.0]|[0.17258883248730...|  1.0|       1.0|
+|http://100miledie...|(36,[0,15,20,23,2...|   [1.0,13.0]|[0.07142857142857...|  0.0|       1.0|
+|http://13gb.com/v...|(36,[0,15,16,20,2...|  [56.0,30.0]|[0.65116279069767...|  0.0|       0.0|
+|http://3kidsandus...|(36,[0,15,16,17,1...| [34.0,163.0]|[0.17258883248730...|  0.0|       1.0|
+|http://3kidsandus...|(36,[0,15,16,17,1...| [34.0,163.0]|[0.17258883248730...|  1.0|       1.0|
+|http://3kidsandus...|(36,[0,15,16,17,1...|  [55.0,29.0]|[0.65476190476190...|  0.0|       0.0|
+|http://8tracks.co...|(36,[2,14,15,16,1...|    [0.0,3.0]|           [0.0,1.0]|  0.0|       1.0|
+|http://9gag.com/g...|(36,[0,15,16,17,1...|   [2.0,11.0]|[0.15384615384615...|  0.0|       1.0|
+|http://abeautiful...|(36,[2,14,15,16,1...|   [29.0,3.0]|   [0.90625,0.09375]|  1.0|       0.0|
+|http://addapinch....|(36,[1,14,15,16,1...|  [3.0,105.0]|[0.02777777777777...|  0.0|       1.0|
++--------------------+--------------------+-------------+--------------------+-----+----------+
+only showing top 10 rows
+</code></pre>
+<p>查看预测结果与概率</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predicted.select(&#39;probability&#39;,&#39;prediction&#39;) .take(10)</code></pre>
+<pre><code>[Row(probability=DenseVector([0.1726, 0.8274]), prediction=1.0),
+ Row(probability=DenseVector([0.0714, 0.9286]), prediction=1.0),
+ Row(probability=DenseVector([0.6512, 0.3488]), prediction=0.0),
+ Row(probability=DenseVector([0.1726, 0.8274]), prediction=1.0),
+ Row(probability=DenseVector([0.1726, 0.8274]), prediction=1.0),
+ Row(probability=DenseVector([0.6548, 0.3452]), prediction=0.0),
+ Row(probability=DenseVector([0.0, 1.0]), prediction=1.0),
+ Row(probability=DenseVector([0.1538, 0.8462]), prediction=1.0),
+ Row(probability=DenseVector([0.9062, 0.0938]), prediction=0.0),
+ Row(probability=DenseVector([0.0278, 0.9722]), prediction=1.0)]
+</code></pre>
+<h2 id="8评估模型的准确率"><a class="markdownIt-Anchor" href="#8评估模型的准确率">#</a> 8. 评估模型的准确率</h2>
+<p>首先从 pyspark.ml.evaluation 导入 BinaryClassificationEvaluator 模块</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.evaluation import BinaryClassificationEvaluator</code></pre>
+<p>创建 BinaryClassificationEvaluator，传入下列参数：- rawPredictionCol=“rawPrediction” 之<br>
+前预测后产生的字段</p>
+<p>・labelCol=“label” 标签字段</p>
+<p>・metricName=“areaUnderROC” 也就是 AUC</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">evaluator &#x3D; BinaryClassificationEvaluator(rawPredictionCol&#x3D;&quot;rawPrediction&quot;,
+                                          labelCol&#x3D;&quot;label&quot;,
+                                          metricName&#x3D;&quot;areaUnderROC&quot; )</code></pre>
+<p>计算 AUC</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predictions &#x3D;pipelineModel.transform(test_df)
+auc&#x3D; evaluator.evaluate(predictions)
+auc</code></pre>
+<pre><code>0.6324079757381753
+</code></pre>
+<p>使用 TrainValidation 进行训练验证找出最佳模型</p>
+<p>从 pyspark.ml.tuning 导入 ParamGridBuilder 与 TrainValidationSplit 模块</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.tuning import ParamGridBuilder,TrainValidationSplit</code></pre>
+<p>设置训练验证的参数，我们使用 ParamGridBuilder 设置 impurity 两个参数值、maxDepth 三个<br>
+参数值与 maxBins 三个参数值，后续执行训练验证时会执行 233=18 次。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">paramGrid &#x3D; ParamGridBuilder()\
+.addGrid(dt.impurity, [ &quot;gini&quot;,&quot;entropy&quot;])\
+.addGrid(dt.maxDepth, [ 5,10,15])\
+.addGrid(dt.maxBins, [10, 15,20])\
+.build()</code></pre>
+<p>创建 TrainValidationSplit，传入下列参数，执行后创建 tvs 变量：</p>
+<p>・estimator=dt，之前创建的 DecisionTreeClassifier</p>
+<p>・evaluator=evaluator，之前创建的 BinaryClassificationEvaluator</p>
+<p>・estimatorParamMaps=paramGrid，之前创建的 ParamGridBuilder</p>
+<p>・trainRatio=0.8，训练验证前会先将数据按照 8:2 的比例分成训练数据与验证数据</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">tvs &#x3D; TrainValidationSplit(estimator&#x3D;dt,evaluator&#x3D;evaluator,
+                           estimatorParamMaps&#x3D;paramGrid,trainRatio&#x3D;0.8)</code></pre>
+<p>建立 tvs_pipeline/</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">tvs_pipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler, tvs])</code></pre>
+<p>使用 tvs_pipeline 流程进行训练验证</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">tvs_pipelineModel &#x3D;tvs_pipeline.fit(train_df)</code></pre>
+<p>查看训练完成的最佳模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">bestModel&#x3D;tvs_pipelineModel.stages[3].bestModel
+bestModel</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_07bfaed33184) of depth 15 with 1255 nodes
+</code></pre>
+<p>看训练验证完成的最佳模型规则，[：500] 表示只显示前 500 文字</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">print (bestModel.toDebugString[:500])</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_07bfaed33184) of depth 15 with 1255 nodes
+  If (feature 31 &lt;= 1548.0)
+   If (feature 2 in &#123;1.0&#125;)
+    If (feature 33 &lt;= 11.5)
+     If (feature 33 &lt;= 5.5)
+      If (feature 35 &lt;= 0.128495221)
+       If (feature 28 &lt;= 0.5)
+        If (feature 16 &lt;= 0.5052088985000001)
+         If (feature 17 &lt;= 0.103194726)
+          If (feature 26 &lt;= 0.6825757575)
+           If (feature 34 &lt;= 0.179858142)
+            If (feature 29 &lt;= 22.5)
+             I
+</code></pre>
+<p>评估最佳模型 AUC</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predictions &#x3D; tvs_pipelineModel.transform(test_df)
+auc&#x3D; evaluator.evaluate(predictions)
+auc</code></pre>
+<pre><code>0.6440101246327793
+</code></pre>
+<h2 id="9使用-crossvalidation-交叉验证找出最佳模型"><a class="markdownIt-Anchor" href="#9使用-crossvalidation-交叉验证找出最佳模型">#</a> 9. 使用 crossValidation 交叉验证找出最佳模型</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.tuning import CrossValidator</code></pre>
+<p>建立交叉验证的 CrossValidator</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">cv &#x3D; CrossValidator(estimator&#x3D;dt, evaluator&#x3D;evaluator,
+                    estimatorParamMaps&#x3D;paramGrid, numFolds&#x3D;3)</code></pre>
+<p>建立交叉验证的 cv_pipeline</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">cv_pipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler, cv])</code></pre>
+<p>用 cv_pipeline 流程进行交叉验证</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">cv_pipelineModel &#x3D; cv_pipeline.fit(train_df)</code></pre>
+<p>查看交叉验证完成的最佳模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">bestModel&#x3D;cv_pipelineModel.stages[3].bestModel
+bestModel</code></pre>
+<pre><code>DecisionTreeClassificationModel (uid=DecisionTreeClassifier_07bfaed33184) of depth 15 with 1575 nodes
+</code></pre>
+<p>评估最佳模型 AUC</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">predictions &#x3D; cv_pipelineModel.transform(test_df)
+auc&#x3D; evaluator.evaluate(predictions)
+auc
+</code></pre>
+<pre><code>0.6608278234025085
+</code></pre>
+<h2 id="使用随机森林-randomforestclassifier-分类器"><a class="markdownIt-Anchor" href="#使用随机森林-randomforestclassifier-分类器">#</a> 使用随机森林 RandomForestClassifier 分类器</h2>
+<p>创建 RandomForestClassifier 变量 rf，传入参数与决策树类似，只是多了 numTrees 参数（设置<br>
+决策森林中有多少决策树，这里设为 10）</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.classification import RandomForestClassifier
+rf &#x3D;RandomForestClassifier(labelCol&#x3D;&quot;label&quot;,featuresCol&#x3D;&quot;features&quot;,numTrees&#x3D;10)
+rfpipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler,rf ])</code></pre>
+<p>评估 RandomForestClassifier 的准确度</p>
+<p>rfpipeline.fit 传入 train_df 进行训练，再用 rftvs_pipelineModel.transform 传入 test_df 进行评<br>
+估，我们可以看到 AUC 约为 0.72，比之前使用决策树的准确度明显增加</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">rfpipelineModel &#x3D; rfpipeline.fit(train_df)
+rfpredicted&#x3D;rfpipelineModel.transform(test_df)
+evaluator.evaluate(rfpredicted)</code></pre>
+<pre><code>0.7371290346808376
+</code></pre>
+<p>使用 RandomForestClassifier TrainValidation 找出最佳模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.tuning import ParamGridBuilder, TrainValidationSplit
+from pyspark.ml.evaluation import BinaryClassificationEvaluator
+from pyspark.ml.classification import RandomForestClassifier
+paramGrid &#x3D; ParamGridBuilder()\
+.addGrid(rf.impurity, [ &quot;gini&quot;,&quot;entropy&quot;])\
+.addGrid(rf.maxDepth, [ 5,10,15])\
+.addGrid(rf.maxBins, [10, 15,20])\
+.addGrid(rf.numTrees, [10, 20,30])\
+.build()
+rftvs &#x3D; TrainValidationSplit(estimator&#x3D;rf, evaluator&#x3D;evaluator,
+estimatorParamMaps&#x3D;paramGrid, trainRatio&#x3D;0.8)
+rftvs_pipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler, rftvs])
+rftvs_pipelineModel &#x3D;rftvs_pipeline.fit(train_df)
+rftvspredictions &#x3D; rftvs_pipelineModel.transform(test_df)
+auc&#x3D; evaluator.evaluate(rftvspredictions)
+auc</code></pre>
+<pre><code>0.7653783831147928
+</code></pre>
+<p>使用 crossValidation 找出最佳模型</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.ml import Pipeline
+rfcv &#x3D; CrossValidator(estimator&#x3D;rf, evaluator&#x3D;evaluator,
+estimatorParamMaps&#x3D;paramGrid, numFolds&#x3D;3)
+rfcv_pipeline &#x3D; Pipeline(stages&#x3D;[stringIndexer,encoder ,assembler, rfcv])
+rfcv_pipelineModel &#x3D; rfcv_pipeline.fit(train_df)
+</code></pre>
+<p>使用最佳模型进行预测</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">rfcvpredictions &#x3D; rfcv_pipelineModel.transform(test_df)</code></pre>
+<p>显示使用最佳模型进行预测结果</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">DescDict &#x3D; &#123;
+0: &quot;暂时性网页 (ephemeral)&quot;,
+1: &quot;长青网页 (evergreen)&quot;
+&#125;
+for data in rfcvpredictions .select(&#39;url&#39;,&#39;prediction&#39;).take(5):
+    print(&quot; 网址： &quot; +str(data[0])+&quot;\n&quot; +\
+    &quot; &#x3D;&#x3D;&gt; 预测:&quot;+ str(data[1])+ \
+    &quot; 说明:&quot;+DescDict[data[1]] +&quot;\n&quot;)
+</code></pre>
+<pre><code> 网址： http://1000awesomethings.com/2008/07/07/989-blowing-your-nose-in-the-shower/
+ ==&gt; 预测:1.0 说明:长青网页 (evergreen)
+
+ 网址： http://100milediet.org/
+ ==&gt; 预测:0.0 说明:暂时性网页 (ephemeral)
+
+ 网址： http://13gb.com/videos/2298/
+ ==&gt; 预测:0.0 说明:暂时性网页 (ephemeral)
+
+ 网址： http://3kidsandus.com/2010/patriotic-checkerboard-cake-for-the-4th-of-july/
+ ==&gt; 预测:1.0 说明:长青网页 (evergreen)
+
+ 网址： http://3kidsandus.com/2011/cook-for-the-cure-strawberries-n-cream-layer-cake/
+ ==&gt; 预测:1.0 说明:长青网页 (evergreen)
+</code></pre>
+<p>计算最佳模型 AUC</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">auc&#x3D; evaluator.evaluate(rfcvpredictions)
+auc</code></pre>
+<pre><code>0.7632262080194218
+</code></pre>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/sparkMLlib/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/" rel="tag">spark</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2020/12/20/Hadoop-develop/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            hadoop-develop
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/12/20/spark-install/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">spark-install</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2020
+        <i class="ri-heart-fill heart_icon"></i> Aikedaer
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Aikedaer"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>

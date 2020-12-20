@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    spark-practice |  Aikedaer
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="Aikedaer" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-spark-practice"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  spark-practice
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/12/20/spark-practice/" class="article-date">
+  <time datetime="2020-12-20T01:23:00.707Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">7.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">39 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1><center>Spark</center></h1>
+<h2>实验目的</h2>
+安装spark并熟悉pyspark 的RDD算子操作
+<h2>实验过程</h2>
+## 一、Spark local模式安装
+<h4 id="11安装scala"><a class="markdownIt-Anchor" href="#11安装scala">#</a> 1.1 安装 scala</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cp ~&#x2F;big_data_tools&#x2F;scala-2.12.8.tgz &#x2F;apps&#x2F;
+tar zxvf &#x2F;apps&#x2F;scala-2.12.8.tgz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;scala-2.12.8&#x2F; &#x2F;apps&#x2F;scala
+# 删除压缩包
+rm &#x2F;apps&#x2F;scala-2.12.8.tgz
+# 添加环境变量
+vim ~&#x2F;.bashrc
+# Scala
+export SCALA_HOME&#x3D;&#x2F;apps&#x2F;scala
+export PATH&#x3D;$SCALA_HOME&#x2F;bin:$PATH
+# 使配置生效
+source ~&#x2F;.bashrc</code></pre>
+<h4 id="12安装spark"><a class="markdownIt-Anchor" href="#12安装spark">#</a> 1.2 安装 spark</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cp ~&#x2F;big_data_tools&#x2F;spark-2.4.3-bin-hadoop2.7.tgz &#x2F;apps
+tar zxvf &#x2F;apps&#x2F;spark-2.4.3-bin-hadoop2.7.tgz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;spark-2.4.3-bin-hadoop2.7&#x2F; &#x2F;apps&#x2F;spark
+# 删除压缩包
+rm &#x2F;apps&#x2F;spark-2.4.3-bin-hadoop2.7.tgz
+# 添加环境变量
+vim ~&#x2F;.bashrc
+# Spark
+export SPARK_HOME&#x3D;&#x2F;apps&#x2F;spark
+export PATH&#x3D;$SPARK_HOME&#x2F;bin:$PATH
+# 使配置生效
+source ~&#x2F;.bashrc </code></pre>
+<p>不需要对 spark 进行任何配置，就可以启动 spark-shell 进行任务处理了。 在终端中执行</p>
+<p><img src="/images/1606273331055.png" alt="1606273331055"></p>
+<p>产查看当前运行模式</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scala&gt; sc.master
+res1: String &#x3D; local[*]</code></pre>
+<p>用单机的多个线程来模拟 Spark 分布式计算。</p>
+<h4 id="13执行测试"><a class="markdownIt-Anchor" href="#13执行测试">#</a> 1.3 执行测试</h4>
+<p>在 Spark Shell 中，使用 Scala 加载 Spark 安装目录下文件 <a target="_blank" rel="noopener" href="http://README.md">README.md</a> 并转变为 RDD。</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">val rdd &#x3D; sc.textFile(&quot;&#x2F;apps&#x2F;spark&#x2F;README.md&quot;)</code></pre>
+<p><img src="/images/1606273762884.png" alt="1606273762884"></p>
+<p>对 RDD 进行算子操作，统计文件的行数。</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">rdd.count()</code></pre>
+<p><img src="/images/1606273853343.png" alt="1606273853343"></p>
+<p>退出</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">:quit</code></pre>
+<h4 id="14启动pyspark"><a class="markdownIt-Anchor" href="#14启动pyspark">#</a> 1.4 启动 pyspark</h4>
+<p>在终端中执行，指定运行 spark 的 python 版本</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">PYSPARK_PYTHON&#x3D;python3 pyspark</code></pre>
+<p><img src="/images/1606273953600.png" alt="1606273953600"></p>
+<p>在 Spark Shell 中，使用 Python 加载 Spark 安装目录下文件 <a target="_blank" rel="noopener" href="http://README.md">README.md</a> 并转变为 RDD</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">&gt;&gt;&gt; rdd &#x3D; sc.textFile(&quot;file:&#x2F;apps&#x2F;spark&#x2F;README.md&quot;)
+&gt;&gt;&gt; rdd.count()</code></pre>
+<p><img src="/images/1606274086471.png" alt="1606274086471"></p>
+<p>到此 Spark Local 模式已经安装完成.</p>
+<h2 id="二-伪分布式安装"><a class="markdownIt-Anchor" href="#二-伪分布式安装">#</a> 二、伪分布式安装</h2>
+<p>安装伪分布式，还需要对配置文件做一些修改。进入配置文件目录 /apps/spark/conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;spark&#x2F;conf</code></pre>
+<p>将 slaves.template 重命名为 slaves</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mv slaves.template slaves</code></pre>
+<p>之前只有一个节点，保持原样就可以了</p>
+<p><img src="/images/1606274323080.png" alt="1606274323080"></p>
+<p>将 spark-env.sh.template 重命名 <a target="_blank" rel="noopener" href="http://spark-env.sh">spark-env.sh</a></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mv spark-env.sh.template spark-env.sh</code></pre>
+<p>在 <a target="_blank" rel="noopener" href="http://spark-env.sh">spark-env.sh</a> 中添加如下内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">HADOOP_CONF_DIR&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop
+JAVA_HOME&#x3D;&#x2F;apps&#x2F;java
+SPARK_MASTER_IP&#x3D;ubuntu
+SPARK_MASTER_PORT&#x3D;7077
+SPARK_MASTER_WEBUI_PORT&#x3D;8080
+SPARK_WORKER_CORES&#x3D;1
+SPARK_WORKER_MEMORY&#x3D;1g
+SPARK_WORKER_PORT&#x3D;7078
+SPARK_WORKER_WEBUI_PORT&#x3D;8081
+SPARK_EXECUTOR_INSTANCES&#x3D;1</code></pre>
+<p>说明：需要配置 JAVA_HOME 以及 HADOOP 配置文件所在的目录 HADOOP_CONF_DIR。SPARK_MASTER_IP、SPARK_MASTER_PORT、 SPARK_MASTER_WEBUI_PORT，分别指 spark 集群中，master 节点的 ip 地址、端口 号、提供的 web 接口的端口。SPARK_WORKER_CORES、SPARK_WORKER_MEMORY 分布为 worker 节点的内核数、内存大小。此处根据自己机器情况调整配置项参数，比如 ip 地址改为自己的主机名。</p>
+<p>配置传递给 spark 应用程序的默认属性 将 spark-defaults.conf.template 重命名 spark-defaults.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mv spark-defaults.conf.template spark-defaults.conf</code></pre>
+<p>在其中添加如下内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark.master                        spark:&#x2F;&#x2F;ubuntu:7077
+spark.eventLog.enabled              true
+spark.eventLog.dir                  hdfs:&#x2F;&#x2F;localhost:9000&#x2F;spark&#x2F;eventLog
+spark.serializer                    org.apache.spark.serializer.KryoSerializer
+spark.driver.memory                 1g
+spark.jars.package                  Azure:mmlspark:0.12</code></pre>
+<p>MMLSpark 是微软开源的用于 Spark 的深度学习库，为 Apache Spark 提供了大量深度 学习和数据科学工具，包括将 Spark Machine Learning 管道与 Microsoft Cognitive Toolkit (CNTK) 和 OpenCV 进行无缝集成，使您能够快速创建功能强大，高度可扩展的大 型图像和文本数据集分析预测模型。</p>
+<p>eventLog 用来存放日志，需要手动创建</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh
+hadoop fs -mkdir -p &#x2F;spark&#x2F;eventLog</code></pre>
+<p>spark-defaults.conf 文件不配置的话，运行演示示例的任务不会显示在 web 界面中。</p>
+<h4 id="21启动spark"><a class="markdownIt-Anchor" href="#21启动spark">#</a> 2.1 启动 spark</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p><img src="/images/1606274937357.png" alt="1606274937357"></p>
+<p>可以看到 Spark 创建了 Master 和 Worker 两个进程</p>
+<h4 id="运行演示实例"><a class="markdownIt-Anchor" href="#运行演示实例">#</a> 运行演示实例</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;bin&#x2F;run-example SparkPi</code></pre>
+<p><img src="/images/1606275049400.png" alt="1606275049400"></p>
+<p>日志信息很多，很难找到输出结果，下面对日志进行设置。</p>
+<h4 id="22设置日志"><a class="markdownIt-Anchor" href="#22设置日志">#</a> 2.2 设置日志</h4>
+<p>上面运行过程中，由于 Log4j 的日志输出级别为 INFO 级别，所以会在屏幕上输出很多的 日志信息，造成很难定位程序的输出结果。可以通过修改日志级别进行解决。</p>
+<p>切换目录到 /apps/spark/sbin 目录下，停止 Spark。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;stop-all.sh</code></pre>
+<p>再切换目录到 /apps/spark/conf 目录下，将目录下 log4j.properties.template 重命名为</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mv log4j.properties.template log4j.properties
+vim log4j.properties</code></pre>
+<p>第 19 行修改 log4j.rootCategory 的值为 WARN</p>
+<p><img src="/images/1606275258091.png" alt="1606275258091"></p>
+<p>启动 Spark，再次运行演示实例，可以很容易找到结果。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;start-all.sh
+&#x2F;apps&#x2F;spark&#x2F;bin&#x2F;run-example SparkPi</code></pre>
+<p><img src="/images/1606275364676.png" alt="1606275364676"></p>
+<h4 id="使用pyspark统计hdfs上的文件的行数"><a class="markdownIt-Anchor" href="#使用pyspark统计hdfs上的文件的行数">#</a> 使用 pyspark 统计 HDFS 上的文件的行数</h4>
+<p>在 HDFS 上新建目录 /input/spark 并上传文件 <a target="_blank" rel="noopener" href="http://README.md">README.md</a> 到该目录</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input&#x2F;spark&#x2F;
+hadoop fs -put &#x2F;apps&#x2F;spark&#x2F;README.md &#x2F;input&#x2F;spark&#x2F;</code></pre>
+<p><img src="/images/1606275518216.png" alt="1606275518216"></p>
+<h4 id="启动-pyspark"><a class="markdownIt-Anchor" href="#启动-pyspark">#</a> 启动 pyspark</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">PYSPARK_PYTHON&#x3D;python3 pyspark</code></pre>
+<p>使用 python 加载 HDFS 上的 <a target="_blank" rel="noopener" href="http://README.md">README.md</a> 文件，并转变为 RDD</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">rdd &#x3D; sc.textFile(&quot;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;input&#x2F;spark&#x2F;README.md&quot;)
+rdd.count()</code></pre>
+<p><img src="/images/1606275645182.png" alt="1606275645182"></p>
+<p>查看当前运行模式</p>
+<pre class="line-numbers language-scala" data-language="scala"><code class="language-scala">sc.master</code></pre>
+<p><img src="/images/1606275686989.png" alt="1606275686989"></p>
+<p>因为我们在 spark-defaults.conf 中对主节点进行了设置，所以这里显示的运行模式不再 是 local。</p>
+<h2 id="三-web界面"><a class="markdownIt-Anchor" href="#三-web界面">#</a> 三、Web 界面</h2>
+<p>可以看到只有一个 worker，我们运行的例子显示的已完成的列表里</p>
+<p><img src="/images/1606275841446.png" alt="1606275841446"></p>
+<h2 id="四-jupyter-notebook环境搭建"><a class="markdownIt-Anchor" href="#四-jupyter-notebook环境搭建">#</a> 四、Jupyter notebook 环境搭建</h2>
+<p>安装 jupyter notebook</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo apt install jupyter-notebook</code></pre>
+<p>新建工作目录～/work_pyspark</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mkdir ~&#x2F;work_pyspark</code></pre>
+<p>进入目录，执行以下命令在 jupyter notebook 中运行 spark</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">PYSPARK_DRIVER_PYTHON&#x3D;jupyter PYSPARK_DRIVER_PYTHON_OPTS&#x3D;&#39;notebook&#39; \
+PYSPARK_PYTHON&#x3D;python3 pyspark</code></pre>
+<p><img src="/images/1606276390750.png" alt="1606276390750"></p>
+<p>为方便起见，可以将下面的环境变量添加到～/.bashrc 中</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export PYSPARK_DRIVER_PYTHON&#x3D;jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS&#x3D;&#39;notebook&#39;
+export PYSPARK_PYTHON&#x3D;python3</code></pre>
+<p>使配置生效</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<p>这样在终端中执行 pyspark，就默认在 jupyter notebook 中运行 spark。</p>
+<p><img src="/images/1606276422023.png" alt="1606276422023"></p>
+<p><img src="/images/1606281704800.png" alt="1606281704800"></p>
+<p>新建一个工作目录</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mkdir ~&#x2F;pyspark-workspace</code></pre>
+<h2 id="五-配置jupyter-notebook"><a class="markdownIt-Anchor" href="#五-配置jupyter-notebook">#</a> 五、配置 jupyter notebook</h2>
+<p>由于虚拟机内部使用图形界面体验感不够好，所以配置以下 jupyter 服务器，使宿主机可以直接访问 notebook</p>
+<ul>
+<li>生成配置文件</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">jupyter notebook --generate-config</code></pre>
+<p><img src="/images/1606284378614.png" alt="1606284378614"></p>
+<ul>
+<li>启动 python3 shell, 设置密码，并拷贝输出的 sha1 一行</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">python3
+&gt;&gt;&gt; from notebook.auth import passwd
+&gt;&gt;&gt; passwd()
+Enter password: 
+Verify password: 
+&#39;sha1:f81168ee5979:773a40f2f37625b9dd22f6626ed1dfe9300adba3&#39;
+&gt;&gt;&gt; exit()</code></pre>
+<p><img src="/images/1606284436182.png" alt="1606284436182"></p>
+<ul>
+<li>编辑 /home/chen/.jupyter/jupyter_notebook_config.py, 添加如下</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">c.NotebookApp.ip &#x3D; &quot;10.0.0.135&quot; # 不知道为什么这里填127.0.0.1不可以,10.0.0.135是NAT模式的IP
+c.NotebookApp.password&#x3D;u&quot;sha1:f81168ee5979:773a40f2f37625b9dd22f6626ed1dfe9300adba3&quot;
+c.NotebookApp.open_browser &#x3D; False
+c.NotebookApp.port&#x3D;8888</code></pre>
+<ul>
+<li>在工作空间启动 pyspark</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd ~&#x2F;pyspark-workspace
+pyspark</code></pre>
+<p><img src="/images/1606284817174.png" alt="1606284817174"></p>
+<p><img src="/images/1606284875720.png" alt="1606284875720"></p>
+<h2 id="六-pyspark-rdd"><a class="markdownIt-Anchor" href="#六-pyspark-rdd">#</a> 六、pyspark RDD</h2>
+<p>RDD 算子</p>
+<ul>
+<li>Transformation
+<ul>
+<li>Transformation 是通过转换从一个或多个 RDD 生成新的 RDD，该操作是 lazy 的，当调用 action 算则，才会发起 job</li>
+<li>典型算子：map .  flatMap  .filter  .  reduceByKey  等</li>
+</ul>
+</li>
+<li>Action
+<ul>
+<li>当代码调用该类型算子时，立即启动 job。</li>
+<li>典型算子：take count  saveAsTextFile 等</li>
+</ul>
+</li>
+</ul>
+<p>Transformation</p>
+<table>
+<thead>
+<tr>
+<th>Transformation API</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>filter(func)</td>
+<td>筛选出满足函数 Func 的元素，并返回一个新的数据集</td>
+</tr>
+<tr>
+<td>map(func)</td>
+<td>将每个元素传递到函数 func 中，并将结果返回为一个新的数据集</td>
+</tr>
+<tr>
+<td>flatMap(func)</td>
+<td>与 map () 相似，但每个输入元素都可以映射到 0 或多个输出结果</td>
+</tr>
+<tr>
+<td>groupByKey()</td>
+<td>应用于 (K,V) 键值对的数据集时，返回一个新的 (K,Iterable<V>形式的数据集)</td>
+</tr>
+<tr>
+<td>reduceByKey(func)</td>
+<td>应用于 (K,V) 键值对的数据集时，返回一个新的 (K,V) 形式的数据集，其中的每个值是将每个 key 传递到函数 func 中进行聚合。</td>
+</tr>
+</tbody>
+</table>
+<p>Action</p>
+<table>
+<thead>
+<tr>
+<th>Action API</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count()</td>
+<td>返回数据集中的元素的个数</td>
+</tr>
+<tr>
+<td>collect()</td>
+<td>以数组的形式返回数据集中的所有元素</td>
+</tr>
+<tr>
+<td>first()</td>
+<td>返回数据集中的第一个元素</td>
+</tr>
+<tr>
+<td>take(n)</td>
+<td>以数组的形式返回数据集中的前 n 个元素</td>
+</tr>
+<tr>
+<td>reduce(func)</td>
+<td>通过函数 Func (输入两个参数并返回一个值) 聚合数据集中的元素</td>
+</tr>
+<tr>
+<td>foreach(func)</td>
+<td>将数据集中的每个元素传递到函数 func 中运行</td>
+</tr>
+</tbody>
+</table>
+<h2 id="七-pyspark-rdd"><a class="markdownIt-Anchor" href="#七-pyspark-rdd">#</a> 七、Pyspark RDD</h2>
+<h3 id="1查看pyspark的版本号"><a class="markdownIt-Anchor" href="#1查看pyspark的版本号">#</a> 1. 查看 pyspark 的版本号</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">print(&quot;pyspark version:&quot;+str(sc.version))</code></pre>
+<pre><code>pyspark version:2.4.3
+</code></pre>
+<h3 id="2使用parallelize创建rdd"><a class="markdownIt-Anchor" href="#2使用parallelize创建rdd">#</a> 2. 使用 parallelize 创建 RDD</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+print(x.collect())</code></pre>
+<pre><code>[1, 2, 3]
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&quot;apple&quot;,&quot;orange&quot;,&quot;banana&quot;])
+print(x.collect())</code></pre>
+<pre><code>['apple', 'orange', 'banana']
+</code></pre>
+<h2 id="3-map"><a class="markdownIt-Anchor" href="#3-map">#</a> 3. map</h2>
+<p>map (f,presercesPartitioning=False): 对 RDD 中每个元素进行 f 函数里面的操作，返回一个新的 RDD。preservePartitioning 表示是否保留父 RDD 的分区信息</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+y &#x3D; x.map(lambda x:(x,x**2))
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[1, 2, 3]
+[(1, 1), (2, 4), (3, 9)]
+</code></pre>
+<h2 id="4flatmap"><a class="markdownIt-Anchor" href="#4flatmap">#</a> 4.flatMap</h2>
+<p>flatMap (f, preservesPartitioning=False)：对 RDD 中每个元素进行 f 函数里面的操作，返回一个扁平化结果的新 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,3])
+y &#x3D; x.flatMap(lambda x:(x,x*100,x**2))
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[1, 3, 3]
+[1, 100, 1, 3, 300, 9, 3, 300, 9]
+</code></pre>
+<h2 id="5mappatitions"><a class="markdownIt-Anchor" href="#5mappatitions">#</a> 5.mapPatitions</h2>
+<p>mapPartitions (f, preservesPartitioning=False)：对 RDD 中每个分区里面的全部元素进行自定义 f 函数操作，返回一个新 RDD Section ??</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3],2)
+def f(iterator):yield sum(iterator)
+    
+y &#x3D; x.mapPartitions(f)
+print(x.glom().collect())
+print(y.glom().collect())</code></pre>
+<pre><code>[[1], [2, 3]]
+[[1], [5]]
+</code></pre>
+<h2 id="6mappartitionswithindex"><a class="markdownIt-Anchor" href="#6mappartitionswithindex">#</a> 6.mapPartitionsWithIndex</h2>
+<p>mapPartitionsWithIndex (f, preservesPartitioning=False)：对 RDD 中每个分区里面的全部元素进行自定义 f 函数操作，并跟踪每个分区索引</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3],2)
+def f(partitionIndex,iterator):yield (partitionIndex,sum(iterator))
+    
+y &#x3D; x.mapPartitionsWithIndex(f)
+print(x.glom().collect())
+print(y.glom().collect())</code></pre>
+<pre><code>[[1], [2, 3]]
+[[(0, 1)], [(1, 5)]]
+</code></pre>
+<h2 id="7分区数量"><a class="markdownIt-Anchor" href="#7分区数量">#</a> 7. 分区数量</h2>
+<p>getNumPartition (): 返回分区的数量</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3],2)
+y &#x3D; x.getNumPartitions()
+print(x.glom().collect())
+print(y)</code></pre>
+<pre><code>[[1], [2, 3]]
+2
+</code></pre>
+<h2 id="8filter"><a class="markdownIt-Anchor" href="#8filter">#</a> 8.filter</h2>
+<p>filter (f)：对 RDD 中的元素进行过滤，返回一个满足过滤条件的新 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+y &#x3D; x.filter(lambda x:x%2&#x3D;&#x3D;1)
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[1, 2, 3]
+[1, 3]
+</code></pre>
+<h2 id="9distinct"><a class="markdownIt-Anchor" href="#9distinct">#</a> 9.distinct</h2>
+<p>distinct (numPartitions=None)：对 RDD 中的元素进行去重，返回去重后的新 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&quot;A&quot;,&quot;B&quot;,&quot;A&quot;,&quot;C&quot;])
+y &#x3D; x.distinct()
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>['A', 'B', 'A', 'C']
+['C', 'A', 'B']
+</code></pre>
+<h2 id="10sample"><a class="markdownIt-Anchor" href="#10sample">#</a> 10.sample</h2>
+<p>sample (withReplacement, fraction, seed=None)：对 RDD 进行抽样操作。</p>
+<ul>
+<li>withReplacement：是否有放回</li>
+<li>fraction：抽取的比率</li>
+<li>seed：随机生成的种子</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize(range(7))
+# call &#39;sample&#39; 5 times
+ylist &#x3D; [x.sample(withReplacement&#x3D;False, fraction&#x3D;0.5) for i in range(5)]
+print(&#39;x &#x3D; &#39; + str(x.collect()))
+for cnt,y in zip(range(len(ylist)), ylist):
+    print(&#39;sample:&#39; + str(cnt) + &#39; y &#x3D; &#39; + str(y.collect()))</code></pre>
+<pre><code>x = [0, 1, 2, 3, 4, 5, 6]
+sample:0 y = [1, 2, 5, 6]
+sample:1 y = [0, 1, 2, 6]
+sample:2 y = [1, 2, 3, 4]
+sample:3 y = [2, 4, 6]
+sample:4 y = [0, 1, 3]
+</code></pre>
+<h2 id="11takesample"><a class="markdownIt-Anchor" href="#11takesample">#</a> 11.takeSample</h2>
+<p>takeSample (withReplacement, num, seed=None)：对 RDD 中元素进行抽样，返回抽样后 num<br>
+ 个元素。- withReplacement：是否有放回 - seed：随机种子数</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize(range(7))
+# call &#39;sample&#39; 5 times
+ylist &#x3D; [x.takeSample(withReplacement&#x3D;False, num&#x3D;3) for i in range(5)]
+print(&#39;x &#x3D; &#39; + str(x.collect()))
+for cnt,y in zip(range(len(ylist)), ylist):
+    print(&#39;sample:&#39; + str(cnt) + &#39; y &#x3D; &#39; + str(y))</code></pre>
+<pre><code>x = [0, 1, 2, 3, 4, 5, 6]
+sample:0 y = [6, 2, 3]
+sample:1 y = [3, 1, 2]
+sample:2 y = [1, 4, 3]
+sample:3 y = [0, 2, 4]
+sample:4 y = [2, 5, 0]
+</code></pre>
+<h2 id="12union"><a class="markdownIt-Anchor" href="#12union">#</a> 12.union</h2>
+<p>union (other)：将自身 RDD 与其它 RDD 进行合并操作，返回一个新的 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;A&#39;,&#39;A&#39;,&#39;B&#39;])
+y &#x3D; sc.parallelize([&#39;D&#39;,&#39;C&#39;,&#39;A&#39;])
+z &#x3D; x.union(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>['A', 'A', 'B']
+['D', 'C', 'A']
+['A', 'A', 'B', 'D', 'C', 'A']
+</code></pre>
+<h2 id="13intersection"><a class="markdownIt-Anchor" href="#13intersection">#</a> 13.intersection</h2>
+<p>intersection：对自身 RDD 与其它 RDD 取交集</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;A&#39;,&#39;A&#39;,&#39;B&#39;])
+y &#x3D; sc.parallelize([&#39;A&#39;,&#39;C&#39;,&#39;D&#39;])
+z &#x3D; x.intersection(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>['A', 'A', 'B']
+['A', 'C', 'D']
+['A']
+</code></pre>
+<h2 id="14sortbykey"><a class="markdownIt-Anchor" href="#14sortbykey">#</a> 14.sortByKey</h2>
+<p>sortByKey (ascending=True, numPartitions=None, keyfunc)：对 RDD 按 key 值或对 key 操作<br>
+的自定义 keyfunc 函数进行排序，默认为升序，numPartitions：分区的数目。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;A&#39;,2),(&#39;C&#39;,3)])
+y &#x3D; x.sortByKey()
+print(x.collect())
+print(y.collect())
+</code></pre>
+<pre><code>[('B', 1), ('A', 2), ('C', 3)]
+[('A', 2), ('B', 1), ('C', 3)]
+</code></pre>
+<h2 id="15sortby"><a class="markdownIt-Anchor" href="#15sortby">#</a> 15.sortBy</h2>
+<p>sortBy (keyfunc, ascending=True, numPartitions=None)：按自定义的 keyfunc 函数对 RDD 中<br>
+元素进行排序，默认为升序</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;Cat&#39;,&#39;Apple&#39;,&#39;Bat&#39;])
+def keyGen(val): return val[0]
+y &#x3D; x.sortBy(keyGen)
+print(y.collect())</code></pre>
+<pre><code>['Apple', 'Bat', 'Cat']
+</code></pre>
+<h2 id="16glom"><a class="markdownIt-Anchor" href="#16glom">#</a> 16.glom</h2>
+<p>glom ()：创建一个新的 RDD，通过合并每个分区里面的全部元素到一个列表中</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;C&#39;,&#39;B&#39;,&#39;A&#39;], 2)
+y &#x3D; x.glom()
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>['C', 'B', 'A']
+[['C'], ['B', 'A']]
+</code></pre>
+<h2 id="17cartesian"><a class="markdownIt-Anchor" href="#17cartesian">#</a> 17.cartesian</h2>
+<p>cartesian (other)：将 RDD 与其它 RDD 进行笛卡尔积，返回 &lt;key,value&gt; 类型的 RDD，其中 key 为自身的元素，value 为其它 RDD 的元素。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;A&#39;,&#39;B&#39;])
+y &#x3D; sc.parallelize([&#39;C&#39;,&#39;D&#39;])
+z &#x3D; x.cartesian(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>['A', 'B']
+['C', 'D']
+[('A', 'C'), ('A', 'D'), ('B', 'C'), ('B', 'D')]
+</code></pre>
+<h2 id="18groupby"><a class="markdownIt-Anchor" href="#18groupby">#</a> 18.groupBy</h2>
+<p>groupBy (f, numPartitions=None, partitionFunc)：对 RDD 中每个元素按照满足自定义的 f 函数为条件进行分组，返回一个新的 &lt;key,value&amp;gt 类型的 RDD，其中 key 为 f 函数的返回值。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+y &#x3D; x.groupBy(lambda x: &#39;A&#39; if (x%2 &#x3D;&#x3D; 1) else &#39;B&#39; )
+print(x.collect())
+print(y.collect())
+print([(j[0],[i for i in j[1]]) for j in y.collect()])</code></pre>
+<pre><code>[1, 2, 3]
+[('A', &lt;pyspark.resultiterable.ResultIterable object at 0x7f380801f2e8&gt;), ('B', &lt;pyspark.resultiterable.ResultIterable object at 0x7f380801ff98&gt;)]
+[('A', [1, 3]), ('B', [2])]
+</code></pre>
+<h2 id="19pipe"><a class="markdownIt-Anchor" href="#19pipe">#</a> 19.pipe</h2>
+<p>pipe (command, env=None, checkCode=False)：对 RDD 元素进行管道操作，将返回 shell 命<br>
+令的处理结果，形成一个新的 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;A&#39;, &#39;Ba&#39;, &#39;C&#39;, &#39;AD&#39;])
+y &#x3D; x.pipe(&#39;grep &quot;A&quot;&#39;) 
+y1 &#x3D; x.pipe(&#39;grep -i &quot;a&quot;&#39;)
+print(x.collect())
+print(y.collect())
+print(y1.collect())</code></pre>
+<pre><code>['A', 'Ba', 'C', 'AD']
+['A', 'AD']
+['A', 'Ba', 'AD']
+</code></pre>
+<h2 id="20foreach"><a class="markdownIt-Anchor" href="#20foreach">#</a> 20.foreach</h2>
+<p>foreach (f)：对 RDD 中每个元素进行自定义 f 函数输出操作</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+def f(el):
+    &#39;&#39;&#39;side effect: append the current RDD elements to a file&#39;&#39;&#39;
+    f1 &#x3D; open(&quot;&#x2F;home&#x2F;chen&#x2F;foreachExample.txt&quot;, &#39;a+&#39;)
+    print(el,file&#x3D;f1)
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"># first clear the file contents
+open(&#39;&#x2F;home&#x2F;chen&#x2F;foreachExample.txt&#39;, &#39;w&#39;).close()
+y &#x3D; x.foreach(f) # writes into foreachExample.txt
+print(x.collect())
+print(y) # foreach returns &#39;None&#39;
+# print the contents of foreachExample.txt
+with open(&quot;&#x2F;home&#x2F;chen&#x2F;foreachExample.txt&quot;, &quot;r&quot;) as foreachExample:
+    print (foreachExample.read())</code></pre>
+<pre><code>[1, 2, 3]
+None
+1
+2
+3
+</code></pre>
+<h2 id="21foreachpartition"><a class="markdownIt-Anchor" href="#21foreachpartition">#</a> 21.foreachPartition</h2>
+<p>foreachPartition (f)：对 RDD 每个分区中元素进行自定义 f 函数操作。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3,4,5,6],5)
+def f(parition):
+    &#39;&#39;&#39;side effect: append the current RDD partition contents to a file&#39;&#39;&#39;
+    f1&#x3D;open(&quot;&#x2F;home&#x2F;chen&#x2F;foreachPartitionExample.txt&quot;, &#39;a+&#39;)
+    print([el for el in parition],file&#x3D;f1)</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">open(&#39;&#x2F;home&#x2F;chen&#x2F;foreachPartitionExample.txt&#39;, &#39;w&#39;).close()
+y &#x3D; x.foreachPartition(f) # writes into foreachExample.txt
+print(x.glom().collect())
+print(y) # foreach returns &#39;None&#39;
+# print the contents of foreachExample.txt
+with open(&quot;&#x2F;home&#x2F;chen&#x2F;foreachPartitionExample.txt&quot;, &quot;r&quot;) as foreachExample:
+    print (foreachExample.read())</code></pre>
+<pre><code>[[1], [2], [3], [4], [5, 6]]
+None
+[1]
+[2]
+[3]
+[4]
+[5, 6]
+</code></pre>
+<h2 id="22reduce"><a class="markdownIt-Anchor" href="#22reduce">#</a> 22.reduce</h2>
+<p>reduce (f)：使用指定的二元运算符，对 RDD 中每个元素进行 reduce 操作</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+y &#x3D; x.reduce(lambda x, y: x + y) # computes a cumulative sum
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 2, 3]
+6
+</code></pre>
+<h2 id="23fold"><a class="markdownIt-Anchor" href="#23fold">#</a> 23.fold</h2>
+<p>fold (zeroValue, op)：对 RDD 中每个元素进行聚合操作。使用一个函数和零值，先对每个分区的<br>
+元素进行聚合，然后对全部分区进行聚合。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3],2)
+neutral_zero_value &#x3D; 0 # 0 for sum, 1 for multiplication
+y &#x3D; x.fold(neutral_zero_value,lambda x, y: x + y) # computes cumulative sum
+print(x.glom().collect())
+print(y)</code></pre>
+<pre><code>[[1], [2, 3]]
+6
+</code></pre>
+<h2 id="24aggregate"><a class="markdownIt-Anchor" href="#24aggregate">#</a> 24.aggregate</h2>
+<p>aggregate (zeroValue, seqOp, combOp)：使用一个合并函数和一个零值，先对每个分区按合并<br>
+函数进行聚合，然后将全部分区进行聚合。- seqOp: 每个分区执行的聚合函数，对 rdd 中按分区每<br>
+个元素 y 执行此函数，x 为上一次的执行结果，首次计算时使用默认值 zeroValue</p>
+<ul>
+<li>comOp: 对每个分区的结果执行的聚合函数，执行此函数时，每个分区的计算结果 y 执行此函<br>
+数，x 为上一次的执行结果，首次计算时使用默认值 zeroValue</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([2,3,4])
+neutral_zero_value &#x3D; (0,1) # sum: x &#x3D; x+0, product: x &#x3D; 1*x
+seqOp &#x3D; (lambda x, y: (x[0] + y, x[1] * y))
+combOp &#x3D; (lambda x, y: (x[0] + y[0], x[1] * y[1]))
+y &#x3D; x.aggregate(neutral_zero_value,seqOp,combOp) # computes (cumulative sum,cumulative product)
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[2, 3, 4]
+(9, 24)
+</code></pre>
+<h2 id="25max"><a class="markdownIt-Anchor" href="#25max">#</a> 25.max</h2>
+<p>max (key=None)：找寻 RDD 中最大的一项，参数 key: 一个函数用于生成比较的关键条件</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.max()
+print(x.collect())
+print(y)
+</code></pre>
+<pre><code>[1, 3, 2]
+3
+</code></pre>
+<h2 id="26min"><a class="markdownIt-Anchor" href="#26min">#</a> 26.min</h2>
+<p>min (key=None)：找寻 RDD 中最小的一项，参数 key: 一个函数用于生成比较的关键条件</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.min()
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+1
+</code></pre>
+<h2 id="27sum"><a class="markdownIt-Anchor" href="#27sum">#</a> 27.sum</h2>
+<p>sum ()：对 RDD 中所有元素进行累加求和</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.sum()
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+6
+</code></pre>
+<h2 id="28count"><a class="markdownIt-Anchor" href="#28count">#</a> 28.count</h2>
+<p>count ()：计算 RDD 中元素的个数</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.count()
+print(x.collect())
+print(y)
+</code></pre>
+<pre><code>[1, 3, 2]
+3
+</code></pre>
+<h2 id="29histogram"><a class="markdownIt-Anchor" href="#29histogram">#</a> 29.histogram</h2>
+<p>histogram (buckets)：使用提供的桶计算直方图。例如 [1,10,20,50] 意思是桶 [1,10) [10,20) [20,50]</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.histogram(buckets &#x3D; 2)
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+([1, 2, 3], [2, 3])
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.histogram([0,0.5,1,1.5,2,2.5,3,3.5])
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5], [0, 0, 2, 0, 1, 0, 2])
+</code></pre>
+<h2 id="30mean"><a class="markdownIt-Anchor" href="#30mean">#</a> 30.mean</h2>
+<p>mean ()：计算 RDD 中元素的平均值</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.mean()
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+2.0
+</code></pre>
+<h2 id="31variance"><a class="markdownIt-Anchor" href="#31variance">#</a> 31.variance</h2>
+<p>variance ()：计算 RDD 中所有元素的方差</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.variance() # divides by N
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+0.6666666666666666
+</code></pre>
+<h2 id="32stdev"><a class="markdownIt-Anchor" href="#32stdev">#</a> 32.stdev</h2>
+<p>stdev ()：计算 RDD 中所有元素的标准差</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.stdev() # divides by N
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+0.816496580927726
+</code></pre>
+<h2 id="33samplestdev"><a class="markdownIt-Anchor" href="#33samplestdev">#</a> 33.sampleStdev</h2>
+<p>sampleStdev ()：计算 RDD 中所有元素的样本标准差</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.sampleStdev() # divides by N-1
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+1.0
+</code></pre>
+<h2 id="34samplevariance"><a class="markdownIt-Anchor" href="#34samplevariance">#</a> 34.sampleVariance</h2>
+<p>sampleVariance ()：计算 RDD 中所有元素的样本方差</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,2])
+y &#x3D; x.sampleVariance() # divides by N-1
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 2]
+1.0
+</code></pre>
+<h2 id="35countbyvalue"><a class="markdownIt-Anchor" href="#35countbyvalue">#</a> 35.countByValue</h2>
+<p>countByValue ()：对 RDD 中每个元素进行计数</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&quot;A&quot;,&quot;C&quot;,&quot;A&quot;,&quot;B&quot;,&quot;C&quot;])
+y &#x3D; x.countByValue()
+print(x.collect())
+print(y)</code></pre>
+<pre><code>['A', 'C', 'A', 'B', 'C']
+defaultdict(&lt;class 'int'&gt;, &#123;'A': 2, 'C': 2, 'B': 1&#125;)
+</code></pre>
+<h2 id="36top"><a class="markdownIt-Anchor" href="#36top">#</a> 36.top</h2>
+<p>top (num, key=None)：对 RDD 中元素按降序或自定义 key 函数进行排序，输出排序后的前 num<br>
+ 个元素</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.top(num &#x3D; 3)
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+[3, 3, 2]
+</code></pre>
+<h2 id="37takeordered"><a class="markdownIt-Anchor" href="#37takeordered">#</a> 37.takeOrdered</h2>
+<p>takeOrdered (num, key=None)：对 RDD 中元素按升序或自定义 key 函数进行排序，输出排序<br>
+后的前 num 个元素。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.takeOrdered(num &#x3D; 3)
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+[1, 1, 2]
+</code></pre>
+<h2 id="38take"><a class="markdownIt-Anchor" href="#38take">#</a> 38.take</h2>
+<p>take (num)：输出 RDD 中前 num 个元素</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.take(num &#x3D; 3)
+print(x.collect())
+print(y)
+</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+[1, 3, 1]
+</code></pre>
+<h2 id="39first"><a class="markdownIt-Anchor" href="#39first">#</a> 39.first</h2>
+<p>first ()：输出 RDD 中第一个元素</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,3,1,2,3])
+y &#x3D; x.first()
+print(x.collect())
+print(y)
+</code></pre>
+<pre><code>[1, 3, 1, 2, 3]
+1
+</code></pre>
+<h2 id="40collectasmap"><a class="markdownIt-Anchor" href="#40collectasmap">#</a> 40.collectAsMap</h2>
+<p>collectAsMap ()：对 RDD 的每个元素进行遍历，返回一个键值对类型的字典。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,3),(&#39;A&#39;,1),(&#39;B&#39;,2)])
+y &#x3D; x.collectAsMap()
+print(x.collect())
+print(y)</code></pre>
+<pre><code>[('C', 3), ('A', 1), ('B', 2)]
+&#123;'C': 3, 'A': 1, 'B': 2&#125;
+</code></pre>
+<h2 id="41keys"><a class="markdownIt-Anchor" href="#41keys">#</a> 41.keys</h2>
+<p>keys ()：对 &lt;key,value&gt; 类型 RDD 进行操作，返回 RDD 每个元素的 key 值。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,3),(&#39;A&#39;,1),(&#39;B&#39;,2)])
+y &#x3D; x.keys()
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('C', 3), ('A', 1), ('B', 2)]
+['C', 'A', 'B']
+</code></pre>
+<h2 id="42values"><a class="markdownIt-Anchor" href="#42values">#</a> 42.values</h2>
+<p>values ()：对 &lt;key,value&gt; 类型的 RDD 进行操作，返回 RDD 每个元素的 value 值。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,3),(&#39;A&#39;,1),(&#39;B&#39;,2)])
+y &#x3D; x.values()
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('C', 3), ('A', 1), ('B', 2)]
+[3, 1, 2]
+</code></pre>
+<h2 id="43reducebykey"><a class="markdownIt-Anchor" href="#43reducebykey">#</a> 43.reduceByKey</h2>
+<p>reduceByKey (func, numPartitions=None, partitionFunc)：对 pairRDD 中的 key 先进行 group<br>
+by 操作，然后对聚合后的 value 数据进行自定义 f 函数操作，返回一个新的 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4),(&#39;A&#39;,5)])
+y &#x3D; x.reduceByKey(lambda agg, obj: agg + obj)
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('B', 1), ('B', 2), ('A', 3), ('A', 4), ('A', 5)]
+[('B', 3), ('A', 12)]
+</code></pre>
+<h2 id="44countbykey"><a class="markdownIt-Anchor" href="#44countbykey">#</a> 44.countByKey</h2>
+<p>countByKey ()：对 key 相同的所有元素进行计数，返回值为一个字典</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4),(&#39;A&#39;,5)])
+y &#x3D; x.countByKey()
+print(x.collect())
+print(y)
+</code></pre>
+<pre><code>[('B', 1), ('B', 2), ('A', 3), ('A', 4), ('A', 5)]
+defaultdict(&lt;class 'int'&gt;, &#123;'B': 2, 'A': 3&#125;)
+</code></pre>
+<h2 id="45join"><a class="markdownIt-Anchor" href="#45join">#</a> 45.join</h2>
+<p>join (other, numPartitions=None)：对 RDD 上的每个元素与其它 RDD 进行 join 操作，返回一<br>
+个 (k, (v1, v2)) 类型的新 RDD，其中 (k, v1) 在自身 RDD，(k, v2) 在其它 RDD。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,3),(&#39;A&#39;,2),(&#39;A&#39;,1)])
+y &#x3D; sc.parallelize([(&#39;A&#39;,8),(&#39;B&#39;,7),(&#39;A&#39;,6),(&#39;D&#39;,5)])
+z &#x3D; x.join(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>[('C', 4), ('B', 3), ('A', 2), ('A', 1)]
+[('A', 8), ('B', 7), ('A', 6), ('D', 5)]
+[('B', (3, 7)), ('A', (2, 8)), ('A', (2, 6)), ('A', (1, 8)), ('A', (1, 6))]
+</code></pre>
+<h2 id="46leftouterjoin"><a class="markdownIt-Anchor" href="#46leftouterjoin">#</a> 46.leftOuterJoin</h2>
+<p>leftOuterJoin (other, numPartitions=None)：执行自身 RDD 与其他 RDD 的 left outer join 操作，例如自身 RDD 每个元素为 &lt;k,v&gt;，其他 RDD 每个元素为 &lt;k,w&gt;，返回新的 RDD 中包含全<br>
+部的 pairs (k, (v, w)) 或者 pair (k, (v, None))。numPartitions：进行 Hash 分区的数量</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,3),(&#39;A&#39;,2),(&#39;A&#39;,1)])
+y &#x3D; sc.parallelize([(&#39;A&#39;,8),(&#39;B&#39;,7),(&#39;A&#39;,6),(&#39;D&#39;,5)])
+z &#x3D; x.leftOuterJoin(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>[('C', 4), ('B', 3), ('A', 2), ('A', 1)]
+[('A', 8), ('B', 7), ('A', 6), ('D', 5)]
+[('B', (3, 7)), ('A', (2, 8)), ('A', (2, 6)), ('A', (1, 8)), ('A', (1, 6)), ('C', (4, None))]
+</code></pre>
+<h2 id="47rightouterjoin"><a class="markdownIt-Anchor" href="#47rightouterjoin">#</a> 47.rightOuterJoin</h2>
+<p>rightOuterJoin：执行自身 RDD 与其他 RDD 的 right outer join 操作，例如自身 RDD 每个元<br>
+素为 &lt;k,v&gt;，其他 RDD 每个元素为 &lt;k,w&gt;，返回新的 RDD 中包含全部的 pairs (k, (v, w)) 或者<br>
+ pair (k, (None, w))。numPartitions：进行 Hash 分区的数量</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,3),(&#39;A&#39;,2),(&#39;A&#39;,1)])
+y &#x3D; sc.parallelize([(&#39;A&#39;,8),(&#39;B&#39;,7),(&#39;A&#39;,6),(&#39;D&#39;,5)])
+z &#x3D; x.rightOuterJoin(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>[('C', 4), ('B', 3), ('A', 2), ('A', 1)]
+[('A', 8), ('B', 7), ('A', 6), ('D', 5)]
+[('B', (3, 7)), ('A', (2, 8)), ('A', (2, 6)), ('A', (1, 8)), ('A', (1, 6)), ('D', (None, 5))]
+</code></pre>
+<h2 id="48partitionby"><a class="markdownIt-Anchor" href="#48partitionby">#</a> 48.partitionBy</h2>
+<p>partitionBy (numPartitions, partitionFunc)：对 RDD 进行分区。numPartitions：分区的数目，<br>
+partitionFunc：自定义分区函数，partitionFunc (k) % numPartitions 的值为新分区的索引 index</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"># partitionBy Example1
+x &#x3D; sc.parallelize([(0,1),(1,2),(2,3)],2)
+y &#x3D; x.partitionBy(numPartitions &#x3D; 3, partitionFunc &#x3D; lambda x: x) # only key␣is passed to paritionFunc
+print(x.glom().collect())
+print(y.glom().collect())</code></pre>
+<pre><code>[[(0, 1)], [(1, 2), (2, 3)]]
+[[(0, 1)], [(1, 2)], [(2, 3)]]
+</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"># partitionBy Example2
+x &#x3D; sc.parallelize([(&quot;hadoop&quot;,1),(&quot;spark&quot;,2),(&quot;python&quot;,3),(&quot;C&quot;,4)],2)
+y &#x3D; x.partitionBy(numPartitions &#x3D; 3, partitionFunc &#x3D; lambda x: len(x)) # only␣key is passed to paritionFunc
+print(x.glom().collect())
+print(y.glom().collect())
+</code></pre>
+<pre><code>[[('hadoop', 1), ('spark', 2)], [('python', 3), ('C', 4)]]
+[[('hadoop', 1), ('python', 3)], [('C', 4)], [('spark', 2)]]
+</code></pre>
+<h2 id="49combinebykey"><a class="markdownIt-Anchor" href="#49combinebykey">#</a> 49.combineByKey</h2>
+<p>combineByKey(createCombiner, mergeValue, mergeCombiners, numPartitions=None,<br>
+partitionFunc)：泛型函数使用一个自定义的聚合函数，去合并 RDD 中每个 key 相同的元素，具<br>
+体为转换 RDD [(K, V)] 形成一个新的 RDD [(K, C)]，其中 C 是一个合并类型。createCombiner：创<br>
+建一个 V 到 C 的函数，mergeValue：将一个 V 形成一个 C，mergeCombiners：将 C 的集合进<br>
+行合并。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4),(&#39;A&#39;,5)])
+createCombiner &#x3D; (lambda el: [(el,el**2)])
+mergeVal &#x3D; (lambda aggregated, el: aggregated + [(el,el**2)]) # append to␣aggregated
+mergeComb &#x3D; (lambda agg1,agg2: agg1 + agg2 ) # append agg1 with agg2
+y &#x3D; x.combineByKey(createCombiner,mergeVal,mergeComb)
+print(x.collect())
+print(y.collect())
+</code></pre>
+<pre><code>[('B', 1), ('B', 2), ('A', 3), ('A', 4), ('A', 5)]
+[('B', [(1, 1), (2, 4)]), ('A', [(3, 9), (4, 16), (5, 25)])]
+</code></pre>
+<h2 id="50aggregatebykey"><a class="markdownIt-Anchor" href="#50aggregatebykey">#</a> 50.aggregateByKey</h2>
+<p>aggregateByKey (zeroValue, seqFunc, combFunc, numPartitions=None, partitionFunc)：聚<br>
+合每个键的值，使用组合函数和一个零值，函数返回一个不同类型的 rdd。seqFunc：是对一个分区<br>
+里每个键的值聚合，combFunc：是对分区间每个键的聚合结果进行聚合。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4),(&#39;A&#39;,5)])
+zeroValue &#x3D; [] # empty list is &#39;zero value&#39; for append operation
+mergeVal &#x3D; (lambda aggregated, el: aggregated + [(el,el**2)])
+mergeComb &#x3D; (lambda agg1,agg2: agg1 + agg2 )
+y &#x3D; x.aggregateByKey(zeroValue,mergeVal,mergeComb)
+print(x.collect())
+print(y.collect())
+</code></pre>
+<pre><code>[('B', 1), ('B', 2), ('A', 3), ('A', 4), ('A', 5)]
+[('B', [(1, 1), (2, 4)]), ('A', [(3, 9), (4, 16), (5, 25)])]
+</code></pre>
+<h2 id="51foldbykey"><a class="markdownIt-Anchor" href="#51foldbykey">#</a> 51.foldByKey</h2>
+<p>foldByKey (zeroValue, func, numPartitions=None, partitionFunc)：使用一个组合函数 func 与<br>
+一个零值，对 key 相同的 value 值进行聚合</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4),(&#39;A&#39;,5)])
+zeroValue &#x3D; 1 # one is &#39;zero value&#39; for multiplication
+y &#x3D; x.foldByKey(zeroValue,lambda agg,x: agg*x ) # computes cumulative product␣,→within each key
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('B', 1), ('B', 2), ('A', 3), ('A', 4), ('A', 5)]
+[('B', 2), ('A', 60)]
+</code></pre>
+<h2 id="52groupbykey"><a class="markdownIt-Anchor" href="#52groupbykey">#</a> 52.groupByKey</h2>
+<p>groupByKey (numPartitions=None, partitionFunc)：对 RDD 里 key 相同的元素进行分组，分<br>
+组结果形成一个序列，最后返回一个新的 &lt;key,value&gt; 类型的 RDD。numPartitions：进行 Hash<br>
+ 分区的分区数</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;B&#39;,5),(&#39;B&#39;,4),(&#39;A&#39;,3),(&#39;A&#39;,2),(&#39;A&#39;,1)])
+y &#x3D; x.groupByKey()
+print(x.collect())
+print([(j[0],[i for i in j[1]]) for j in y.collect()])</code></pre>
+<pre><code>[('B', 5), ('B', 4), ('A', 3), ('A', 2), ('A', 1)]
+[('B', [5, 4]), ('A', [3, 2, 1])]
+</code></pre>
+<h2 id="53flatmapvalues"><a class="markdownIt-Anchor" href="#53flatmapvalues">#</a> 53.flatMapValues</h2>
+<p>flatMapValues (f)：使用一个 flatMap 函数，对类型 RDD 中 key 相同的 value 值进行操作，返回<br>
+一个新的 RDD。新 RDD 的 key 值不变，只改变了 value 值，还保留了原始 RDD 的分区。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;A&#39;,(1,2,3)),(&#39;B&#39;,(4,5))])
+y &#x3D; x.flatMapValues(lambda x: [i**2 for i in x]) # function is applied to␣,→entire value, then result is flattened
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('A', (1, 2, 3)), ('B', (4, 5))]
+[('A', 1), ('A', 4), ('A', 9), ('B', 16), ('B', 25)]
+</code></pre>
+<h2 id="54mapvalues"><a class="markdownIt-Anchor" href="#54mapvalues">#</a> 54.mapValues</h2>
+<p>mapValues：对键值对 &lt;key,value&gt; 中的 value 部分执行函数里面的操作，返回 &lt;key,value&gt; 键<br>
+值对形式的新 RDD</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;A&#39;,(1,2,3)),(&#39;B&#39;,(4,5))])
+y &#x3D; x.mapValues(lambda x: [i**2 for i in x]) # function is applied to entire␣,→value
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('A', (1, 2, 3)), ('B', (4, 5))]
+[('A', [1, 4, 9]), ('B', [16, 25])]
+</code></pre>
+<h2 id="55cogroup"><a class="markdownIt-Anchor" href="#55cogroup">#</a> 55.cogroup</h2>
+<p>cogroup (other)：对两个 RDD 数据集按 key 相同的数据进行 group by，并对 key 值相同的数据<br>
+中每个 RDD 的 value 进行单独 group by</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,(3,3)),(&#39;A&#39;,2),(&#39;A&#39;,(1,1))])
+y &#x3D; sc.parallelize([(&#39;A&#39;,8),(&#39;B&#39;,7),(&#39;A&#39;,6),(&#39;D&#39;,(5,5))])
+z &#x3D; x.cogroup(y)
+print(x.collect())
+print(y.collect())
+for key,val in list(z.collect()):
+    print(key, [list(i) for i in val])
+</code></pre>
+<pre><code>[('C', 4), ('B', (3, 3)), ('A', 2), ('A', (1, 1))]
+[('A', 8), ('B', 7), ('A', 6), ('D', (5, 5))]
+B [[(3, 3)], [7]]
+A [[2, (1, 1)], [8, 6]]
+C [[4], []]
+D [[], [(5, 5)]]
+</code></pre>
+<h2 id="56groupwith"><a class="markdownIt-Anchor" href="#56groupwith">#</a> 56.groupWith</h2>
+<p>groupWith (other, *others)：类似于 cogroup 操作，但支持多个 RDD。返回类型为 RDD。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,(3,3)),(&#39;A&#39;,2),(&#39;A&#39;,(1,1))])
+y &#x3D; sc.parallelize([(&#39;B&#39;,(7,7)),(&#39;A&#39;,6),(&#39;D&#39;,(5,5))])
+z &#x3D; sc.parallelize([(&#39;D&#39;,9),(&#39;B&#39;,(8,8))])
+a &#x3D; x.groupWith(y,z)
+print(x.collect())
+print(y.collect())
+print(z.collect())
+print(&quot;Result:&quot;)
+for key,val in list(a.collect()):
+    print(key, [list(i) for i in val])</code></pre>
+<pre><code>[('C', 4), ('B', (3, 3)), ('A', 2), ('A', (1, 1))]
+[('B', (7, 7)), ('A', 6), ('D', (5, 5))]
+[('D', 9), ('B', (8, 8))]
+Result:
+C [[4], [], []]
+A [[2, (1, 1)], [6], []]
+B [[(3, 3)], [(7, 7)], [(8, 8)]]
+D [[], [(5, 5)], [9]]
+</code></pre>
+<h2 id="57samplebykey"><a class="markdownIt-Anchor" href="#57samplebykey">#</a> 57.sampleByKey</h2>
+<p>sampleByKey (withReplacement, fractions, seed=None)：以 key 值对元素进行抽样，返回一个<br>
+新 RDD，withReplacement：表示是否有放回，True 表示有放回，fractions：key 值得抽样率，<br>
+seed：随机种子</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;A&#39;,1),(&#39;B&#39;,2),(&#39;C&#39;,3),(&#39;B&#39;,4),(&#39;A&#39;,5)])
+y &#x3D; x.sampleByKey(withReplacement&#x3D;False, fractions&#x3D;&#123;&#39;A&#39;:0.5, &#39;B&#39;:1, &#39;C&#39;:0.2&#125;)
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[('A', 1), ('B', 2), ('C', 3), ('B', 4), ('A', 5)]
+[('B', 2), ('C', 3), ('B', 4), ('A', 5)]
+</code></pre>
+<h2 id="58subtractbykey"><a class="markdownIt-Anchor" href="#58subtractbykey">#</a> 58.subtractByKey</h2>
+<p>subtractByKey (other, numPartitions=None)：按 key 值对 RDD 进行扣除操作，返回自身<br>
+ &lt;key,value&gt; 类型 RDD 不匹配其他 RDD 中 key 的部分</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,1),(&#39;B&#39;,2),(&#39;A&#39;,3),(&#39;A&#39;,4)])
+y &#x3D; sc.parallelize([(&#39;A&#39;,5),(&#39;D&#39;,6),(&#39;A&#39;,7),(&#39;D&#39;,8)])
+z &#x3D; x.subtractByKey(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>[('C', 1), ('B', 2), ('A', 3), ('A', 4)]
+[('A', 5), ('D', 6), ('A', 7), ('D', 8)]
+[('B', 2), ('C', 1)]
+</code></pre>
+<h2 id="59subtract"><a class="markdownIt-Anchor" href="#59subtract">#</a> 59.subtract</h2>
+<p>subtract (other, numPartitions=None)：返回自身 RDD 中不匹配其他 RDD 的部分</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([(&#39;C&#39;,4),(&#39;B&#39;,3),(&#39;A&#39;,2),(&#39;A&#39;,1)])
+y &#x3D; sc.parallelize([(&#39;C&#39;,8),(&#39;A&#39;,2),(&#39;D&#39;,1)])
+z &#x3D; x.subtract(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>[('C', 4), ('B', 3), ('A', 2), ('A', 1)]
+[('C', 8), ('A', 2), ('D', 1)]
+[('C', 4), ('A', 1), ('B', 3)]
+</code></pre>
+<h2 id="60keyby"><a class="markdownIt-Anchor" href="#60keyby">#</a> 60.keyBy</h2>
+<p>keyBy (f)：使用自定义函数 f，创建每个元素为元组类型的新 RDD，f 函数的返回值作为 key，RDD<br>
+ 的元素值作为 value。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3])
+y &#x3D; x.keyBy(lambda x: x**2)
+print(x.collect())
+print(y.collect())</code></pre>
+<pre><code>[1, 2, 3]
+[(1, 1), (4, 2), (9, 3)]
+</code></pre>
+<h2 id="61repartition"><a class="markdownIt-Anchor" href="#61repartition">#</a> 61.repartition</h2>
+<p>repartition (numPartitions)：对 RDD 进行分区。numPartitions：为分区数</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3,4,5],2)
+y &#x3D; x.repartition(numPartitions&#x3D;3)
+print(x.glom().collect())
+print(y.glom().collect())</code></pre>
+<pre><code>[[1, 2], [3, 4, 5]]
+[[], [1, 2], [3, 4, 5]]
+</code></pre>
+<h2 id="62coalesce"><a class="markdownIt-Anchor" href="#62coalesce">#</a> 62.coalesce</h2>
+<p>coalesce (numPartitions, shuffle=False)：对 RDD 进行分区，将分区数减少到 numPartitions。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([1,2,3,4,5],2)
+y &#x3D; x.coalesce(numPartitions&#x3D;1)
+print(x.glom().collect())
+print(y.glom().collect())</code></pre>
+<pre><code>[[1, 2], [3, 4, 5]]
+[[1, 2, 3, 4, 5]]
+</code></pre>
+<h2 id="63zip"><a class="markdownIt-Anchor" href="#63zip">#</a> 63.zip</h2>
+<p>zip (other)：将 RDD 与其它 RDD 进行 zip 操作，返回 &lt;key,value&gt; 类型的新 RDD，其中 key 为<br>
+自身 RDD 的元素值，value 为其它 RDD 的元素值</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;B&#39;,&#39;A&#39;,&#39;A&#39;])
+# zip expects x and y to have same #partitions and #elements&#x2F;partition
+y &#x3D; x.map(lambda x: ord(x))
+z &#x3D; x.zip(y)
+print(x.collect())
+print(y.collect())
+print(z.collect())</code></pre>
+<pre><code>['B', 'A', 'A']
+[66, 65, 65]
+[('B', 66), ('A', 65), ('A', 65)]
+</code></pre>
+<h2 id="64zipwithindex"><a class="markdownIt-Anchor" href="#64zipwithindex">#</a> 64.zipWithIndex</h2>
+<p>zipWithIndex ()：对 RDD 进行 zip 操作，返回新的 RDD 中，每个元素包含原 RDD 的元素值还有<br>
+对应的索引。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;B&#39;,&#39;A&#39;,&#39;A&#39;],2)
+y &#x3D; x.zipWithIndex()
+print(x.glom().collect())
+print(y.collect())</code></pre>
+<pre><code>[['B'], ['A', 'A']]
+[('B', 0), ('A', 1), ('A', 2)]
+</code></pre>
+<h2 id="65-zipwithuniqueid"><a class="markdownIt-Anchor" href="#65-zipwithuniqueid">#</a> 65. zipWithUniqueId</h2>
+<p>zipWithUniqueId ()：对 RDD 进行 zip 操作，返回 &lt;key,value&gt; 类型新 RDD，key 为原 RDD 的<br>
+元素值，value 为从 0 开始的值得 id<br>
+[70]: x = sc.parallelize([‘B’,‘A’,‘A’]</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">x &#x3D; sc.parallelize([&#39;B&#39;,&#39;A&#39;,&#39;A&#39;],2)
+y &#x3D; x.zipWithUniqueId()
+print(x.glom().collect())
+print(y.collect())
+</code></pre>
+<pre><code>[['B'], ['A', 'A']]
+[('B', 0), ('A', 1), ('A', 3)]
+</code></pre>
+<h2 id="66wordcount"><a class="markdownIt-Anchor" href="#66wordcount">#</a> 66.WordCount</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">## 从dhfs加载文件
+textFile &#x3D; sc.textFile(&quot;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;input&#x2F;wordcount&#x2F;testfile&quot;)</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">## 以空格为分界符分词
+stringRDD &#x3D; textFile.flatMap(lambda line:line.split(&quot; &quot;))</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">## map执行的是将每个词都变为（词，1）这样的二元组，
+## reduceByKey执行的是将key相同的二元组的value相加
+countsRDD &#x3D; stringRDD.map(lambda word:(word,1)).reduceByKey(lambda x,y:x+y)</code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">countsRDD.collect()</code></pre>
+<pre><code>[('hadoop', 1), ('world', 1), ('python', 1), ('hello', 4), ('spark', 1)]
+</code></pre>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/spark-practice/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/" rel="tag">spark</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2020/12/20/auto_install/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            auto scripts
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/12/20/hive_QL/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">hive-QL</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2020
+        <i class="ri-heart-fill heart_icon"></i> Aikedaer
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Aikedaer"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hello World |  Aikedaer
+    hadoop-develop |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-hello-world"
+  id="post-Hadoop-develop"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,22 +56,26 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hello World
+  hadoop-develop
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>   
+      <a href="/2020/12/20/Hadoop-develop/" class="article-date">
+  <time datetime="2020-12-20T01:22:13.295Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">76</span>
+            <span class="post-count">1.3k</span>
         </span>
     </span>
 
@@ -80,7 +84,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">7 分钟</span>
         </span>
     </span>
 </div>
@@ -95,20 +99,266 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+  <center><h1>Hadoop程序开发</h1></center>
+<h2>一、实验目的</h2>
+<p>Hadoop 程序开发</p>
+<h2>二、实验内容（实验过程、步骤及实验结果）</h2>
+<h4> 创建Rectangle.txt文件，输入如下数据</h4>
+<pre class="line-numbers language-none"><code class="language-none">9 9
+4 5
+7 8
+1 1
+3 6</code></pre>
+<h4>启动hadoop</h4>
+<pre class="line-numbers language-none"><code class="language-none">start-all.sh</code></pre>
+<h4>在HDFS上创建目录/input/sort，并将Rectangle.txt文件上传其中。</h4>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -mkdir &#x2F;input&#x2F;sort
+hadoop fs -put &#x2F;data&#x2F;Rectangle.txt &#x2F;input&#x2F;sort</code></pre>
+<h4>建立RectangleSort类</h4>
+<pre class="line-numbers language-none"><code class="language-none">package sds.mapreduce;
+ 
+&#x2F;&#x2F;导包 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+ 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+ 
+public class RectangleSort &#123;
+    &#x2F;&#x2F;指定输入输出文件位置
+	static final String INPUT_PATH &#x3D; &quot;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;input&#x2F;sort&#x2F;Rectangle.txt&quot;;
+	static final String OUTPUT_PATH &#x3D; &quot;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;output&#x2F;rectangle&quot;;
+ 
+	public static void main(String[] args) throws Throwable, URISyntaxException &#123;
+	    &#x2F;&#x2F;创建配置类
+		Configuration conf &#x3D; new Configuration();
+	
+		FileSystem fileSystem &#x3D; FileSystem.get(new URI(INPUT_PATH), conf);
+		Path outpath &#x3D; new Path(OUTPUT_PATH);
+		if (fileSystem.exists(outpath)) &#123;
+			fileSystem.delete(outpath, true);
+		&#125;
+ 
+		Job job &#x3D; Job.getInstance(conf, &quot;RectangleSort&quot;);
+		job.setJarByClass(RectangleWritable.class);
+		job.setInputFormatClass(TextInputFormat.class); &#x2F;&#x2F;指定如何对输入的文件格式化，把输入文件每一行解析成键值对
+		job.setMapperClass(MyMapper.class);            &#x2F;&#x2F;指定自定义的map类
+		job.setMapOutputKeyClass(RectangleWritable.class); &#x2F;&#x2F;map输出的&lt;k,v&gt;类型，如果&lt;k3,v3&gt;的类型与&lt;k2,v2&gt;类型一致，则可以省略
+		job.setMapOutputValueClass(NullWritable.class);
+		job.setReducerClass(MyReducer.class);   &#x2F;&#x2F;指定自定义reduce类
+		job.setOutputKeyClass(IntWritable.class);
+		job.setOutputValueClass(IntWritable.class);
+		FileInputFormat.setInputPaths(job, INPUT_PATH);
+		FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH));
+		job.setOutputFormatClass(TextOutputFormat.class);   &#x2F;&#x2F;指定输出文件的格式化类分区
+		job.setPartitionerClass(MyPatitioner.class);
+		job.setNumReduceTasks(2); &#x2F;&#x2F;指定两个reduce任务运行
+		job.waitForCompletion(true);  &#x2F;&#x2F;把job提交给jobtracker运行
+	&#125;
+ 
+	static class MyMapper extends 
+			Mapper&lt;LongWritable, Text, RectangleWritable, NullWritable&gt; &#123;
+ 
+		protected void map(LongWritable k1, Text v1, Context context)
+				throws IOException, InterruptedException &#123;
+			String[] splites &#x3D; v1.toString().split(&quot; &quot;);
+			RectangleWritable k2 &#x3D; new RectangleWritable(
+					Integer.parseInt(splites[0]), Integer.parseInt(splites[1]));
+			context.write(k2, NullWritable.get());
+		&#125;;
+	&#125;
+ 
+	static class MyReducer extends
+			Reducer&lt;RectangleWritable, NullWritable, IntWritable, IntWritable&gt; &#123;
+		protected void reduce(RectangleWritable k2, Iterable&lt;NullWritable&gt; v2s,
+				Context context) throws IOException, InterruptedException &#123;
+			context.write(new IntWritable(k2.getLength()),
+					new IntWritable(k2.getWidth()));
+		&#125;;
+	&#125;
+ 
+&#125;
+ 
+ 
+class MyPatitioner extends Partitioner&lt;RectangleWritable, NullWritable&gt; &#123;
+	@Override
+	&#x2F;&#x2F;重写获取分区方法
+	public int getPartition(RectangleWritable k2, NullWritable v2,
+			int numReduceTasks) &#123;
+ 
+		if (k2.getLength() &#x3D;&#x3D; k2.getWidth()) &#123;
+			return 0; &#x2F;&#x2F; 正方形在任务0中汇总
+		&#125; else
+			return 1;&#x2F;&#x2F; 长方形在任务1中汇总
+	&#125;
+&#125;
+</code></pre>
+<h4>继承WritableComparable类</h4>
+<pre class="line-numbers language-none"><code class="language-none">package sds.mapreduce; 
+ 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+ 
+import org.apache.hadoop.io.WritableComparable;
+ 
+public class RectangleWritable implements WritableComparable &lt;RectangleWritable&gt; &#123;
+ 
+	int length, width;
+ 
+	public int getLength() &#123;
+		return length;
+	&#125;
+ 
+	public void setLength(int length) &#123;
+		this.length &#x3D; length;
+	&#125;
+ 
+	public int getWidth() &#123;
+		return width;
+	&#125;
+ 
+	public void setWidth(int width) &#123;
+		this.width &#x3D; width;
+	&#125;
+ 
+	public RectangleWritable() &#123;
+		super();
+	&#125;
+ 
+	public RectangleWritable(int length, int width) &#123;
+		super();
+		this.length &#x3D; length;
+		this.width &#x3D; width;
+	&#125;
+ 
+	@Override
+	public void write(DataOutput out) throws IOException &#123;
+		out.writeInt(length);
+		out.writeInt(width);
+	&#125;
+ 
+	@Override
+	public void readFields(DataInput in) throws IOException &#123;
+		this.length &#x3D; in.readInt();
+		this.width &#x3D; in.readInt();
+ 
+	&#125;
+ 
+	@Override
+	public int compareTo(RectangleWritable o) &#123;
+		if (this.getLength() * this.getWidth() &gt; o.getLength() * o.getWidth())
+			return 1;
+		if (this.getLength() * this.getWidth() &lt; o.getLength() * o.getWidth())
+			return -1;
+		return 0;
+	&#125;
+ 
+&#125;</code></pre>
+<h4>建立WordCount类</h4>
+<pre class="line-numbers language-none"><code class="language-none">package sds.mapreduce;
+ 
+import java.io.IOException;
+import java.util.StringTokenizer;
+ 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.GenericOptionsParser;
+ 
+public class WordCount &#123;
+ 
+	public static class TokenizerMapper extends Mapper&lt;Object, Text, Text, IntWritable&gt; &#123;
+ 
+		private final static IntWritable one &#x3D; new IntWritable(1);
+		private Text word &#x3D; new Text(); 
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException &#123;
+			StringTokenizer itr &#x3D; new StringTokenizer(value.toString());
+			while (itr.hasMoreTokens()) &#123;
+				word.set(itr.nextToken());
+				context.write(word, one);
+			&#125;
+		&#125;
+	&#125;
+ 
+	public static class IntSumReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt; &#123;
+		private IntWritable result &#x3D; new IntWritable();
+ 		public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;
+			int sum &#x3D; 0;
+			for (IntWritable val : values) &#123;
+				sum +&#x3D; val.get();
+			&#125;
+			result.set(sum);
+			context.write(key, result);
+		&#125;
+	&#125;
+ 
+	public static void main(String[] args) throws Exception &#123;
+		Configuration conf &#x3D; new Configuration();
+		String[] otherArgs &#x3D; new GenericOptionsParser(conf, args).getRemainingArgs();
+		if (otherArgs.length &lt; 2) &#123;
+			System.err.println(&quot;Usage: wordcount &lt;in&gt; [&lt;in&gt;...] &lt;out&gt;&quot;);
+			System.exit(2);
+		&#125;
+		Job job &#x3D; Job.getInstance(conf, &quot;word count&quot;);
+		job.setJarByClass(WordCount.class);
+		job.setMapperClass(TokenizerMapper.class);
+		job.setCombinerClass(IntSumReducer.class);
+		job.setReducerClass(IntSumReducer.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		for (int i &#x3D; 0; i &lt; otherArgs.length - 1; ++i) &#123;
+			FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
+		&#125;
+		FileOutputFormat.setOutputPath(job, new Path(otherArgs[otherArgs.length - 1]));
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
+	&#125;
+&#125;</code></pre>
+<h4>在自己家目录下创建~/project_jar目录用于保存导出的jar包</h4>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1601815397125.png" alt="1601815397125"></p>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1601815407046.png" alt="1601815407046"></p>
+<h4>运行jar包中的java类</h4>
+<pre class="line-numbers language-none"><code class="language-none">hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.WordCount &#x2F;input&#x2F;wordcount&#x2F;testfile &#x2F;output&#x2F;wordcount 
+
+## 运行结果 hadoop fs -ls &#x2F;output&#x2F;wordcount&#x2F;part-r-00000
+big    1
+data   1
+hadoop 1
+hdfs   1
+hello  3
+
+
+hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort 
+&#x2F;&#x2F;配置参数已经写入java类中,无需在命令行中再说明，输出文件也在java类中做了处理。
+
+## 运行结果 hadoop fs -ls &#x2F;output&#x2F;rectangle&#x2F;part-r-00000
+1 1
+9 9
+
+## 运行结果 hadoop fs -ls &#x2F;output&#x2F;rectangle&#x2F;part-r-00001
+3 6
+4 5
+7 8</code></pre>
  
       <!-- reward -->
       
@@ -179,26 +429,33 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/18/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/Hadoop-develop/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/" rel="tag">hadoop</a></li></ul>
+
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/Flume/" class="article-nav-link">
+      <a href="/2020/12/20/hbase/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            flume
+            hbase
           
         </div>
       </a>
     
+    
+      <a href="/2020/12/20/sparkMLlib/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">sparkMLlib.</div>
+      </a>
     
   </nav>
 

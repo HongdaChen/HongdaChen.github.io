@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-     Aikedaer
+    spark-Streaming |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -43,108 +43,8 @@
     
       
     <main class="content on">
-      
-<section class="cover">
-    
-      
-      <a class="forkMe" href="https://github.com/HongdaChen"
-        target="_blank"><img width="149" height="149" src="/images/forkme.png"
-          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
-    
-  <div class="cover-frame">
-    <div class="bg-box">
-      <img src="/images/cover6.jpg" alt="image frame" />
-    </div>
-    <div class="cover-inner text-center text-white">
-      <h1><a href="/">Aikedaer</a></h1>
-      <div id="subtitle-box">
-        
-        <span id="subtitle"></span>
-        
-      </div>
-      <div>
-        
-      </div>
-    </div>
-  </div>
-  <div class="cover-learn-more">
-    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
-  </div>
-</section>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
-
-
-<!-- Subtitle -->
-
-  <script>
-    try {
-      var typed = new Typed("#subtitle", {
-        strings: ['想要的都拥有，得不到的都释怀', '愿你一生努力，一生被爱', '面朝大海，春暖花开'],
-        startDelay: 0,
-        typeSpeed: 200,
-        loop: true,
-        backSpeed: 100,
-        showCursor: true
-      });
-    } catch (err) {
-      console.log(err)
-    }
-  </script>
-  
-<div id="main">
-  <section class="outer">
-  
-  
-
-<div class="notice" style="margin-top:50px">
-    <i class="ri-heart-fill"></i>
-    <div class="notice-content" id="broad"></div>
-</div>
-<script type="text/javascript">
-    fetch('https://v1.hitokoto.cn')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("broad").innerHTML = data.hitokoto;
-        })
-        .catch(console.error)
-</script>
-
-<style>
-    .notice {
-        padding: 20px;
-        border: 1px dashed #e6e6e6;
-        color: #969696;
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        background: #fbfbfb50;
-        border-radius: 10px;
-    }
-
-    .notice i {
-        float: left;
-        color: #999;
-        font-size: 16px;
-        padding-right: 10px;
-        vertical-align: middle;
-        margin-top: -2px;
-    }
-
-    .notice-content {
-        display: initial;
-        vertical-align: middle;
-    }
-</style>
-  
-  <article class="articles">
-    
-    
-    
-    
-    <article
+      <section class="outer">
+  <article
   id="post-spark-streaming"
   class="article article-type-post"
   itemscope
@@ -155,10 +55,9 @@
     
     <header class="article-header">
        
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/20/spark-streaming/"
-    >spark-Streaming</a> 
-</h2>
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  spark-Streaming
+</h1>
  
 
     </header>
@@ -170,206 +69,256 @@
   <div class="article-category">
     <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
   </div>
-   
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">641</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">3 分钟</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
        
+  <h2 id="spark-streaming"><a class="markdownIt-Anchor" href="#spark-streaming">#</a> Spark Streaming</h2>
+<h4 id="设置环境变量"><a class="markdownIt-Anchor" href="#设置环境变量">#</a> 设置环境变量</h4>
+<p>修改～/.bashrc     注释掉 jupyter，notebook。再指定 PYSPARK_DRIVER_PYTHON 和 PYTHONPATH</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># pyspark
+# export PYSPARK_DRIVER_PYTHON&#x3D;jupyter
+export PYSPARK_DRIVER_PYTHON&#x3D;&#x2F;usr&#x2F;bin&#x2F;python3
+# export PYSPARK_DRIVER_PYTHON_OPTS&#x3D;&#39;notebook&#39;
+export PYSPARK_PYTHON&#x3D;python3
+# spark streaming
+export PYTHONPATH&#x3D;$SPARK_HOME&#x2F;python:$SPARK_HOME&#x2F;python&#x2F;lib&#x2F;py4j-0.10.7-src.zip:$PYTHONPATH    </code></pre>
+<p>使环境变量生效</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<p>测试</p>
+<p><img src="/images/1606886117852.png" alt="1606886117852"></p>
+<h4 id="文件流"><a class="markdownIt-Anchor" href="#文件流">#</a> 文件流</h4>
+<p>监控一个目录，若有新文件，Spark 就会处理这个文件。但是如果修改文件内容，Spark 是不会发现的。</p>
+<p>设置监控目录为</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;home&#x2F;chen&#x2F;pyspark-workspace&#x2F;streaming&#x2F;logfile</code></pre>
+<p><a target="_blank" rel="noopener" href="http://xn--logfileFileStreaming-h545am1j8wxns2aj44bs6bu74e429g.py">在 logfile 目录中创建文件 FileStreaming.py</a></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext, SparkConf
+from pyspark.streaming import StreamingContext
+conf &#x3D; SparkConf()
+conf.setAppName(&#39;TestDStream&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc &#x3D; SparkContext(conf &#x3D; conf)
+ssc &#x3D; StreamingContext(sc, 10)
+lines &#x3D; ssc.textFileStream(&#39;file:&#x2F;&#x2F;&#x2F;home&#x2F;chen&#x2F;pyspark-workspace&#x2F;streaming&#x2F;logfile&#39;) # 目录提前存在
+words &#x3D; lines.flatMap(lambda line: line.split(&#39; &#39;))
+wordCounts &#x3D; words.map(lambda x : (x,1)).reduceByKey(lambda a,b:a+b)
+wordCounts.pprint()
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<p>提交任务</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit FileStreaming.py</code></pre>
+<p>在监控目录下创建文件 test2.txt，写入一些内容。</p>
+<p><img src="/images/1606886467840.png" alt="1606886467840"></p>
+<p>保存退出后，就会在另一个终端显示</p>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881529753.png" alt=" "></p>
+<h4 id="套接字流"><a class="markdownIt-Anchor" href="#套接字流">#</a> 套接字流</h4>
+<p>监听一个端口，如果端口收到数据，spark 就会处理。</p>
+<ol>
+<li>首先打开 9999 端口等待传输数据</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nc -lk 9999</code></pre>
+<ol start="2">
+<li>在监控目录下新建 <a target="_blank" rel="noopener" href="http://xn--NetworkWordCount-c02z9480a.py">文件 NetworkWordCount.py</a></li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+sc &#x3D; SparkContext(&quot;local[2]&quot;, appName&#x3D;&quot;NetworkWordCount&quot;)
+ssc &#x3D; StreamingContext(sc, 1)
+lines &#x3D; ssc.socketTextStream(&quot;localhost&quot;, 9999)
+words &#x3D; lines.flatMap(lambda line: line.split(&quot; &quot;))
+wordCounts &#x3D; words.map(lambda x:(x, 1)).reduceByKey(lambda a,b:a+b)
+wordCounts.pprint()
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<ol start="3">
+<li>提交</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit NetworkWordCount.py</code></pre>
+<ol start="4">
+<li>写入一些数据</li>
+</ol>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881716732.png" alt="1606881716732"></p>
+<ol start="5">
+<li>另一个端口显示一次的处理结果</li>
+</ol>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881701721.png" alt="1606881701721"></p>
+<h4 id="全局聚合"><a class="markdownIt-Anchor" href="#全局聚合">#</a> 全局聚合</h4>
+<p>为了使实时处理得到累加的效果，做以下处理：</p>
+<ol>
+<li>首先打开 9999 端口等待传输数据</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nc -lk 9999</code></pre>
+<ol start="2">
+<li>在监控目录下新建 文件 <a target="_blank" rel="noopener" href="http://StatefulStreamingWordCount.py">StatefulStreamingWordCount.py</a></li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+sc &#x3D; SparkContext(&quot;local[2]&quot;, &quot;StatefulNetworkWordCount&quot;)
+ssc &#x3D; StreamingContext(sc, 1)
+# Create checkpoint for local StreamingContext
+ssc.checkpoint(&quot;checkpoint&quot;)
+# Define updateFunc: sum of the (key, value) pairs
+def updateFunc(new_values, last_sum):
+    return sum(new_values) + (last_sum or 0)
+lines &#x3D; ssc.socketTextStream(&quot;localhost&quot;, 9999)
+# Calculate running counts
+# Line 1: Split lines in to words
+# Line 2: count each word in each batch
+# Line 3: Run &#96;updateStateByKey&#96; to running count
+running_counts &#x3D; lines.flatMap(lambda line: line.split(&quot; &quot;)).map(lambda word: (word, 1)).up
+running_counts.pprint()
+ssc.start()
+ssc.awaitTermination()                                                                     </code></pre>
+<ol start="3">
+<li>提交</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit StatefulStreamingWordCount.py</code></pre>
+<ol start="4">
+<li>写入一些数据</li>
+</ol>
+<p><img src="/images/1606885674441.png" alt="1606885674441"></p>
+<ol start="5">
+<li>在另一个终端可以看到累加的效果</li>
+</ol>
+<p><img src="/images/1606885650879.png" alt="1606885650879"></p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
 
     <!-- copyright -->
     
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
     <footer class="article-footer">
        
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/spark-streaming/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/" rel="tag">spark</a></li></ul>
 
     </footer>
   </div>
 
    
-   
-</article>
-
+  <nav class="article-nav">
     
-    <article
-  id="post-kafka"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
+      <a href="/2020/12/20/Hadoop-Streaming/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            hadoop-streaming
+          
+        </div>
+      </a>
     
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/20/kafka/"
-    >kafka</a> 
-</h2>
- 
-
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/20/kafka/" class="article-date">
-  <time datetime="2020-12-20T01:19:42.742Z" itemprop="datePublished">2020-12-20</time>
-</a> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-   
-    </div>
-       
-
-    <!-- copyright -->
     
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li></ul>
-
-    </footer>
-  </div>
-
-   
-   
-</article>
-
+      <a href="/2020/12/20/kafka/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">kafka</div>
+      </a>
     
-    <article
-  id="post-Sqoop"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/20/Sqoop/"
-    >Sqoop</a> 
-</h2>
- 
-
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/20/Sqoop/" class="article-date">
-  <time datetime="2020-12-20T01:19:12.919Z" itemprop="datePublished">2020-12-20</time>
-</a> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-   
-    </div>
-       
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqoop/" rel="tag">sqoop</a></li></ul>
-
-    </footer>
-  </div>
-
-   
-   
-</article>
-
-    
-    <article
-  id="post-Flume"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/20/Flume/"
-    >flume</a> 
-</h2>
- 
-
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/20/Flume/" class="article-date">
-  <time datetime="2020-12-20T01:06:26.560Z" itemprop="datePublished">2020-12-20</time>
-</a> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
-  </div>
-   
-    </div>
-       
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flume/" rel="tag">flume</a></li></ul>
-
-    </footer>
-  </div>
-
-   
-   
-</article>
-
-    
-    <article
-  id="post-hello-world"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/18/hello-world/"
-    >Hello World</a> 
-</h2>
- 
-
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>    
-    </div>
-       
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-    </footer>
-  </div>
-
-   
-   
-</article>
-
-    
-  </article>
-  
-
-  
-  <nav class="page-nav">
-    
-    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
   </nav>
-  
-</section>
-</div>
 
+  
+   
+  
+</article>
+
+</section>
       <footer class="footer">
   <div class="outer">
     <ul>
@@ -518,6 +467,23 @@
 <script src="/js/lazyload.min.js"></script>
 
 <!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">

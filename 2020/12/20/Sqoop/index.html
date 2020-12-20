@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hello World |  Aikedaer
+    Sqoop |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-hello-world"
+  id="post-Sqoop"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,22 +56,26 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hello World
+  Sqoop
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>   
+      <a href="/2020/12/20/Sqoop/" class="article-date">
+  <time datetime="2020-12-20T01:19:12.919Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">76</span>
+            <span class="post-count">975</span>
         </span>
     </span>
 
@@ -80,7 +84,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">5 分钟</span>
         </span>
     </span>
 </div>
@@ -95,20 +99,157 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+  <h1><center>Sqoop</center></h1>
+<h2>实验目的</h2>
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+<h2>实验内容</h2>
+安装，配置Sqoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
+if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
+    sudo rm -rf &#x2F;apps&#x2F;sqoop
+fi
+# 将Sqoop的安装包复制到&#x2F;apps下，并解压
+sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
+tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
+# 删除压缩包
+sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+# 修改名称
+mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
+# 删除有关sqoop_home的环境变量
+sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+# 添加环境变量
+echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
+# 重命令
+mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
+# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
+echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
+sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
+# 重启，使环境变量生效
+sudo reboot</code></pre>
+<p>版本信息：</p>
+<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
+<p>使用 sqoop help 查看支持的命令</p>
+<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
+<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
+<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
+<p>确保 mysql 正常运行</p>
+<p><img src="/images/1605065733969.png" alt=""></p>
+<p>查询 mysql 中的数据库。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
+<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
+use mydb;
+create table record 
+	(
+	id varchar(100),
+	buyer_id varchar(100),
+	dt varchar(100),
+	ip varchar(100),
+	opt_type varchar(100)
+	);
+    
+load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
+<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
+<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
+<ul>
+<li>启动 hadoop   【<a target="_blank" rel="noopener" href="http://start-all.sh">start-all.sh</a>】</li>
+</ul>
+<p>hdfs 上的 mysqool 不能存在</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456 \
+--table record -m 1 \
+--target-dir &#x2F;mysqoop</code></pre>
+<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
+<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhdfs like record;</code></pre>
+<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhdfs -m 1 \
+--export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
+<p>检查 Mysql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhdfs limit 3,5;</code></pre>
+<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
+<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
+<p>启动 HBase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
+<p>进入 hbase shell</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
+<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
+<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hbase-table hbaserecord \
+--column-family mycf \
+--hbase-row-key dt -m 1</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
+<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
+<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
+<p>需要在～/.bashrc 添加以下内容。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
+export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hive-import \
+--hive-table hiverecord \
+--fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
+<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
+<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhive like record;             </code></pre>
+<p>导数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhive \
+--export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
+--input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
+<p>查看结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhive;</code></pre>
+<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
  
       <!-- reward -->
       
@@ -179,26 +320,33 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/18/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/Sqoop/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqoop/" rel="tag">sqoop</a></li></ul>
+
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/Flume/" class="article-nav-link">
+      <a href="/2020/12/20/kafka/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            flume
+            kafka
           
         </div>
       </a>
     
+    
+      <a href="/2020/12/20/Flume/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">flume</div>
+      </a>
     
   </nav>
 

@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hello World |  Aikedaer
+    auto scripts |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-hello-world"
+  id="post-auto_install"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,22 +56,26 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hello World
+  auto scripts
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/18/hello-world/" class="article-date">
-  <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
-</a>   
+      <a href="/2020/12/20/auto_install/" class="article-date">
+  <time datetime="2020-12-20T01:35:31.392Z" itemprop="datePublished">2020-12-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">76</span>
+            <span class="post-count">2.2k</span>
         </span>
     </span>
 
@@ -80,35 +84,191 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">13 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
-    <div class="tocbot"></div>
-
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+  <p>安装并配置 hadoop,eclipse</p>
+<pre class="line-numbers language-none"><code class="language-none">if [ -d &#39;&#x2F;apps&#39; ];then
+    sudo rm -rf &#x2F;apps
+fi
+if [ -d &#39;&#x2F;data&#39; ];then
+    sudo rm -rf &#x2F;data
+fi
+sudo rm -rf ~&#x2F;.ssh&#x2F;*
+# clear env
+sed -i &#39;&#x2F;JAVA_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+sed -i &#39;&#x2F;HADOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+mkdir apps
+mkdir data
+
+sudo mv apps &#x2F;
+sudo mv data &#x2F;
+# install openssh-server
+sudo apt -y update 
+sudo apt -y upgrade 
+echo &quot;install vim ...&quot;
+sudo apt -y install vim
+echo &quot;install openssh-server&quot;
+sudo apt -y install openssh-server
+ssh-keygen -t rsa 
+cp ~&#x2F;.ssh&#x2F;id_rsa.pub ~&#x2F;.ssh&#x2F;authorized_keys
+
+# install jdk
+cp ~&#x2F;big_data_tools&#x2F;jdk-8u191-linux-x64.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;jdk1.8.0_191 &#x2F;apps&#x2F;java
+rm -rf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  
+
+# add jdk to path
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$JAVA_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# install hadoop
+cp ~&#x2F;big_data_tools&#x2F;hadoop-3.0.0.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;hadoop-3.0.0 &#x2F;apps&#x2F;hadoop
+rm -rf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz 
+
+# add hadoop to path
+echo &#39;export HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hadoop
+#cp -f ~&#x2F;big_data_tools&#x2F;conf_hadoop&#x2F;* &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hadoop.tmp.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;tmp&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;fs.defaultFS&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;dfs.namenode.name.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;name&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.datanode.data.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;data&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.replication&lt;\&#x2F;name&gt;&lt;value&gt;1&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.permissions.enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hdfs-site.xml
+
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;mapreduce.framework.name&lt;\&#x2F;name&gt;&lt;value&gt;yarn&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml
+
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;yarn.nodemanager.aux-services&lt;\&#x2F;name&gt;&lt;value&gt;mapreduce_shuffle&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-check-enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;\&#x2F;name&gt;&lt;value&gt;5&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml
+
+sed -i &quot;54,54s&#x2F;.*&#x2F;export JAVA_HOME&#x3D;\&#x2F;apps\&#x2F;java&#x2F;g&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;tmp
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs
+
+export PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;bin:$PATH
+
+hadoop namenode -format
+
+# install eclipse
+cp ~&#x2F;big_data_tools&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz -C &#x2F;apps&#x2F;
+cp ~&#x2F;big_data_tools&#x2F;hadoop-eclipse-plugin-2.6.0.jar &#x2F;apps&#x2F;eclipse&#x2F;dropins&#x2F;
+rm -rf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz
+sudo reboot</code></pre>
+<p>安装并配置 hbase</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+# install hbase
+
+if [-d &#39;&#x2F;apps&#x2F;hbase&#39;];then
+    sudo rm -rf &#x2F;apps&#x2F;hbase
+fi
+
+cp ~&#x2F;big_data_tools&#x2F;hbase-1.4.0-bin.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz -C &#x2F;apps&#x2F;
+rm -rf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz 
+mv &#x2F;apps&#x2F;hbase-1.4.0 &#x2F;apps&#x2F;hbase
+# clear env
+if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&#39; ];then
+    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+fi
+sed -i &#39;&#x2F;HBASE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+# add hbase to path
+echo &#39;export HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hbase 
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hbase.master&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.rootdir&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000\&#x2F;hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.cluster.distributed&lt;\&#x2F;name&gt;&lt;value&gt;true&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.quorum&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.property.dataDir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;zookeeper-hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-site.xml
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+
+sudo reboot</code></pre>
+<p>安装并配置 hive</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+if [ -d &#39;&#x2F;apps&#x2F;hive&#39;  ];then
+    sudo rm -rf &#x2F;apps&#x2F;hive
+fi
+if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp&#39; ];then
+    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
+fi
+# clear env
+sed -i &#39;&#x2F;HIVE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+cp ~&#x2F;big_data_tools&#x2F;apache-hive-2.3.5-bin.tar.gz &#x2F;apps&#x2F;
+tar zxvf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;apache-hive-2.3.5-bin &#x2F;apps&#x2F;hive 
+rm -rf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz
+
+# add hive to path
+echo &#39;export HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HIVE_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;hive&#x2F;lib&#x2F;
+# config hive
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-default.xml.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
+
+sed -i &quot;s&#x2F;\$&#123;system:java.io.tmpdir&#125;&#x2F;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+sed -i &quot;s&#x2F;\$&#123;system:user.name&#125;&#x2F;root&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+sed -i &quot;545,545s&#x2F;.*&#x2F;&lt;value&gt;jdbc:mysql:\&#x2F;\&#x2F;localhost:3306\&#x2F;hive?createDatabaseIfNotExsit&#x3D;true;characterEncoding&#x3D;latin1\&amp;useSSL&#x3D;false&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;1020,1020s&#x2F;.*&#x2F;&lt;value&gt;com.mysql.jdbc.Driver&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;1045,1045s&#x2F;.*&#x2F;&lt;value&gt;root&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;530,530s&#x2F;.*&#x2F;&lt;value&gt;123456&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+# 
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh 
+echo &#39;HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
+echo &#39;export HIVE_CONF_DIR&#x3D;&#x2F;apps&#x2F;hive&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
+# logger
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
+
+sed -i &quot;24,24s&#x2F;.*&#x2F;property.hive.log.dir&#x3D;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp\&#x2F;log&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
+
+# restart
+sudo reboot</code></pre>
+<p>安装并配置 mysql</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+sudo apt -y update
+sudo apt -y upgrade
+sudo apt -y install mysql-server
+
+sudo service mysql restart
+
+
+sudo mysql&lt;&lt;EOF
+update mysql.user set authentication_string&#x3D;PASSWORD(&#39;123456&#39;),plugin&#x3D;&#39;mysql_native_password&#39; where user&#x3D;&#39;root&#39;;
+
+create database hive CHARACTER SET latin1;
+
+grant all privileges on *.* to root@&#39;%&#39; identified by &#39;123456&#39;;
+flush privileges;
+EOF
+exit;
+
+sed -i &quot;43,43s&#x2F;.*&#x2F;#bind-address&#x3D;127.0.0.1&#x2F;g&quot; &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf
+
+service mysql restart
+
+# init meta database
+schematool -dbType mysql -initSchema</code></pre>
+<p style="color:red">如果是重新安装hive，mysql不用重装的情况下，运行完hive_install_config.sh后需要将mysql中的hive数据库删除，重新建立hive数据库，之后再退出mysql在终端执行初始化元数据库的命令schematool -dbType mysql -initSchema。运行hbase shell前要先启动hadoop和hbase。运行hive之前要先启动hadoop</p>
  
       <!-- reward -->
       
@@ -179,26 +339,24 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/18/hello-world/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/auto_install/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scripts/" rel="tag">scripts</a></li></ul>
+
     </footer>
   </div>
 
    
   <nav class="article-nav">
     
-      <a href="/2020/12/20/Flume/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            flume
-          
-        </div>
-      </a>
     
+      <a href="/2020/12/20/spark-practice/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">spark-practice</div>
+      </a>
     
   </nav>
 

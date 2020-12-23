@@ -144,6 +144,32 @@
   </entry>
   
   <entry>
+    <title>更新和删除数据</title>
+    <link href="http://example.com/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/"/>
+    <id>http://example.com/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</id>
+    <published>2020-12-23T10:38:07.837Z</published>
+    <updated>2020-12-23T06:40:51.504Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;update&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#update&quot;&gt;#&lt;/a&gt; UPDATE&lt;/h2&gt;
+&lt;p&gt;UPDATE, 可以使用 SELECT 子查询。UPDATE</summary>
+        
+      
+    
+    
+    
+    <category term="mysql" scheme="http://example.com/categories/mysql/"/>
+    
+    
+    <category term="mysql" scheme="http://example.com/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
     <title>创建和操纵表</title>
     <link href="http://example.com/2020/12/23/21.%E5%88%9B%E5%BB%BA%E5%92%8C%E6%93%8D%E7%BA%B5%E8%A1%A8/"/>
     <id>http://example.com/2020/12/23/21.%E5%88%9B%E5%BB%BA%E5%92%8C%E6%93%8D%E7%BA%B5%E8%A1%A8/</id>
@@ -158,32 +184,6 @@
     <summary type="html">&lt;h2 id=&quot;创建表&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#创建表&quot;&gt;#&lt;/a&gt; 创建表&lt;/h2&gt;
 &lt;p&gt;DEFAULT 指定默认值，不允许使用函数作为默认值，只能是常数。&lt;/p&gt;
 &lt;pre class=&quot;line-numbers</summary>
-        
-      
-    
-    
-    
-    <category term="mysql" scheme="http://example.com/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://example.com/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>更新和删除数据</title>
-    <link href="http://example.com/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/"/>
-    <id>http://example.com/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</id>
-    <published>2020-12-23T10:38:07.837Z</published>
-    <updated>2020-12-23T06:40:51.504Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;update&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#update&quot;&gt;#&lt;/a&gt; UPDATE&lt;/h2&gt;
-&lt;p&gt;UPDATE, 可以使用 SELECT 子查询。UPDATE</summary>
         
       
     
@@ -331,19 +331,18 @@
   </entry>
   
   <entry>
-    <title>使用数据处理函数</title>
-    <link href="http://example.com/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/"/>
-    <id>http://example.com/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</id>
+    <title>汇总数据</title>
+    <link href="http://example.com/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/"/>
+    <id>http://example.com/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</id>
     <published>2020-12-23T10:38:07.817Z</published>
-    <updated>2020-12-23T06:36:19.204Z</updated>
+    <updated>2020-12-23T06:37:25.132Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2 id=&quot;文本处理函数&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#文本处理函数&quot;&gt;#&lt;/a&gt; 文本处理函数&lt;/h2&gt;
-&lt;pre class=&quot;line-numbers language-sql&quot;</summary>
+    <summary type="html">&lt;h2 id=&quot;聚集函数&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#聚集函数&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
@@ -357,18 +356,19 @@
   </entry>
   
   <entry>
-    <title>汇总数据</title>
-    <link href="http://example.com/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/"/>
-    <id>http://example.com/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</id>
+    <title>使用数据处理函数</title>
+    <link href="http://example.com/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/"/>
+    <id>http://example.com/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</id>
     <published>2020-12-23T10:38:07.817Z</published>
-    <updated>2020-12-23T06:37:25.132Z</updated>
+    <updated>2020-12-23T06:36:19.204Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2 id=&quot;聚集函数&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#聚集函数&quot;&gt;#&lt;/a&gt;</summary>
+    <summary type="html">&lt;h2 id=&quot;文本处理函数&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#文本处理函数&quot;&gt;#&lt;/a&gt; 文本处理函数&lt;/h2&gt;
+&lt;pre class=&quot;line-numbers language-sql&quot;</summary>
         
       
     
@@ -437,8 +437,8 @@
   
   <entry>
     <title>使用mysql</title>
-    <link href="http://example.com/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/"/>
-    <id>http://example.com/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/</id>
+    <link href="http://example.com/2020/12/23/3.%E4%BD%BF%E7%94%A8mysql/"/>
+    <id>http://example.com/2020/12/23/3.%E4%BD%BF%E7%94%A8mysql/</id>
     <published>2020-12-23T10:38:07.807Z</published>
     <updated>2020-12-23T06:31:12.360Z</updated>
     
@@ -464,8 +464,8 @@
   
   <entry>
     <title>检索数据</title>
-    <link href="http://example.com/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/"/>
-    <id>http://example.com/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</id>
+    <link href="http://example.com/2020/12/23/4.%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/"/>
+    <id>http://example.com/2020/12/23/4.%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</id>
     <published>2020-12-23T10:38:07.807Z</published>
     <updated>2020-12-23T06:31:52.093Z</updated>
     
@@ -490,8 +490,8 @@
   
   <entry>
     <title>排序检索数据</title>
-    <link href="http://example.com/2020/12/23/5%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/"/>
-    <id>http://example.com/2020/12/23/5%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</id>
+    <link href="http://example.com/2020/12/23/5.%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/"/>
+    <id>http://example.com/2020/12/23/5.%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</id>
     <published>2020-12-23T10:38:07.807Z</published>
     <updated>2020-12-23T06:32:42.503Z</updated>
     
@@ -515,18 +515,19 @@
   </entry>
   
   <entry>
-    <title>过滤数据</title>
-    <link href="http://example.com/2020/12/23/6%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE/"/>
-    <id>http://example.com/2020/12/23/6%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE/</id>
+    <title>数据过滤</title>
+    <link href="http://example.com/2020/12/23/7%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4/"/>
+    <id>http://example.com/2020/12/23/7%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4/</id>
     <published>2020-12-23T10:38:07.807Z</published>
-    <updated>2020-12-23T06:33:08.255Z</updated>
+    <updated>2020-12-23T06:34:08.078Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h4 id=&quot;使用where子句&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#使用where子句&quot;&gt;#&lt;/a&gt; 使用 WHERE 子句&lt;/h4&gt;
+    <summary type="html">&lt;h4 id=&quot;组合where子句&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#组合where子句&quot;&gt;#&lt;/a&gt; 组合 WHERE 子句&lt;/h4&gt;
+&lt;p&gt;AND&lt;/p&gt;
 &lt;pre class=&quot;line-numbers language-sql&quot;</summary>
         
       

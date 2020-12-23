@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    使用mysql |  Aikedaer
+    排序检索数据 |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-3使用mysql"
+  id="post-5.排序检索数据"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,14 +56,14 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  使用mysql
+  排序检索数据
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/" class="article-date">
+      <a href="/2020/12/23/5.%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/" class="article-date">
   <time datetime="2020-12-23T10:38:07.807Z" itemprop="datePublished">2020-12-23</time>
 </a> 
   <div class="article-category">
@@ -75,7 +75,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">79</span>
+            <span class="post-count">145</span>
         </span>
     </span>
 
@@ -99,36 +99,27 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>数据库结构</p>
-<p><img src="/images/1606098995693.png" alt="1606098995693"></p>
-<p><img src="/images/1606099055555.png" alt="1606099055555"></p>
-<p><img src="/images/1606099086725.png" alt="1606099086725"></p>
-<p><img src="/images/1606099108941.png" alt="1606099108941"></p>
-<p><img src="/images/1606099141841.png" alt="1606099141841"></p>
-<p><img src="/images/1606099165126.png" alt="1606099165126"></p>
-<p><img src="/images/1606099185763.png" alt="1606099185763"></p>
-<h2 id="33了解数据库和表"><a class="markdownIt-Anchor" href="#33了解数据库和表">#</a> 3.3 了解数据库和表</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SHOW DATABASES;</code></pre>
-<p><img src="/images/1606099030626.png" alt="1606099030626"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">USE study;
-SHOW TABLES;</code></pre>
-<p><img src="/images/1606095908997.png" alt="1606095908997"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">SHOW COLUMNS FROM customers;
-# 快捷实现为
-DESC customers;</code></pre>
-<p><img src="/images/1606096022008.png" alt="1606096022008"></p>
-<p><img src="/images/1606096320986.png" alt="1606096320986"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">SHOW STATUS; # 用于显示广泛的服务器状态信息</code></pre>
-<p><img src="/images/1606098564941.png" alt="1606098564941"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">SHOW CREATE DATABASE study;</code></pre>
-<p><img src="/images/1606098612914.png" alt="1606098612914"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">SHOW CREATE TABLE customers;</code></pre>
-<p><img src="/images/1606098661171.png" alt="1606098661171"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 显示服务器错误或警告信息
-SHOW ERRORS;
-SHOW WARNINGS;
-HELP SHOW; # 显示帮助信息</code></pre>
-<p><img src="/images/1606098844859.png" alt="1606098844859"></p>
+  <h4 id="排序数据"><a class="markdownIt-Anchor" href="#排序数据">#</a> 排序数据</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 不指定排序方向时，默认升序，A--Z，1--100
+mysql&gt; SELECT prod_name
+    -&gt; FROM study.products
+    -&gt; ORDER BY prod_name;</code></pre>
+<p><img src="/images/1606109753390.png" alt="1606109753390"></p>
+<h4 id="按多个列排序"><a class="markdownIt-Anchor" href="#按多个列排序">#</a> 按多个列排序</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 同一个prod_price的商品名字按升序排列
+mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price,prod_name;</code></pre>
+<p><img src="/images/1606110015811.png" alt="1606110015811"></p>
+<h4 id="指定排序方向"><a class="markdownIt-Anchor" href="#指定排序方向">#</a> 指定排序方向</h4>
+<p><span style="color:red">DESC 只对位于其前面的一个字段起作用，如果多个字段都要求降序，那么每个后面都要加 DESC</span></p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL"># 按prod_price降序
+mysql&gt; SELECT prod_id,prod_price,prod_name
+    -&gt; FROM products
+    -&gt; ORDER BY prod_price DESC;</code></pre>
+<p><img src="/images/1606109879637.png" alt="1606109879637"></p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price DESC,prod_name;</code></pre>
+<p><img src="/images/1606110329785.png" alt="1606110329785"></p>
+<h4 id="order-by-位于from-之后"><a class="markdownIt-Anchor" href="#order-by-位于from-之后">#</a> ORDER BY 位于 FROM 之后</h4>
+<p><img src="/images/1606110459058.png" alt="1606110459058"></p>
  
       <!-- reward -->
       
@@ -199,7 +190,7 @@ HELP SHOW; # 显示帮助信息</code></pre>
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/23/5.%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -212,19 +203,19 @@ HELP SHOW; # 显示帮助信息</code></pre>
    
   <nav class="article-nav">
     
-      <a href="/2020/12/23/9%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="article-nav-link">
+      <a href="/2020/12/23/4.%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            正则表达式
+            检索数据
           
         </div>
       </a>
     
     
-      <a href="/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/" class="article-nav-link">
+      <a href="/2020/12/23/7%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">检索数据</div>
+        <div class="article-nav-title">数据过滤</div>
       </a>
     
   </nav>

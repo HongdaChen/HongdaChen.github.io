@@ -46,6 +46,245 @@
       </tags>
   </entry>
   <entry>
+    <title>汇总数据</title>
+    <url>/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="聚集函数"><a class="markdownIt-Anchor" href="#聚集函数">#</a> 聚集函数</h2>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AVG()</td>
+<td>返回某列的平均值</td>
+</tr>
+<tr>
+<td>COUNT()</td>
+<td>返回某列的行数</td>
+</tr>
+<tr>
+<td>MAX()</td>
+<td>返回某列的最大值</td>
+</tr>
+<tr>
+<td>MIN()</td>
+<td>返回某列的最小值</td>
+</tr>
+<tr>
+<td>SUM()</td>
+<td>返回某列的值的和</td>
+</tr>
+</tbody>
+</table>
+<p>AVG () 函数默认忽略列值为 NULL 的行</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606208664784.png" alt="1606208664784"></p>
+<p>返回 vend_id 为 1003 的价格的平均值</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
+    -&gt; FROM products
+    -&gt; WHERE vend_id&#x3D;1003;</code></pre>
+<p><img src="/images/1606208766911.png" alt="1606208766911">COUNT()</p>
+<ul>
+<li>COUNT (*) 对表中行的数目进行计数，不管是否包含 NULL</li>
+<li>COUNT (column) 对特定列中具有值的行进行计数，忽略 NULL 值，也就是为 NULL 的不计数</li>
+</ul>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_cust
+    -&gt; FROM customers;</code></pre>
+<p><img src="/images/1606208895057.png" alt="1606208895057"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(cust_email) AS num_cust
+    -&gt; FROM customers;</code></pre>
+<p><img src="/images/1606209168755.png" alt="1606209168755"></p>
+<p>MAX()</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MAX(prod_price) AS max_price
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606209252390.png" alt="1606209252390"></p>
+<p>MAX () 函数忽略列值为 NULL 的行</p>
+<hr>
+<p>MIN()</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MIN(prod_price) AS max_price FROM products;</code></pre>
+<p><img src="/images/1606209840756.png" alt="1606209840756"></p>
+<hr>
+<p>SUM () 函数，忽略 NULL 值</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(quantity) AS items_ordered
+    -&gt; FROM orderitems
+    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
+<p><img src="/images/1606209982667.png" alt="1606209982667"></p>
+<p><img src="/images/1606210066580.png" alt="1606210066580"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(item_price*quantity) AS items_ordered FROM orderitems WHERE order_num &#x3D; 20005;</code></pre>
+<p><img src="/images/1606210140778.png" alt="1606210140778"></p>
+<h2 id="聚集不同的值"><a class="markdownIt-Anchor" href="#聚集不同的值">#</a> 聚集不同的值</h2>
+<p>DISTINCT 只考虑各个不同的价格<img src="/images/1606210295272.png" alt="1606210295272"></p>
+<h2 id="组合聚集函数"><a class="markdownIt-Anchor" href="#组合聚集函数">#</a> 组合聚集函数</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_items,
+    -&gt; MIN(prod_price) AS price_min,
+    -&gt; MAX(prod_price) AS price_max,
+    -&gt; AVG(prod_price) AS price_avg
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606212027281.png" alt="1606212027281"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分组数据</title>
+    <url>/2020/12/23/13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="数据分组"><a class="markdownIt-Anchor" href="#数据分组">#</a> 数据分组</h2>
+<p>返回供应商 1003 提供的产品数目</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_prods
+    -&gt; FROM products
+    -&gt; WHERE vend_id &#x3D; 1003;</code></pre>
+<p><img src="/images/1606271401693.png" alt="1606271401693"></p>
+<h2 id="创建分组"><a class="markdownIt-Anchor" href="#创建分组">#</a> 创建分组</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
+    -&gt; FROM products
+    -&gt; GROUP BY vend_id;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606349381601.png" alt="1606349381601"> GROUP BY 指定按照 vend_id 排序并分组数据，这导致对每个 vend_id 而不是对整个表计算 num_prods 一次。</p>
+<ul>
+<li>GROUP BY 子句可以包含任意数目的列。这使得能够对分组进行嵌套，为数据分组提供更细致的控制</li>
+<li>如果在 GROUP BY 子句中嵌套了分组，数据将在最后规定的分组上进行汇总。换句话说，在建立分组时，指定的所有列都一起计算（所以不能从个别的列取回数据）</li>
+<li>GROUP BY 子句中列出的每个列都必须是检索列或有效的表达式（但不能是聚集 函数）。如果在 SELECT 中使用表达式，则必须在 GROUP BY 子句中指定相同的表达式，不可以使用别名。</li>
+<li>除了聚集函数以外，SELECT 语句中的每个列都必须在 GROUP BY 子句中给出。</li>
+<li>如果分组列中具有 NULL 值，则 NULL 值将作为一个分组返回。如果列中有多行 NULL 值，他们将分为一组。</li>
+<li>GROUP BY 子句必须出现在 WHERE 子句之后，ORDER BY 子句之前。</li>
+</ul>
+<h2 id="过滤分组"><a class="markdownIt-Anchor" href="#过滤分组">#</a> 过滤分组</h2>
+<p>WHERE 是用来过滤行的，在分组之前，HAVING 是用来过滤分组的，在分组之后，句法一样，只是关键字不同。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id,COUNT(*) AS orders
+    -&gt; FROM orders
+    -&gt; GROUP BY cust_id
+    -&gt; HAVING COUNT(*)&gt;&#x3D;2;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606350556890.png" alt="1606350556890"></p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
+    -&gt; FROM products
+    -&gt; WHERE prod_price&gt;&#x3D;10
+    -&gt; GROUP BY vend_id
+    -&gt; HAVING COUNT(*) &gt;&#x3D; 2;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351098102.png" alt="1606351098102"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
+    -&gt; FROM products
+    -&gt; GROUP BY vend_id
+    -&gt; HAVING COUNT(*) &gt;&#x3D; 2;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351175781.png" alt="1606351175781"></p>
+<h2 id="分组和排序"><a class="markdownIt-Anchor" href="#分组和排序">#</a> 分组和排序</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num,SUM(quantity*item_price) AS ordertotal
+    -&gt; FROM orderitems
+    -&gt; GROUP BY order_num
+    -&gt; HAVING SUM(quantity*item_price)&gt;&#x3D;50;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351555588.png" alt="1606351555588"></p>
+<p>使按总计订单价排序</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num,SUM(quantity*item_price) AS ordertotal
+    -&gt; FROM orderitems
+    -&gt; GROUP BY order_num
+    -&gt; HAVING SUM(quantity*item_price)&gt;&#x3D;50
+    -&gt; ORDER BY ordertotal;</code></pre>
+<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351643843.png" alt="1606351643843"></p>
+<h2 id="select子句顺序"><a class="markdownIt-Anchor" href="#select子句顺序">#</a> SELECT 子句顺序</h2>
+<table>
+<thead>
+<tr>
+<th>子句</th>
+<th>说明</th>
+<th>是否必须使用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SELECT</td>
+<td>要返回的列或表达式</td>
+<td>是</td>
+</tr>
+<tr>
+<td>FROM</td>
+<td>从中检索数据的表</td>
+<td>仅在从表选择数据时使用</td>
+</tr>
+<tr>
+<td>WHERE</td>
+<td>行级过滤</td>
+<td>否</td>
+</tr>
+<tr>
+<td>GROUP BY</td>
+<td>分组说明</td>
+<td>仅在按组计算聚集时使用</td>
+</tr>
+<tr>
+<td>HAVING</td>
+<td>组级过滤</td>
+<td>否</td>
+</tr>
+<tr>
+<td>ORDER BY</td>
+<td>输出排序顺序</td>
+<td>否</td>
+</tr>
+<tr>
+<td>LIMIT</td>
+<td>要检索的行数</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用子查询</title>
+    <url>/2020/12/23/14.%E4%BD%BF%E7%94%A8%E5%AD%90%E6%9F%A5%E8%AF%A2/</url>
+    <content><![CDATA[<h2 id="利用子查询进行过滤"><a class="markdownIt-Anchor" href="#利用子查询进行过滤">#</a> 利用子查询进行过滤</h2>
+<p>1. 检索包含物品 TNT2 的所有订单号</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num 
+    -&gt; FROM orderitems
+    -&gt; WHERE prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
+<p><img src="/images/1606352683649.png" alt="1606352683649"></p>
+<p>2. 检索上述订单号所属的用户 ID</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id
+    -&gt; FROM orders
+    -&gt; WHERE order_num IN (20005,20007);</code></pre>
+<p><img src="/images/1606352777595.png" alt="1606352777595"></p>
+<p>3. 检索上述用户的信息</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_contact
+    -&gt; FROM customers
+    -&gt; WHERE cust_id IN (10001,10004);</code></pre>
+<p><img src="/images/1606353091149.png" alt="1606353091149"></p>
+<p>将以上检索用一条语句</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_contact
+    -&gt; FROM customers
+    -&gt; WHERE cust_id IN (SELECT cust_id
+    -&gt; FROM orders
+    -&gt; WHERE order_num IN (SELECT order_num
+    -&gt; FROM orderitems
+    -&gt; WHERE prod_id &#x3D; &#39;TNT2&#39;));</code></pre>
+<p><img src="/images/1606353415882.png" alt="1606353415882"></p>
+<h2 id="作为计算字段使用子查询"><a class="markdownIt-Anchor" href="#作为计算字段使用子查询">#</a> 作为计算字段使用子查询</h2>
+<p>相关子查询</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_state,(SELECT COUNT(*) FROM orders
+    -&gt; WHERE orders.cust_id &#x3D; customers.cust_id) AS orders
+    -&gt; FROM customers
+    -&gt; ORDER BY cust_name;</code></pre>
+<p><img src="/images/1606353838749.png" alt="1606353838749"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用数据处理函数</title>
     <url>/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h2 id="文本处理函数"><a class="markdownIt-Anchor" href="#文本处理函数">#</a> 文本处理函数</h2>
@@ -264,245 +503,6 @@ WHERE Date(order_date) BETWEEN &#39;2005-09-01&#39; AND &#39;2005-09-30&#39;;</c
       </tags>
   </entry>
   <entry>
-    <title>分组数据</title>
-    <url>/2020/12/23/13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="数据分组"><a class="markdownIt-Anchor" href="#数据分组">#</a> 数据分组</h2>
-<p>返回供应商 1003 提供的产品数目</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_prods
-    -&gt; FROM products
-    -&gt; WHERE vend_id &#x3D; 1003;</code></pre>
-<p><img src="/images/1606271401693.png" alt="1606271401693"></p>
-<h2 id="创建分组"><a class="markdownIt-Anchor" href="#创建分组">#</a> 创建分组</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
-    -&gt; FROM products
-    -&gt; GROUP BY vend_id;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606349381601.png" alt="1606349381601"> GROUP BY 指定按照 vend_id 排序并分组数据，这导致对每个 vend_id 而不是对整个表计算 num_prods 一次。</p>
-<ul>
-<li>GROUP BY 子句可以包含任意数目的列。这使得能够对分组进行嵌套，为数据分组提供更细致的控制</li>
-<li>如果在 GROUP BY 子句中嵌套了分组，数据将在最后规定的分组上进行汇总。换句话说，在建立分组时，指定的所有列都一起计算（所以不能从个别的列取回数据）</li>
-<li>GROUP BY 子句中列出的每个列都必须是检索列或有效的表达式（但不能是聚集 函数）。如果在 SELECT 中使用表达式，则必须在 GROUP BY 子句中指定相同的表达式，不可以使用别名。</li>
-<li>除了聚集函数以外，SELECT 语句中的每个列都必须在 GROUP BY 子句中给出。</li>
-<li>如果分组列中具有 NULL 值，则 NULL 值将作为一个分组返回。如果列中有多行 NULL 值，他们将分为一组。</li>
-<li>GROUP BY 子句必须出现在 WHERE 子句之后，ORDER BY 子句之前。</li>
-</ul>
-<h2 id="过滤分组"><a class="markdownIt-Anchor" href="#过滤分组">#</a> 过滤分组</h2>
-<p>WHERE 是用来过滤行的，在分组之前，HAVING 是用来过滤分组的，在分组之后，句法一样，只是关键字不同。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id,COUNT(*) AS orders
-    -&gt; FROM orders
-    -&gt; GROUP BY cust_id
-    -&gt; HAVING COUNT(*)&gt;&#x3D;2;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606350556890.png" alt="1606350556890"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
-    -&gt; FROM products
-    -&gt; WHERE prod_price&gt;&#x3D;10
-    -&gt; GROUP BY vend_id
-    -&gt; HAVING COUNT(*) &gt;&#x3D; 2;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351098102.png" alt="1606351098102"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,COUNT(*) AS num_prods
-    -&gt; FROM products
-    -&gt; GROUP BY vend_id
-    -&gt; HAVING COUNT(*) &gt;&#x3D; 2;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351175781.png" alt="1606351175781"></p>
-<h2 id="分组和排序"><a class="markdownIt-Anchor" href="#分组和排序">#</a> 分组和排序</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num,SUM(quantity*item_price) AS ordertotal
-    -&gt; FROM orderitems
-    -&gt; GROUP BY order_num
-    -&gt; HAVING SUM(quantity*item_price)&gt;&#x3D;50;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351555588.png" alt="1606351555588"></p>
-<p>使按总计订单价排序</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num,SUM(quantity*item_price) AS ordertotal
-    -&gt; FROM orderitems
-    -&gt; GROUP BY order_num
-    -&gt; HAVING SUM(quantity*item_price)&gt;&#x3D;50
-    -&gt; ORDER BY ordertotal;</code></pre>
-<p><img src="13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE.assets/1606351643843.png" alt="1606351643843"></p>
-<h2 id="select子句顺序"><a class="markdownIt-Anchor" href="#select子句顺序">#</a> SELECT 子句顺序</h2>
-<table>
-<thead>
-<tr>
-<th>子句</th>
-<th>说明</th>
-<th>是否必须使用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SELECT</td>
-<td>要返回的列或表达式</td>
-<td>是</td>
-</tr>
-<tr>
-<td>FROM</td>
-<td>从中检索数据的表</td>
-<td>仅在从表选择数据时使用</td>
-</tr>
-<tr>
-<td>WHERE</td>
-<td>行级过滤</td>
-<td>否</td>
-</tr>
-<tr>
-<td>GROUP BY</td>
-<td>分组说明</td>
-<td>仅在按组计算聚集时使用</td>
-</tr>
-<tr>
-<td>HAVING</td>
-<td>组级过滤</td>
-<td>否</td>
-</tr>
-<tr>
-<td>ORDER BY</td>
-<td>输出排序顺序</td>
-<td>否</td>
-</tr>
-<tr>
-<td>LIMIT</td>
-<td>要检索的行数</td>
-<td>否</td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>汇总数据</title>
-    <url>/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="聚集函数"><a class="markdownIt-Anchor" href="#聚集函数">#</a> 聚集函数</h2>
-<table>
-<thead>
-<tr>
-<th>函数</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>AVG()</td>
-<td>返回某列的平均值</td>
-</tr>
-<tr>
-<td>COUNT()</td>
-<td>返回某列的行数</td>
-</tr>
-<tr>
-<td>MAX()</td>
-<td>返回某列的最大值</td>
-</tr>
-<tr>
-<td>MIN()</td>
-<td>返回某列的最小值</td>
-</tr>
-<tr>
-<td>SUM()</td>
-<td>返回某列的值的和</td>
-</tr>
-</tbody>
-</table>
-<p>AVG () 函数默认忽略列值为 NULL 的行</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606208664784.png" alt="1606208664784"></p>
-<p>返回 vend_id 为 1003 的价格的平均值</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
-    -&gt; FROM products
-    -&gt; WHERE vend_id&#x3D;1003;</code></pre>
-<p><img src="/images/1606208766911.png" alt="1606208766911">COUNT()</p>
-<ul>
-<li>COUNT (*) 对表中行的数目进行计数，不管是否包含 NULL</li>
-<li>COUNT (column) 对特定列中具有值的行进行计数，忽略 NULL 值，也就是为 NULL 的不计数</li>
-</ul>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_cust
-    -&gt; FROM customers;</code></pre>
-<p><img src="/images/1606208895057.png" alt="1606208895057"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(cust_email) AS num_cust
-    -&gt; FROM customers;</code></pre>
-<p><img src="/images/1606209168755.png" alt="1606209168755"></p>
-<p>MAX()</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MAX(prod_price) AS max_price
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606209252390.png" alt="1606209252390"></p>
-<p>MAX () 函数忽略列值为 NULL 的行</p>
-<hr>
-<p>MIN()</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MIN(prod_price) AS max_price FROM products;</code></pre>
-<p><img src="/images/1606209840756.png" alt="1606209840756"></p>
-<hr>
-<p>SUM () 函数，忽略 NULL 值</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(quantity) AS items_ordered
-    -&gt; FROM orderitems
-    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
-<p><img src="/images/1606209982667.png" alt="1606209982667"></p>
-<p><img src="/images/1606210066580.png" alt="1606210066580"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(item_price*quantity) AS items_ordered FROM orderitems WHERE order_num &#x3D; 20005;</code></pre>
-<p><img src="/images/1606210140778.png" alt="1606210140778"></p>
-<h2 id="聚集不同的值"><a class="markdownIt-Anchor" href="#聚集不同的值">#</a> 聚集不同的值</h2>
-<p>DISTINCT 只考虑各个不同的价格<img src="/images/1606210295272.png" alt="1606210295272"></p>
-<h2 id="组合聚集函数"><a class="markdownIt-Anchor" href="#组合聚集函数">#</a> 组合聚集函数</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_items,
-    -&gt; MIN(prod_price) AS price_min,
-    -&gt; MAX(prod_price) AS price_max,
-    -&gt; AVG(prod_price) AS price_avg
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606212027281.png" alt="1606212027281"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用子查询</title>
-    <url>/2020/12/23/14.%E4%BD%BF%E7%94%A8%E5%AD%90%E6%9F%A5%E8%AF%A2/</url>
-    <content><![CDATA[<h2 id="利用子查询进行过滤"><a class="markdownIt-Anchor" href="#利用子查询进行过滤">#</a> 利用子查询进行过滤</h2>
-<p>1. 检索包含物品 TNT2 的所有订单号</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT order_num 
-    -&gt; FROM orderitems
-    -&gt; WHERE prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
-<p><img src="/images/1606352683649.png" alt="1606352683649"></p>
-<p>2. 检索上述订单号所属的用户 ID</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id
-    -&gt; FROM orders
-    -&gt; WHERE order_num IN (20005,20007);</code></pre>
-<p><img src="/images/1606352777595.png" alt="1606352777595"></p>
-<p>3. 检索上述用户的信息</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_contact
-    -&gt; FROM customers
-    -&gt; WHERE cust_id IN (10001,10004);</code></pre>
-<p><img src="/images/1606353091149.png" alt="1606353091149"></p>
-<p>将以上检索用一条语句</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_contact
-    -&gt; FROM customers
-    -&gt; WHERE cust_id IN (SELECT cust_id
-    -&gt; FROM orders
-    -&gt; WHERE order_num IN (SELECT order_num
-    -&gt; FROM orderitems
-    -&gt; WHERE prod_id &#x3D; &#39;TNT2&#39;));</code></pre>
-<p><img src="/images/1606353415882.png" alt="1606353415882"></p>
-<h2 id="作为计算字段使用子查询"><a class="markdownIt-Anchor" href="#作为计算字段使用子查询">#</a> 作为计算字段使用子查询</h2>
-<p>相关子查询</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_name,cust_state,(SELECT COUNT(*) FROM orders
-    -&gt; WHERE orders.cust_id &#x3D; customers.cust_id) AS orders
-    -&gt; FROM customers
-    -&gt; ORDER BY cust_name;</code></pre>
-<p><img src="/images/1606353838749.png" alt="1606353838749"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>联结表</title>
     <url>/2020/12/23/15.%E8%81%94%E7%BB%93%E8%A1%A8/</url>
     <content><![CDATA[<p>如果数据存储在多个表中，怎样用单条 SELECT 语句检索出数据？</p>
@@ -534,66 +534,6 @@ WHERE customers.cust_id &#x3D; orders.cust_id
 AND orderitems.order_num &#x3D; orders.order_num
 AND prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
 <p><img src="/images/1606357006087.png" alt="1606357006087"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>组合查询</title>
-    <url>/2020/12/23/17.%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2/</url>
-    <content><![CDATA[<h2 id="union"><a class="markdownIt-Anchor" href="#union">#</a> UNION</h2>
-<p>单条</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
-FROM products
-WHERE prod_price &lt;&#x3D; 5;</code></pre>
-<p><img src="/images/1606360832251.png" alt="1606360832251"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price 
-FROM products 
-WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606360930967.png" alt="1606360930967"></p>
-<p>联合</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; UNION ALL
-    -&gt; SELECT vend_id,prod_id,prod_price 
-    -&gt; FROM products 
-    -&gt; WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361041162.png" alt="1606361041162"></p>
-<p>还可使用多条 WHERE 子句</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; OR vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361221571.png" alt="1606361221571"></p>
-<p>UNION 规则</p>
-<p>UNION 中的每个查询必须包含相同的列、表达式或聚集函数</p>
-<h2 id="包含或取消重复的行"><a class="markdownIt-Anchor" href="#包含或取消重复的行">#</a> 包含或取消重复的行</h2>
-<p>UNION ALL</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
-FROM products
-WHERE prod_price &lt;&#x3D; 5
-UNION ALL
-SELECT vend_id,prod_id,prod_price 
-FROM products 
-WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361612885.png" alt="1606361612885"></p>
-<p>返回值有两行是重复的，这是 WHERE 做不到的。</p>
-<h2 id="对组合结果排序"><a class="markdownIt-Anchor" href="#对组合结果排序">#</a> 对组合结果排序</h2>
-<p>UNION 不允许多条 GROUP BY</p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; UNION ALL
-    -&gt; SELECT vend_id,prod_id,prod_price 
-    -&gt; FROM products 
-    -&gt; WHERE vend_id IN (1001,1002)
-    -&gt; ORDER BY vend_id,prod_price;</code></pre>
-<p><img src="/images/1606361741191.png" alt="1606361741191"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -663,6 +603,66 @@ WHERE vend_id IN (1001,1002);</code></pre>
     -&gt; ON customers.cust_id &#x3D; orders.cust_id
     -&gt; GROUP BY customers.cust_id;</code></pre>
 <p><img src="/images/1606360546829.png" alt="1606360546829"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>组合查询</title>
+    <url>/2020/12/23/17.%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2/</url>
+    <content><![CDATA[<h2 id="union"><a class="markdownIt-Anchor" href="#union">#</a> UNION</h2>
+<p>单条</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
+FROM products
+WHERE prod_price &lt;&#x3D; 5;</code></pre>
+<p><img src="/images/1606360832251.png" alt="1606360832251"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price 
+FROM products 
+WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606360930967.png" alt="1606360930967"></p>
+<p>联合</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; UNION ALL
+    -&gt; SELECT vend_id,prod_id,prod_price 
+    -&gt; FROM products 
+    -&gt; WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361041162.png" alt="1606361041162"></p>
+<p>还可使用多条 WHERE 子句</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; OR vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361221571.png" alt="1606361221571"></p>
+<p>UNION 规则</p>
+<p>UNION 中的每个查询必须包含相同的列、表达式或聚集函数</p>
+<h2 id="包含或取消重复的行"><a class="markdownIt-Anchor" href="#包含或取消重复的行">#</a> 包含或取消重复的行</h2>
+<p>UNION ALL</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
+FROM products
+WHERE prod_price &lt;&#x3D; 5
+UNION ALL
+SELECT vend_id,prod_id,prod_price 
+FROM products 
+WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361612885.png" alt="1606361612885"></p>
+<p>返回值有两行是重复的，这是 WHERE 做不到的。</p>
+<h2 id="对组合结果排序"><a class="markdownIt-Anchor" href="#对组合结果排序">#</a> 对组合结果排序</h2>
+<p>UNION 不允许多条 GROUP BY</p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; UNION ALL
+    -&gt; SELECT vend_id,prod_id,prod_price 
+    -&gt; FROM products 
+    -&gt; WHERE vend_id IN (1001,1002)
+    -&gt; ORDER BY vend_id,prod_price;</code></pre>
+<p><img src="/images/1606361741191.png" alt="1606361741191"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -889,6 +889,57 @@ FROM custnew;</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>更新和删除数据</title>
+    <url>/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="update"><a class="markdownIt-Anchor" href="#update">#</a> UPDATE</h2>
+<p>UPDATE, 可以使用 SELECT 子查询。UPDATE 在未执行完出错时的处理办法时恢复原来的数据，但可以指定不恢复的关键字 IGNORE，在 UPDATE 和表明之间。</p>
+<ul>
+<li>跟新特定的行</li>
+</ul>
+<p>不要省略 WHERE。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
+SET cust_email&#x3D;&#39;elmer@fudd.com&#39;
+WHERE cust_id&#x3D;10005;</code></pre>
+<p>置空某一行的某一列</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE custnew
+SET cust_email&#x3D;NULL
+WHERE cust_id&#x3D;10008;</code></pre>
+<p><img src="/images/1606396465985.png" alt="1606396465985"></p>
+<ul>
+<li>跟新多个列，只需在 SET 中写多个值，用逗号隔开</li>
+</ul>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
+SET cust_name&#x3D;&#39;lijie&#39;,
+	cust_email&#x3D;&#39;elmer@fudd.com&#39;
+WHERE cust_id&#x3D;10005;</code></pre>
+<ul>
+<li>跟新所有的行</li>
+</ul>
+<p>不写 WHERE.</p>
+<p><img src="/images/1606396527113.png" alt="1606396527113"></p>
+<h2 id="delete"><a class="markdownIt-Anchor" href="#delete">#</a> DELETE</h2>
+<ul>
+<li>删除特定行</li>
+</ul>
+<p>写 WHERE.</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">DELETE FROM custnew
+WHERE cust_id &#x3D; 10009;</code></pre>
+<p>为了删除指定的列，使用 UPDATE</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">?</code></pre>
+<ul>
+<li>删除所有行</li>
+</ul>
+<p>不要使用 DELETE. 使用 TRUNCATE，删除表，并重新创建了一个。快的。</p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">TRUNCATE TABLE custnew;</code></pre>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>创建和操纵表</title>
     <url>/2020/12/23/21.%E5%88%9B%E5%BB%BA%E5%92%8C%E6%93%8D%E7%BA%B5%E8%A1%A8/</url>
     <content><![CDATA[<h2 id="创建表"><a class="markdownIt-Anchor" href="#创建表">#</a> 创建表</h2>
@@ -1016,59 +1067,8 @@ WHERE order_num &#x3D; 20005;</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>更新和删除数据</title>
-    <url>/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="update"><a class="markdownIt-Anchor" href="#update">#</a> UPDATE</h2>
-<p>UPDATE, 可以使用 SELECT 子查询。UPDATE 在未执行完出错时的处理办法时恢复原来的数据，但可以指定不恢复的关键字 IGNORE，在 UPDATE 和表明之间。</p>
-<ul>
-<li>跟新特定的行</li>
-</ul>
-<p>不要省略 WHERE。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
-SET cust_email&#x3D;&#39;elmer@fudd.com&#39;
-WHERE cust_id&#x3D;10005;</code></pre>
-<p>置空某一行的某一列</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE custnew
-SET cust_email&#x3D;NULL
-WHERE cust_id&#x3D;10008;</code></pre>
-<p><img src="/images/1606396465985.png" alt="1606396465985"></p>
-<ul>
-<li>跟新多个列，只需在 SET 中写多个值，用逗号隔开</li>
-</ul>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
-SET cust_name&#x3D;&#39;lijie&#39;,
-	cust_email&#x3D;&#39;elmer@fudd.com&#39;
-WHERE cust_id&#x3D;10005;</code></pre>
-<ul>
-<li>跟新所有的行</li>
-</ul>
-<p>不写 WHERE.</p>
-<p><img src="/images/1606396527113.png" alt="1606396527113"></p>
-<h2 id="delete"><a class="markdownIt-Anchor" href="#delete">#</a> DELETE</h2>
-<ul>
-<li>删除特定行</li>
-</ul>
-<p>写 WHERE.</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">DELETE FROM custnew
-WHERE cust_id &#x3D; 10009;</code></pre>
-<p>为了删除指定的列，使用 UPDATE</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">?</code></pre>
-<ul>
-<li>删除所有行</li>
-</ul>
-<p>不要使用 DELETE. 使用 TRUNCATE，删除表，并重新创建了一个。快的。</p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">TRUNCATE TABLE custnew;</code></pre>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用mysql</title>
-    <url>/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/</url>
+    <url>/2020/12/23/3.%E4%BD%BF%E7%94%A8mysql/</url>
     <content><![CDATA[<p>数据库结构</p>
 <p><img src="/images/1606098995693.png" alt="1606098995693"></p>
 <p><img src="/images/1606099055555.png" alt="1606099055555"></p>
@@ -1109,7 +1109,7 @@ HELP SHOW; # 显示帮助信息</code></pre>
   </entry>
   <entry>
     <title>检索数据</title>
-    <url>/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
+    <url>/2020/12/23/4.%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
     <content><![CDATA[<h2 id="select"><a class="markdownIt-Anchor" href="#select">#</a> SELECT</h2>
 <h4 id="检索单个列"><a class="markdownIt-Anchor" href="#检索单个列">#</a> 检索单个列</h4>
 <pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT prod_name FROM products;</code></pre>
@@ -1150,7 +1150,7 @@ mysql&gt; SELECT prod_name FROM products LIMIT 0,1;</code></pre>
   </entry>
   <entry>
     <title>排序检索数据</title>
-    <url>/2020/12/23/5%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
+    <url>/2020/12/23/5.%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
     <content><![CDATA[<h4 id="排序数据"><a class="markdownIt-Anchor" href="#排序数据">#</a> 排序数据</h4>
 <pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 不指定排序方向时，默认升序，A--Z，1--100
 mysql&gt; SELECT prod_name
@@ -1172,43 +1172,6 @@ mysql&gt; SELECT prod_id,prod_price,prod_name
 <p><img src="/images/1606110329785.png" alt="1606110329785"></p>
 <h4 id="order-by-位于from-之后"><a class="markdownIt-Anchor" href="#order-by-位于from-之后">#</a> ORDER BY 位于 FROM 之后</h4>
 <p><img src="/images/1606110459058.png" alt="1606110459058"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>过滤数据</title>
-    <url>/2020/12/23/6%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h4 id="使用where子句"><a class="markdownIt-Anchor" href="#使用where子句">#</a> 使用 WHERE 子句</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &#x3D; 2.5;
-# 返回这两列的满足prod_price&#x3D;2.5的行</code></pre>
-<p><img src="/images/1606110692872.png" alt="1606110692872"></p>
-<h4 id="where子句操作符使用"><a class="markdownIt-Anchor" href="#where子句操作符使用">#</a> WHERE 子句操作符使用</h4>
-<p>不区分大小写</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_name&#x3D;&#39;fuses&#39;;</code></pre>
-<p><img src="/images/1606110921138.png" alt="1606110921138"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price&lt;10;</code></pre>
-<p><img src="/images/1606110960963.png" alt="1606110960963"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price&lt;&#x3D;10;</code></pre>
-<p><img src="/images/1606111005739.png" alt="1606111005739"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_name,prod_price FROM products WHERE vend_id&lt;&gt;1003;
-# 不等于,和!&#x3D;相同</code></pre>
-<p><img src="/images/1606111076573.png" alt="1606111076573"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price BETWEEN 5 AND 10;
-# 左右都是闭区间</code></pre>
-<p><img src="/images/1606111200125.png" alt="1606111200125"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name FROM products WHERE prod_price IS NULL;</code></pre>
-<p><img src="/images/1606111390398.png" alt="1606111390398"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id FROM customers WHERE cust_email IS NULL;</code></pre>
-<p><img src="/images/1606111381404.png" alt="1606111381404"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -1249,6 +1212,43 @@ mysql&gt; SELECT prod_id,prod_price,prod_name
 	-&gt; WHERE vend_id NOT IN (1002,1003) 
 	-&gt; ORDER BY prod_name;</code></pre>
 <p><img src="/images/1606176420810.png" alt="1606176420810"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>过滤数据</title>
+    <url>/2020/12/23/6%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h4 id="使用where子句"><a class="markdownIt-Anchor" href="#使用where子句">#</a> 使用 WHERE 子句</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &#x3D; 2.5;
+# 返回这两列的满足prod_price&#x3D;2.5的行</code></pre>
+<p><img src="/images/1606110692872.png" alt="1606110692872"></p>
+<h4 id="where子句操作符使用"><a class="markdownIt-Anchor" href="#where子句操作符使用">#</a> WHERE 子句操作符使用</h4>
+<p>不区分大小写</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_name&#x3D;&#39;fuses&#39;;</code></pre>
+<p><img src="/images/1606110921138.png" alt="1606110921138"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price&lt;10;</code></pre>
+<p><img src="/images/1606110960963.png" alt="1606110960963"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price&lt;&#x3D;10;</code></pre>
+<p><img src="/images/1606111005739.png" alt="1606111005739"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_name,prod_price FROM products WHERE vend_id&lt;&gt;1003;
+# 不等于,和!&#x3D;相同</code></pre>
+<p><img src="/images/1606111076573.png" alt="1606111076573"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,prod_price FROM products WHERE prod_price BETWEEN 5 AND 10;
+# 左右都是闭区间</code></pre>
+<p><img src="/images/1606111200125.png" alt="1606111200125"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name FROM products WHERE prod_price IS NULL;</code></pre>
+<p><img src="/images/1606111390398.png" alt="1606111390398"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT cust_id FROM customers WHERE cust_email IS NULL;</code></pre>
+<p><img src="/images/1606111381404.png" alt="1606111381404"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -2175,168 +2175,6 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
       </tags>
   </entry>
   <entry>
-    <title>Sqoop</title>
-    <url>/2020/12/20/Sqoop/</url>
-    <content><![CDATA[<h1><center>Sqoop</center></h1>
-<h2>实验目的</h2>
-熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
-<h2>实验内容</h2>
-安装，配置Sqoop
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
-if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
-    sudo rm -rf &#x2F;apps&#x2F;sqoop
-fi
-# 将Sqoop的安装包复制到&#x2F;apps下，并解压
-sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
-tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
-# 删除压缩包
-sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
-# 修改名称
-mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
-# 删除有关sqoop_home的环境变量
-sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-# 添加环境变量
-echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
-cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
-# 重命令
-mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
-# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
-echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
-sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
-# 重启，使环境变量生效
-sudo reboot</code></pre>
-<p>版本信息：</p>
-<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
-<p>使用 sqoop help 查看支持的命令</p>
-<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
-<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
-<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
-<p>确保 mysql 正常运行</p>
-<p><img src="/images/1605065733969.png" alt=""></p>
-<p>查询 mysql 中的数据库。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
-<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
-use mydb;
-create table record 
-	(
-	id varchar(100),
-	buyer_id varchar(100),
-	dt varchar(100),
-	ip varchar(100),
-	opt_type varchar(100)
-	);
-    
-load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
-<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
-<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
-<ul>
-<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
-</ul>
-<p>hdfs 上的 mysqool 不能存在</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456 \
---table record -m 1 \
---target-dir &#x2F;mysqoop</code></pre>
-<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
-<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhdfs like record;</code></pre>
-<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhdfs -m 1 \
---export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
-<p>检查 Mysql</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhdfs limit 3,5;</code></pre>
-<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
-<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
-<p>启动 HBase</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
-<p>进入 hbase shell</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
-<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
-<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hbase-table hbaserecord \
---column-family mycf \
---hbase-row-key dt -m 1</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
-<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
-<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
-<p>需要在～/.bashrc 添加以下内容。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
-export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
-<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hive-import \
---hive-table hiverecord \
---fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
-<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
-<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhive like record;             </code></pre>
-<p>导数据</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhive \
---export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
---input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
-<p>查看结果</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhive;</code></pre>
-<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>sqoop</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hadoop-streaming</title>
     <url>/2020/12/20/Hadoop-Streaming/</url>
     <content><![CDATA[<h1><center>Hadoop Streaming</center></h1>
@@ -2565,6 +2403,168 @@ ting***15   北京 北京 上海
       </categories>
       <tags>
         <tag>hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Sqoop</title>
+    <url>/2020/12/20/Sqoop/</url>
+    <content><![CDATA[<h1><center>Sqoop</center></h1>
+<h2>实验目的</h2>
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+<h2>实验内容</h2>
+安装，配置Sqoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
+if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
+    sudo rm -rf &#x2F;apps&#x2F;sqoop
+fi
+# 将Sqoop的安装包复制到&#x2F;apps下，并解压
+sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
+tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
+# 删除压缩包
+sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+# 修改名称
+mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
+# 删除有关sqoop_home的环境变量
+sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+# 添加环境变量
+echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
+# 重命令
+mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
+# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
+echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
+sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
+# 重启，使环境变量生效
+sudo reboot</code></pre>
+<p>版本信息：</p>
+<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
+<p>使用 sqoop help 查看支持的命令</p>
+<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
+<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
+<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
+<p>确保 mysql 正常运行</p>
+<p><img src="/images/1605065733969.png" alt=""></p>
+<p>查询 mysql 中的数据库。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
+<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
+use mydb;
+create table record 
+	(
+	id varchar(100),
+	buyer_id varchar(100),
+	dt varchar(100),
+	ip varchar(100),
+	opt_type varchar(100)
+	);
+    
+load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
+<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
+<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
+<ul>
+<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
+</ul>
+<p>hdfs 上的 mysqool 不能存在</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456 \
+--table record -m 1 \
+--target-dir &#x2F;mysqoop</code></pre>
+<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
+<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhdfs like record;</code></pre>
+<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhdfs -m 1 \
+--export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
+<p>检查 Mysql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhdfs limit 3,5;</code></pre>
+<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
+<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
+<p>启动 HBase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
+<p>进入 hbase shell</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
+<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
+<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hbase-table hbaserecord \
+--column-family mycf \
+--hbase-row-key dt -m 1</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
+<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
+<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
+<p>需要在～/.bashrc 添加以下内容。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
+export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hive-import \
+--hive-table hiverecord \
+--fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
+<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
+<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhive like record;             </code></pre>
+<p>导数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhive \
+--export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
+--input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
+<p>查看结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhive;</code></pre>
+<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>sqoop</tag>
       </tags>
   </entry>
   <entry>
@@ -3647,32 +3647,6 @@ public class StringExt extends UDF &#123;
       </tags>
   </entry>
   <entry>
-    <title>安装mysql</title>
-    <url>/2020/12/23/indatll_mysql_on_centos/</url>
-    <content><![CDATA[<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql-community-release-el7-5.noarch.rpm
-
-yum install mysql-community-release-el7-5.noarch.rpm 
-
-yum install -y mysql-community-server
-
-systemctl start mysqld.service
-
-mysql -uroot -p
-
-set password for &#39;root&#39;@&#39;localhost&#39;&#x3D;password(&#39;hutu123&#39;);
-
-grant all privileges on *.* to &#39;root&#39;@&#39;%&#39; identified by &#39;password&#39; with grant option; 
-
-flush privileges; </code></pre>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hive-QL</title>
     <url>/2020/12/20/hive_QL/</url>
     <content><![CDATA[<h1><center>Hive</center></h1>
@@ -3975,6 +3949,32 @@ desc database hive_db_test;</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>安装mysql</title>
+    <url>/2020/12/23/indatll_mysql_on_centos/</url>
+    <content><![CDATA[<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql-community-release-el7-5.noarch.rpm
+
+yum install mysql-community-release-el7-5.noarch.rpm 
+
+yum install -y mysql-community-server
+
+systemctl start mysqld.service
+
+mysql -uroot -p
+
+set password for &#39;root&#39;@&#39;localhost&#39;&#x3D;password(&#39;hutu123&#39;);
+
+grant all privileges on *.* to &#39;root&#39;@&#39;%&#39; identified by &#39;password&#39; with grant option; 
+
+flush privileges; </code></pre>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>spark-Streaming</title>
     <url>/2020/12/20/spark-streaming/</url>
     <content><![CDATA[<h2 id="spark-streaming"><a class="markdownIt-Anchor" href="#spark-streaming">#</a> Spark Streaming</h2>
@@ -4232,148 +4232,6 @@ public static char readConfirmSelection()&#123;
       </tags>
   </entry>
   <entry>
-    <title>学生系统管理-java实现</title>
-    <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-java%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>利用 TreeMap 类完成一个简单的学生成绩管理系统，要求：</p>
-<p>1. 有登录验证用户名和密码的功能。</p>
-<p>2. 有成绩录入、显示、查找、修改、删除等功能。</p>
-<p>3. 所有数据全部通过键盘输入（利用 Scanner 类）。</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java">package chd;
-import java.util.*;
-public class Main &#123;
-	private static final String USER&#x3D;&quot;Admin&quot;;
-	private static final String PASS&#x3D;&quot;A12345&quot;;
-	public static void main(String[] args) &#123;
-		
-		Scanner sc&#x3D;new Scanner(System.in);
-		System.out.println(&quot;Please input the user name:&quot;);
-		String user&#x3D;sc.nextLine();
-		System.out.println(&quot;Please input the password:&quot;);
-		String pass&#x3D;sc.nextLine();
-		
-
-		if (user.equalsIgnoreCase(USER) &amp;&amp; pass.equals(PASS)) &#123;
-			System.out.println(&quot;Welcome to student system:&quot;);
-		&#125;
-		else &#123;
-			System.out.println(&quot;sorry!the user name or the password is wrong!&quot;);
-			sc.close();
-			return;
-		&#125;
-		TreeMap&lt;Long,Student&gt; mp&#x3D;new TreeMap&lt;Long,Student&gt;();
-		long number;
-		String name;
-		int score;
-		
-		System.out.println(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;);
-	 	System.out.println(&quot;&lt;                   Student System                          &gt;&quot;);
-	 	System.out.println(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;);
-	 	System.out.println(&quot; (1)input information (2)display all (3) inquire(4)modify (0) logout &quot;);
-		
-
-		System.out.println(&quot;Please make a choice:&quot;);
-
-	 	int i&#x3D;sc.nextInt();
-	 	while (i!&#x3D;0) &#123;
-	 		Student st&#x3D;new Student();
-	 		switch (i) &#123;
-			 	case 1:
-					System.out.println(&quot;please input student ID:&quot;);
-					number&#x3D; sc.nextLong();
-			 		while (number!&#x3D;0) &#123;
-			 			Student st1&#x3D;new Student();
-						sc.nextLine();
-						System.out.println(&quot;please input student name:&quot;);
-						name&#x3D;sc.nextLine();
-						st1.name&#x3D;name;
-						System.out.println(&quot;Please input student score:&quot;);
-						score&#x3D;sc.nextInt();
-						st1.score&#x3D;score;
-						mp.put(number,st1);
-						System.out.println(&quot;please input student ID:&quot;);
-						number &#x3D; sc.nextLong();
-				 	&#125;
-			 		
-			 		break;
-			 	case 2:
-			 		Set&lt;Long&gt; stt &#x3D; mp.keySet();
-					Iterator&lt;Long&gt; it&#x3D;stt.iterator();
-					
-					while(it.hasNext()) &#123;
-						Long l &#x3D; it.next();
-						System.out.print(&quot;ID:&quot;+l+&quot;\t&quot;);
-						
-						System.out.println(mp.get(l));
-						&#125;
-					break;
-			 	case 3:
-			 		System.out.println(&quot;Please input the ID which you want to inquire:&quot;);
-			 		number&#x3D;sc.nextLong();
-			 		st&#x3D;mp.get(number);
-					if (st!&#x3D;null) &#123;
-						System.out.println(&quot;student name：&quot;+st.name);
-						System.out.println(&quot;student score：&quot;+st.score);
-					&#125;
-					else
-						System.out.println(&quot;No this student!&quot;);
-					break;
-			 	case 4:
-			 		
-			 		System.out.println(&quot;Please input the ID which you want to modify:&quot;);
-			 		number&#x3D;sc.nextLong();
-			 		
-			 		if (mp.containsKey(number)) &#123;
-			 			sc.nextLine();
-			 			System.out.println(&quot;Please input the new name:&quot;);
-						name&#x3D;sc.nextLine();
-						
-						st.name&#x3D;name;
-						System.out.println(&quot;Please input the new score:&quot;);
-						score&#x3D;sc.nextInt();
-						st.score&#x3D;score;
-						mp.put(number,st);
-					&#125;
-					else
-						System.out.println(&quot;No this student!&quot;);
-			 		break;
-			 	case 5:
-			 		System.out.println(&quot;Please input the ID which you want to delete：&quot;);
-			 		number&#x3D;sc.nextLong();
-			 		if (mp.remove(number) !&#x3D; null) &#123;
-						System.out.println(&quot;delete successfully!&quot;);
-					&#125;
-					else
-						System.out.println(&quot;No this student!&quot;);
-		 		    break;
-		 	&#125;
-		 	System.out.println(&quot; (1)input information (2)display all (3) inquire(4)modify (0) logout &quot;);
-	 		i&#x3D;sc.nextInt();
-	 	&#125;
-	 	sc.close();
-&#x2F;&#x2F;	 	System.exit(0);
-&#x2F;&#x2F;	 	return;
-	 	System.out.println(&quot;Goodbye!&quot;);
-	&#125;	
-&#125;
-class Student&#123;
-	public String name;
-	public int score;
-	
-	@Override
-	public String toString() &#123;
-		return &quot;\tname&quot;+name+&quot;\tscore&quot;+score;
-	&#125;
-&#125;
-</code></pre>
-]]></content>
-      <categories>
-        <category>java练习</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>学生系统管理-C实现</title>
     <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>C 语言链表实现学生管理系统</p>
@@ -4619,6 +4477,148 @@ int main()
       </categories>
       <tags>
         <tag>C语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学生系统管理-java实现</title>
+    <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-java%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>利用 TreeMap 类完成一个简单的学生成绩管理系统，要求：</p>
+<p>1. 有登录验证用户名和密码的功能。</p>
+<p>2. 有成绩录入、显示、查找、修改、删除等功能。</p>
+<p>3. 所有数据全部通过键盘输入（利用 Scanner 类）。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">package chd;
+import java.util.*;
+public class Main &#123;
+	private static final String USER&#x3D;&quot;Admin&quot;;
+	private static final String PASS&#x3D;&quot;A12345&quot;;
+	public static void main(String[] args) &#123;
+		
+		Scanner sc&#x3D;new Scanner(System.in);
+		System.out.println(&quot;Please input the user name:&quot;);
+		String user&#x3D;sc.nextLine();
+		System.out.println(&quot;Please input the password:&quot;);
+		String pass&#x3D;sc.nextLine();
+		
+
+		if (user.equalsIgnoreCase(USER) &amp;&amp; pass.equals(PASS)) &#123;
+			System.out.println(&quot;Welcome to student system:&quot;);
+		&#125;
+		else &#123;
+			System.out.println(&quot;sorry!the user name or the password is wrong!&quot;);
+			sc.close();
+			return;
+		&#125;
+		TreeMap&lt;Long,Student&gt; mp&#x3D;new TreeMap&lt;Long,Student&gt;();
+		long number;
+		String name;
+		int score;
+		
+		System.out.println(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;);
+	 	System.out.println(&quot;&lt;                   Student System                          &gt;&quot;);
+	 	System.out.println(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;);
+	 	System.out.println(&quot; (1)input information (2)display all (3) inquire(4)modify (0) logout &quot;);
+		
+
+		System.out.println(&quot;Please make a choice:&quot;);
+
+	 	int i&#x3D;sc.nextInt();
+	 	while (i!&#x3D;0) &#123;
+	 		Student st&#x3D;new Student();
+	 		switch (i) &#123;
+			 	case 1:
+					System.out.println(&quot;please input student ID:&quot;);
+					number&#x3D; sc.nextLong();
+			 		while (number!&#x3D;0) &#123;
+			 			Student st1&#x3D;new Student();
+						sc.nextLine();
+						System.out.println(&quot;please input student name:&quot;);
+						name&#x3D;sc.nextLine();
+						st1.name&#x3D;name;
+						System.out.println(&quot;Please input student score:&quot;);
+						score&#x3D;sc.nextInt();
+						st1.score&#x3D;score;
+						mp.put(number,st1);
+						System.out.println(&quot;please input student ID:&quot;);
+						number &#x3D; sc.nextLong();
+				 	&#125;
+			 		
+			 		break;
+			 	case 2:
+			 		Set&lt;Long&gt; stt &#x3D; mp.keySet();
+					Iterator&lt;Long&gt; it&#x3D;stt.iterator();
+					
+					while(it.hasNext()) &#123;
+						Long l &#x3D; it.next();
+						System.out.print(&quot;ID:&quot;+l+&quot;\t&quot;);
+						
+						System.out.println(mp.get(l));
+						&#125;
+					break;
+			 	case 3:
+			 		System.out.println(&quot;Please input the ID which you want to inquire:&quot;);
+			 		number&#x3D;sc.nextLong();
+			 		st&#x3D;mp.get(number);
+					if (st!&#x3D;null) &#123;
+						System.out.println(&quot;student name：&quot;+st.name);
+						System.out.println(&quot;student score：&quot;+st.score);
+					&#125;
+					else
+						System.out.println(&quot;No this student!&quot;);
+					break;
+			 	case 4:
+			 		
+			 		System.out.println(&quot;Please input the ID which you want to modify:&quot;);
+			 		number&#x3D;sc.nextLong();
+			 		
+			 		if (mp.containsKey(number)) &#123;
+			 			sc.nextLine();
+			 			System.out.println(&quot;Please input the new name:&quot;);
+						name&#x3D;sc.nextLine();
+						
+						st.name&#x3D;name;
+						System.out.println(&quot;Please input the new score:&quot;);
+						score&#x3D;sc.nextInt();
+						st.score&#x3D;score;
+						mp.put(number,st);
+					&#125;
+					else
+						System.out.println(&quot;No this student!&quot;);
+			 		break;
+			 	case 5:
+			 		System.out.println(&quot;Please input the ID which you want to delete：&quot;);
+			 		number&#x3D;sc.nextLong();
+			 		if (mp.remove(number) !&#x3D; null) &#123;
+						System.out.println(&quot;delete successfully!&quot;);
+					&#125;
+					else
+						System.out.println(&quot;No this student!&quot;);
+		 		    break;
+		 	&#125;
+		 	System.out.println(&quot; (1)input information (2)display all (3) inquire(4)modify (0) logout &quot;);
+	 		i&#x3D;sc.nextInt();
+	 	&#125;
+	 	sc.close();
+&#x2F;&#x2F;	 	System.exit(0);
+&#x2F;&#x2F;	 	return;
+	 	System.out.println(&quot;Goodbye!&quot;);
+	&#125;	
+&#125;
+class Student&#123;
+	public String name;
+	public int score;
+	
+	@Override
+	public String toString() &#123;
+		return &quot;\tname&quot;+name+&quot;\tscore&quot;+score;
+	&#125;
+&#125;
+</code></pre>
+]]></content>
+      <categories>
+        <category>java练习</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>

@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    学生系统管理-C实现 |  Aikedaer
+    4台电脑搭建Hadoop+Spark分布式集群 |  Aikedaer
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -45,7 +45,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-学生系统管理-C实现"
+  id="post-hadoop-spark搭建真实分布式环境"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -56,18 +56,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  学生系统管理-C实现
+  4台电脑搭建Hadoop+Spark分布式集群
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/" class="article-date">
-  <time datetime="2020-12-20T13:33:22.171Z" itemprop="datePublished">2020-12-20</time>
+      <a href="/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/" class="article-date">
+  <time datetime="2020-12-23T03:38:35.859Z" itemprop="datePublished">2020-12-23</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/C%E8%AF%AD%E8%A8%80/">C语言</a>
+    <a class="article-category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
   </div>
   
 <div class="word_count">
@@ -75,7 +75,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">957</span>
+            <span class="post-count">1.6k</span>
         </span>
     </span>
 
@@ -84,256 +84,218 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">5 分钟</span>
+            <span class="post-count">7 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>C 语言链表实现学生管理系统</p>
-<p>修改成绩并重新排序流程图</p>
-<p><img src="/images/1608471473621.png" alt="ss"></p>
-<pre class="line-numbers language-none"><code class="language-none">#include &quot;stdio.h&quot;
-#include &quot;stdlib.h&quot;
-#include &quot;string.h&quot;
-
-struct Student
-&#123;
-	unsigned long	ID;
-	char			Name[21];
-	float			Score;
-&#125;;
-
-struct Node
-&#123;
-	struct Student	data;
-	struct Node *	next;
-&#125;;
-
-int Count&#x3D;0;
-struct Node * H&#x3D;NULL;
-
-struct Node * Insert(struct Node * Head, struct Node * pNode)
-&#123;
-	struct Node * p&#x3D;Head,*q&#x3D;Head;
-
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		Head&#x3D;pNode;
-		
-	&#125;
-	else 
-	&#123;
-		while(p)
-		&#123;
-			if (pNode-&gt;data.Score &lt; p-&gt;data.Score)
-			&#123;
-				q&#x3D;p;
-				p&#x3D;p-&gt;next;
-			&#125;
-			else
-			&#123;
-				if (p&#x3D;&#x3D;Head)
-				&#123;
-					Head&#x3D;pNode;
-					pNode-&gt;next&#x3D;p;
-
-				&#125;
-				else
-				&#123;
-					q-&gt;next&#x3D;pNode;
-					pNode-&gt;next&#x3D;p;
-				    
-				&#125;
-				break;
-			&#125;
-		&#125;
-		if (p&#x3D;&#x3D;NULL)
-		&#123;
-			q-&gt;next&#x3D;pNode;
-		&#125;
-	&#125;
-	return Head;
-&#125;
-
-void Display(struct Node * Head)
-&#123;
-	if (Head&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;当前没有学生成绩信息！\n&quot;);
-		return;
-	&#125;
-
-	struct Node * p&#x3D;Head;
-	for (int i&#x3D;0;i&lt;Count;i++)
-	&#123;
-		printf(&quot;学号：%lu\t姓名：%s\t成绩：%.1f\n&quot;,p-&gt;data.ID,p-&gt;data.Name,p-&gt;data.Score);
-		p&#x3D;p-&gt;next;
-	&#125;
-&#125;
-
-void Add() 
-&#123;
-	unsigned long ID;
-	char Name[21];
-	float Score;
-	struct Node * Head&#x3D;NULL;
-
-	printf(&quot;请输入学号：&quot;);
-	scanf(&quot;%lu&quot;,&amp;ID);
-
-	while (ID)
-	&#123;
-		printf(&quot;请输入姓名：&quot;);
-		scanf(&quot;%s&quot;,Name);
-		printf(&quot;请输入成绩：&quot;);
-		scanf(&quot;%f&quot;,&amp;Score);
-
-		struct Node * pNew&#x3D;(struct Node *) malloc(sizeof (struct Node));
-		pNew-&gt;data.ID&#x3D;ID;
-		strcpy(pNew-&gt;data.Name,Name);
-		pNew-&gt;data.Score&#x3D;Score;
-		pNew-&gt;next&#x3D;NULL;
-
-		Count++;
-
-		Head&#x3D;Insert(Head,pNew);
-
-		printf(&quot;请输入学号：&quot;);
-		scanf(&quot;%lu&quot;,&amp;ID);
-	&#125;
-
-	H&#x3D;Head;
-&#125;
-
-
-void Search(struct Node * Head)
-&#123;
-	char Name[21];
-	int i&#x3D;0;
-	struct Node * p&#x3D;Head;
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;当前没有学生成绩信息！\n&quot;);
-		return;
-	&#125;
-	printf(&quot;请输入姓名：&quot;);
-	scanf(&quot;%s&quot;,Name);
-	while(p)
-	&#123;
-		for(i&#x3D;0;Name[i]!&#x3D;0;i++)
-		&#123;
-			if(Name[i]!&#x3D;p-&gt;data.Name[i])
-			break;
-		&#125;
-		if(Name[i])
-		p&#x3D;p-&gt;next;
-		else
-		&#123;
-			printf(&quot;%.2f\n&quot;,p-&gt;data.Score);
-			return ;	
-		&#125;
-		
-	&#125;
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;无当前学生信息\n&quot;);
-		return;
-	&#125;
-	
-&#125;
-
-void Change(struct Node * Head)
-&#123;
-	unsigned long ID;
-	struct Node *m&#x3D;Head,*n&#x3D;Head,*d&#x3D;Head;
-	float Score;
-	printf(&quot;请输入学号：&quot;);
-	scanf(&quot;%lu&quot;,&amp;ID);
-	printf(&quot;请输入成绩：&quot;);
-	scanf(&quot;%f&quot;,&amp;Score);
-	while(m)
-	&#123;
-		if(ID&#x3D;&#x3D;m-&gt;data.ID)
-		&#123;
-			if(m&#x3D;&#x3D;Head)
-			&#123;
-				m-&gt;data.Score&#x3D;Score;
-				Head&#x3D;m-&gt;next;
-			
-			&#125;
-			else if(m-&gt;next&#x3D;&#x3D;NULL)
-			&#123;
-				n-&gt;next&#x3D;NULL;
-				m-&gt;data.Score&#x3D;Score;
-			&#125;
-			else
-			&#123;
-				d&#x3D;m-&gt;next;
-			    m-&gt;data.Score&#x3D;Score;
-			    n-&gt;next&#x3D;d;
-			&#125;
-			Head&#x3D;Insert(Head,m);
-			H&#x3D;Head;
-			return;
-		&#125;
-		else
-		&#123;
-			n&#x3D;m;
-			m&#x3D;m-&gt;next;
-		&#125;	
-	&#125;
-	if(m&#x3D;&#x3D;NULL)
-	printf(&quot;无当前学生信息\n&quot;);
-	return;
-&#125;
-
-int main()
-&#123;
-	
-	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	printf(&quot;&lt;                   学生管理系统                          &gt;\n&quot;);
- 	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
-	int a&#x3D;0;
-	scanf(&quot;%d&quot;,&amp;a);
-	while (a)
-	&#123;
-
-		switch(a)
-		&#123;
-			case 1:
-				Add(); 
-				break;
-			case 2:
-				Display(H);
-				break;
-			case 3:
-				Search(H);
-				break;
-			case 4:
-				Change(H);
-				break;
-		
-		&#125;
-    printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
-	scanf(&quot;%d&quot;,&amp;a);
-
-	 &#125; 
-	 printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	return 0;
-&#125;</code></pre>
-<img src="https://img-blog.csdnimg.cn/20190627224645441.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom: 33%;" />
-<ul>
-<li></li>
-</ul>
+  <h1><center>搭建Hadoop+Spark分布式集群</center></h1>
+<h2>实验目的</h2>
+搭建真实的分布式计算环境。
+<h2>实验内容</h2>
+<h3>1.准备机器</h3>
+![1608541654622](/images/1608541654622.png)
+<h3>2.配置桥接网卡</h3>
+**以master为例说明网络配置：**
+<blockquote>
+<p>1. 首先关闭宿主机（windows10）的防火墙</p>
+</blockquote>
+<img src="/images/BFB92693-400D-41ca-A00A-9B43DFFC62CE.png" alt="BFB92693-400D-41ca-A00A-9B43DFFC62CE" style="zoom: 50%;" />
+<img src="/images/73568DCD-B5E4-4976-BD8D-ACC24EE9752B.png" alt="73568DCD-B5E4-4976-BD8D-ACC24EE9752B" style="zoom:50%;" />
+<img src="/images/C83663EB-7352-4fb6-87F6-4BDE1881D415.png" alt="C83663EB-7352-4fb6-87F6-4BDE1881D415" style="zoom:50%;" />
+<blockquote>
+<p>2. 在虚拟机软件上添加一张桥接网卡</p>
+</blockquote>
+<p><img src="/images/1608550728689.png" alt=""></p>
+<blockquote>
+<p>2. 编辑网卡设置</p>
+</blockquote>
+<img src="/images/D21C35D4-07A9-43d8-91C3-699DCBE49826.png" alt="D21C35D4-07A9-43d8-91C3-699DCBE49826" style="zoom:;" />
+<img src="/images/0E224AFB-82CD-4c35-87CD-737A590E3642.png" alt="0E224AFB-82CD-4c35-87CD-737A590E3642"  />
+<img src="/images/A73277A2-0EB8-4fb1-B397-5F0041BFE98C.png" alt="A73277A2-0EB8-4fb1-B397-5F0041BFE98C" style="zoom:;" />
+<blockquote>
+<p>3. 开启桥接网卡，同时关闭第一张网卡，也可以不关闭</p>
+</blockquote>
+<img src="/images/1608538652346.png" alt="1608538652346"  />
+<p><img src="/images/26084903-91C3-40df-A40A-261C175BF7F4.png" alt="26084903-91C3-40df-A40A-261C175BF7F4"></p>
+<blockquote>
+<p>4. 然后令宿主机（windows10）连接到手机热点。打开 cmd，使用命令【ipconfig】查看 ip 地址</p>
+</blockquote>
+<img src="/images/1608538040429.png" alt="1608538040429"  />
+<p>再开启虚拟机，编辑配置文件【/etc/network/interfaces】</p>
+<p>添加以下内容：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">auto ens38
+iface ens38 inet static
+# IP地址和宿主机保持在同一网段，这里指定92
+address 192.168.43.92
+# 和宿主机一致
+netmask 255.255.255.0
+# 和宿主机一致
+gateway 192.168.43.1</code></pre>
+<p><img src="/images/44CDE29B-6F85-42ba-93AA-9C83757EDEF8.png" alt="44CDE29B-6F85-42ba-93AA-9C83757EDEF8"></p>
+<p>保存退出重启【reboot】</p>
+<p style="color:red">其他的机器和master配置方法相同。配置文件写入相对自己宿主机的内容</p>
+验证互相ping，可以通。
+<h3>3.设置免密登录</h3>
+每台机器上生成密钥
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">ssh-keygen -t rsa
+# 选择覆盖原来的文件，其他都直接回车
+# 私钥id_rsa 公钥 id_rsa.pub</code></pre>
+<p>将每台机器的公钥（id_rsa.pub 里的内容）都放到 authorized_keys 文件里，authorized_keys 中有所有机器的公钥，所有机器都有 authorized_keys 这个文件。</p>
+<p><img src="/images/1608548503181.png" alt="1608548503181"></p>
+<p>因为不同的机器用户名不一样，所以如果想通过【ssh worker1】实现连接，还需要修改（创建）【~/.ssh/config】写入如下内容：然后将其复制到所有机器。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Host master
+user chen
+Host worker1
+user huang
+Host worker2
+user chen
+Host worker3
+user guo</code></pre>
+<p><img src="/images/1608551058111.png" alt="1608551058111"></p>
+<p>分发给其他机器</p>
+<pre class="line-numbers language-none"><code class="language-none">scp ~&#x2F;.ssh&#x2F;config chen@worker2:~&#x2F;.ssh&#x2F;
+scp ~&#x2F;.ssh&#x2F;config huang@worker1:~&#x2F;.ssh&#x2F;
+scp ~&#x2F;.ssh&#x2F;config guo@worker3:~&#x2F;.ssh&#x2F;</code></pre>
+<p>测试</p>
+<p><img src="/images/1608542027157.png" alt="1608542027157"></p>
+<h3>4.配置hadoop</h3>
+首先将Hadoop改为集群模式。在master主机中修改下面四个文件。
+<blockquote>
+<p>1. 修改 core-site.xml</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/core-site.xml 中 fs.defaultFS 的值由 hdfs://localhost:9000 改为 hdfs://master:9000，修改以后，如下图所示</p>
+<p><img src="/images/1608548810072.png" alt="1608548810072"></p>
+<blockquote>
+<p>2. 修改 hdfs-site.xml 文件</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/hdfs-site.xml 中 dfs.replication 的值由 1 改为 4, 修改以后如下图所示</p>
+<p><img src="/images/1608548881666.png" alt="1608548881666"></p>
+<blockquote>
+<p>3. 修改 workers 文件</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/workers 中 localhost 改为</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master 
+worker1 
+worker2
+worker3</code></pre>
+<p>修改后如下图所示</p>
+<p><img src="/images/1608548949979.png" alt="1608548949979"></p>
+<blockquote>
+<p>4. 修改 yarn-site.xml 文件</p>
+</blockquote>
+<p>将以下内容添加到配置文件 /apps/hadoop/etc/hadoop/ yarn-site.xml 中</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&lt;property&gt;
+&lt;name&gt;yarn.resourcemanager.hostname&lt;&#x2F;name&gt;
+&lt;value&gt;master&lt;&#x2F;value&gt;
+&lt;&#x2F;property&gt;</code></pre>
+<p>修改以后的文件内容如下图所示</p>
+<p><img src="/images/1608549036359.png" alt="1608549036359"></p>
+<blockquote>
+<p>5. 将上面修改的四个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
+</blockquote>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \  worker1:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker2:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker3:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;</code></pre>
+<p style="color:red">删除伪分布式namenode文件</p>
+重新对分布式文件系统进行格式化前，需要删除四台主机中/data/tmp/hadoop/hdfs/目录下的文件和文件夹。首先删除master上/data/tmp/hadoop/hdfs/目录下的文件和文件夹
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">rm -rf &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs&#x2F;*</code></pre>
+<p>删除另外三台主机上相应的文件.</p>
+<p style="color:red">格式化分布式文件系统</p>
+在主节点master执行以下命令
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop namenode -format</code></pre>
+<p><img src="/images/1608549403821.png" alt="1608549403821"></p>
+<p>至此，Hadoop 分布式集群就设置好了，下面进行测试。</p>
+<h3>5.测试hadoop</h3>
+**启动Hadoop**
+<p>在 master 节点执行</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p><strong>查看 Hadoop 进程</strong></p>
+<p>查看主节点和其他节点的 Hadoop 进程</p>
+<img src="/images/1608542873111.png" alt="1608542873111"  />
+<p>可以看到 HDFS 的 NameNode 和 SecondaryNameNode，以及 Yarn 的 ResourceManager 只运行在主节点；HDFS 的 DataNode 和 MapReduce 的 NodeManager 只运行在从节点。</p>
+<p><strong>测试 HDFS</strong></p>
+<p>在 HDFS 上创建目录 /input</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input</code></pre>
+<p>查看是否创建成功</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -ls &#x2F;</code></pre>
+<p><img src="/images/1608542925521.png" alt="1608542925521"></p>
+<p><strong>将文件传到 HDFS</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input</code></pre>
+<p><strong>运行 wordcount</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce&#x2F;
+hadoop jar hadoop-mapreduce-examples-3.0.0.jar wordcount &#x2F;input&#x2F;testfile &#x2F;output</code></pre>
+<p><strong>查看结果</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -cat &#x2F;output&#x2F;*</code></pre>
+<p><img src="/images/1608543160006.png" alt="1608543160006"></p>
+<p><strong>webUI</strong></p>
+<p><a target="_blank" rel="noopener" href="http://master:8088/">http://master:8088/</a> 可以查看 Hadoop 集群，节点及任务相关信息。可以看到现在活跃的节点数是 4。</p>
+<p><img src="/images/1608543269965.png" alt="1608543269965"></p>
+<p><strong>HDFS Web 界面</strong></p>
+<p>在浏览器中访问 <a target="_blank" rel="noopener" href="http://master:9870">http://master:9870</a>，可以查看 HDFS 相关信息，浏览 HDFS 上的文件系统</p>
+<p><img src="/images/1608543382064.png" alt="1608543382064"></p>
+<h3>6.配置spark</h3>
+**修改配置文件**
+<p>在 master 节点修改下面三个文件</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://1.xn--spark-env-z89nz78p.sh">1. 修改 spark-env.sh</a>，将 SPARK_MASTER_IP 的值改为 master，修改后，如下图所示</p>
+</blockquote>
+<p><img src="/images/1608543544859.png" alt="1608543544859"></p>
+<blockquote>
+<p>2. 修改 slaves 文件，将 localhost 改为</p>
+</blockquote>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master
+worker1
+worker2
+worker3</code></pre>
+<p><img src="/images/1608543588672.png" alt="1608543588672"></p>
+<blockquote>
+<p>3. 修改 spark-defaults.conf，将 spark.master 改为 spark://master:7077，spark.eventLog.dir 改为 hdfs://master:9000/spark/eventLog。修改后 如下图所示</p>
+</blockquote>
+<p><img src="/images/1608543714760.png" alt="1608543714760"></p>
+<p>eventLog 用来存放日志，需要手动创建</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir -p &#x2F;spark&#x2F;eventLog</code></pre>
+<p><img src="/images/1608543754309.png" alt="1608543754309"></p>
+<p>将修改的三个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;spark&#x2F;conf
+scp spark-env.sh slaves spark-defaults.conf worker1:&#x2F;apps&#x2F;spark&#x2F;conf 
+scp spark-env.sh slaves spark-defaults.conf worker2:&#x2F;apps&#x2F;spark&#x2F;conf
+scp spark-env.sh slaves spark-defaults.conf worker3:&#x2F;apps&#x2F;spark&#x2F;conf</code></pre>
+<p><img src="/images/1608543870706.png" alt="1608543870706"></p>
+<p>至此，配置文件就修改好了，下面进行测试。</p>
+<h3>7.测试spark</h3>
+**启动spark集群**
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p><strong>查看进程</strong></p>
+<p>主节点多了两个进程 Master 和 Worker。从节点多了一个进程 Worker</p>
+<p><img src="/images/1608544157856.png" alt="1608544157856"></p>
+<p><strong>Web UI</strong></p>
+<p>查看 spark 管理界面，在浏览器中输入 http://master:8080，可以看到 Worker 有四个。</p>
+<p><img src="/images/1608544217724.png" alt="1608544217724"></p>
+<p><strong>运行演示实例</strong></p>
+<p>计算 PI 的值会出错</p>
+<h2 id="-code19-"><a class="markdownIt-Anchor" href="#-code19-">#</a> <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">java.lang.NoSuchMethodError: net.jpountz.lz4.LZ4BlockInputStream.&lt;init&gt;(Ljava&#x2F;io&#x2F;InputStream;Z)Vat</code></pre></h2>
+<p>原因：</p>
+<blockquote>
+<p>应用在执行时对数据解码（反序列化）时，使用了默认的 lz4 解压缩算法，在 spark-core 中依赖的 lz4 版本是 1.4，而 kafka-client 中依赖的 lz4 版本是 1.3 版本，在生成解压器时，版本不兼容异常。</p>
+</blockquote>
+<p>解决办法：</p>
+<blockquote>
+<p>可参考网上修改源码解决，也可通过设置 &quot;spark.io.compression.codec&quot;,&quot;snappy&quot; 或其他压缩算法规避。鉴于修改源码重新打包替换较为繁琐，建议设置其他压缩算法规避</p>
+</blockquote>
+<p><img src="/images/1608548015237.png" alt="1608548015237"></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control">https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control</a></p>
  
       <!-- reward -->
       
@@ -404,12 +366,12 @@ int main()
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag">C语言</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li></ul>
 
     </footer>
   </div>
@@ -417,19 +379,10 @@ int main()
    
   <nav class="article-nav">
     
-      <a href="/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            4台电脑搭建Hadoop+Spark分布式集群
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/12/20/hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F/" class="article-nav-link">
+      <a href="/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">hadoop伪分布式</div>
+        <div class="article-nav-title">学生系统管理-C实现</div>
       </a>
     
   </nav>

@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>创建计算字段</title>
+    <url>/2020/12/23/10.%E5%88%9B%E5%BB%BA%E8%AE%A1%E7%AE%97%E5%AD%97%E6%AE%B5/</url>
+    <content><![CDATA[<h4 id="拼接字段"><a class="markdownIt-Anchor" href="#拼接字段">#</a> 拼接字段</h4>
+<p><span style="color:red">Mysql 的不同之处：多数 DBMS 使用 + 或者 || 来实现拼接，MYSQL 则使用 Concat () 函数来实现	</span></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(vend_name, &#39; (&#39;, vend_country,&#39;)&#39;) FROM vendors ORDER BY vend_name;</code></pre>
+<p><img src="/images/1606182040182.png" alt="1606182040182"></p>
+<p>原表</p>
+<p><img src="/images/1606182064434.png" alt="1606182064434"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(vend_name, &#39;-----------is from (&#39;, vend_country,&#39;)&#39;) FROM vendors ORDER BY vend_name;</code></pre>
+<p><img src="/images/1606182179885.png" alt="1606182179885"></p>
+<p>去除右侧多余的空格，RTrim，左侧 LTrim。两侧 Trim</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(RTrim(vend_name), &#39; (&#39;, RTrim(vend_country),&#39;)&#39;) 
+	-&gt; FROM vendors 
+	-&gt; ORDER BY vend_name;</code></pre>
+<p><img src="/images/1606182396895.png" alt="1606182396895"></p>
+<p>使用别名 (导出列)</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(RTrim(vend_name), &#39; (&#39;, RTrim(vend_country),&#39;)&#39;) 
+	-&gt; AS vend_title
+	-&gt; FROM vendors 
+	-&gt; ORDER BY vend_name;</code></pre>
+<p><img src="/images/1606182491330.png" alt="1606182491330"></p>
+<h4 id="执行算数计算"><a class="markdownIt-Anchor" href="#执行算数计算">#</a> 执行算数计算</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_id,  
+    -&gt; quantity,
+    -&gt; item_price,
+    -&gt; quantity*item_price AS expanded_price
+    -&gt; FROM orderitems
+    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
+<p><img src="/images/1606182923410.png" alt="1606182923410"></p>
+<p>数量 * 单价 = 总价</p>
+<p>mysql 算数操作符</p>
+<p>加 +      ； 减 -      ； 乘 *       ； 除  /      ；</p>
+<h4 id="测验计算"><a class="markdownIt-Anchor" href="#测验计算">#</a> 测验计算</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT NOW();</code></pre>
+<p><img src="/images/1606183115412.png" alt="1606183115412"></p>
+<p><img src="/images/1606183134941.png" alt="1606183134941"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用数据处理函数</title>
     <url>/2020/12/23/11%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h2 id="文本处理函数"><a class="markdownIt-Anchor" href="#文本处理函数">#</a> 文本处理函数</h2>
@@ -219,139 +264,6 @@ WHERE Date(order_date) BETWEEN &#39;2005-09-01&#39; AND &#39;2005-09-30&#39;;</c
       </tags>
   </entry>
   <entry>
-    <title>创建计算字段</title>
-    <url>/2020/12/23/10.%E5%88%9B%E5%BB%BA%E8%AE%A1%E7%AE%97%E5%AD%97%E6%AE%B5/</url>
-    <content><![CDATA[<h4 id="拼接字段"><a class="markdownIt-Anchor" href="#拼接字段">#</a> 拼接字段</h4>
-<p><span style="color:red">Mysql 的不同之处：多数 DBMS 使用 + 或者 || 来实现拼接，MYSQL 则使用 Concat () 函数来实现	</span></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(vend_name, &#39; (&#39;, vend_country,&#39;)&#39;) FROM vendors ORDER BY vend_name;</code></pre>
-<p><img src="/images/1606182040182.png" alt="1606182040182"></p>
-<p>原表</p>
-<p><img src="/images/1606182064434.png" alt="1606182064434"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(vend_name, &#39;-----------is from (&#39;, vend_country,&#39;)&#39;) FROM vendors ORDER BY vend_name;</code></pre>
-<p><img src="/images/1606182179885.png" alt="1606182179885"></p>
-<p>去除右侧多余的空格，RTrim，左侧 LTrim。两侧 Trim</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(RTrim(vend_name), &#39; (&#39;, RTrim(vend_country),&#39;)&#39;) 
-	-&gt; FROM vendors 
-	-&gt; ORDER BY vend_name;</code></pre>
-<p><img src="/images/1606182396895.png" alt="1606182396895"></p>
-<p>使用别名 (导出列)</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT CONCAT(RTrim(vend_name), &#39; (&#39;, RTrim(vend_country),&#39;)&#39;) 
-	-&gt; AS vend_title
-	-&gt; FROM vendors 
-	-&gt; ORDER BY vend_name;</code></pre>
-<p><img src="/images/1606182491330.png" alt="1606182491330"></p>
-<h4 id="执行算数计算"><a class="markdownIt-Anchor" href="#执行算数计算">#</a> 执行算数计算</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_id,  
-    -&gt; quantity,
-    -&gt; item_price,
-    -&gt; quantity*item_price AS expanded_price
-    -&gt; FROM orderitems
-    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
-<p><img src="/images/1606182923410.png" alt="1606182923410"></p>
-<p>数量 * 单价 = 总价</p>
-<p>mysql 算数操作符</p>
-<p>加 +      ； 减 -      ； 乘 *       ； 除  /      ；</p>
-<h4 id="测验计算"><a class="markdownIt-Anchor" href="#测验计算">#</a> 测验计算</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT NOW();</code></pre>
-<p><img src="/images/1606183115412.png" alt="1606183115412"></p>
-<p><img src="/images/1606183134941.png" alt="1606183134941"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>汇总数据</title>
-    <url>/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="聚集函数"><a class="markdownIt-Anchor" href="#聚集函数">#</a> 聚集函数</h2>
-<table>
-<thead>
-<tr>
-<th>函数</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>AVG()</td>
-<td>返回某列的平均值</td>
-</tr>
-<tr>
-<td>COUNT()</td>
-<td>返回某列的行数</td>
-</tr>
-<tr>
-<td>MAX()</td>
-<td>返回某列的最大值</td>
-</tr>
-<tr>
-<td>MIN()</td>
-<td>返回某列的最小值</td>
-</tr>
-<tr>
-<td>SUM()</td>
-<td>返回某列的值的和</td>
-</tr>
-</tbody>
-</table>
-<p>AVG () 函数默认忽略列值为 NULL 的行</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606208664784.png" alt="1606208664784"></p>
-<p>返回 vend_id 为 1003 的价格的平均值</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
-    -&gt; FROM products
-    -&gt; WHERE vend_id&#x3D;1003;</code></pre>
-<p><img src="/images/1606208766911.png" alt="1606208766911">COUNT()</p>
-<ul>
-<li>COUNT (*) 对表中行的数目进行计数，不管是否包含 NULL</li>
-<li>COUNT (column) 对特定列中具有值的行进行计数，忽略 NULL 值，也就是为 NULL 的不计数</li>
-</ul>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_cust
-    -&gt; FROM customers;</code></pre>
-<p><img src="/images/1606208895057.png" alt="1606208895057"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(cust_email) AS num_cust
-    -&gt; FROM customers;</code></pre>
-<p><img src="/images/1606209168755.png" alt="1606209168755"></p>
-<p>MAX()</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MAX(prod_price) AS max_price
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606209252390.png" alt="1606209252390"></p>
-<p>MAX () 函数忽略列值为 NULL 的行</p>
-<hr>
-<p>MIN()</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MIN(prod_price) AS max_price FROM products;</code></pre>
-<p><img src="/images/1606209840756.png" alt="1606209840756"></p>
-<hr>
-<p>SUM () 函数，忽略 NULL 值</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(quantity) AS items_ordered
-    -&gt; FROM orderitems
-    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
-<p><img src="/images/1606209982667.png" alt="1606209982667"></p>
-<p><img src="/images/1606210066580.png" alt="1606210066580"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(item_price*quantity) AS items_ordered FROM orderitems WHERE order_num &#x3D; 20005;</code></pre>
-<p><img src="/images/1606210140778.png" alt="1606210140778"></p>
-<h2 id="聚集不同的值"><a class="markdownIt-Anchor" href="#聚集不同的值">#</a> 聚集不同的值</h2>
-<p>DISTINCT 只考虑各个不同的价格<img src="/images/1606210295272.png" alt="1606210295272"></p>
-<h2 id="组合聚集函数"><a class="markdownIt-Anchor" href="#组合聚集函数">#</a> 组合聚集函数</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_items,
-    -&gt; MIN(prod_price) AS price_min,
-    -&gt; MAX(prod_price) AS price_max,
-    -&gt; AVG(prod_price) AS price_avg
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606212027281.png" alt="1606212027281"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>分组数据</title>
     <url>/2020/12/23/13.%E5%88%86%E7%BB%84%E6%95%B0%E6%8D%AE/</url>
     <content><![CDATA[<h2 id="数据分组"><a class="markdownIt-Anchor" href="#数据分组">#</a> 数据分组</h2>
@@ -460,37 +372,85 @@ WHERE Date(order_date) BETWEEN &#39;2005-09-01&#39; AND &#39;2005-09-30&#39;;</c
       </tags>
   </entry>
   <entry>
-    <title>联结表</title>
-    <url>/2020/12/23/15.%E8%81%94%E7%BB%93%E8%A1%A8/</url>
-    <content><![CDATA[<p>如果数据存储在多个表中，怎样用单条 SELECT 语句检索出数据？</p>
-<p>使用联结</p>
-<h2 id="创建联结"><a class="markdownIt-Anchor" href="#创建联结">#</a> 创建联结</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_name,prod_name,prod_price
-    -&gt; FROM vendors,products
-    -&gt; WHERE vendors.vend_id &#x3D; products.vend_id
-    -&gt; ORDER BY vend_name,prod_name;</code></pre>
-<p><img src="/images/1606355633906.png" alt="1606355633906"></p>
-<p>实际运行时是利用了 WHERE 过滤后的数据进行了笛卡尔积。如果不加 WHERE 条件过滤，就会有很多的数据。</p>
-<h2 id="内部联结"><a class="markdownIt-Anchor" href="#内部联结">#</a> 内部联结</h2>
-<p>table1 <strong>INNER JOIN</strong> table2 <strong>ON</strong> condition</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_name,prod_name,prod_price
-    -&gt; FROM vendors INNER JOIN products
-    -&gt; ON vendors.vend_id &#x3D; products.vend_id;</code></pre>
-<p><img src="/images/1606356429678.png" alt="1606356429678"></p>
-<h2 id="联结多个表"><a class="markdownIt-Anchor" href="#联结多个表">#</a> 联结多个表</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,vend_name,prod_price,quantity
-    -&gt; FROM orderitems,products,vendors
-    -&gt; WHERE products.vend_id&#x3D;vendors.vend_id
-    -&gt; AND orderitems.prod_id &#x3D; products.prod_id
-    -&gt; AND order_item &#x3D; 20005;</code></pre>
-<p><img src="/images/1606356674912.png" alt="1606356674912"></p>
-<p>第 14 章的子查询可以使用联结查询替代</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT cust_name,cust_contact
-FROM customers,orders,orderitems
-WHERE customers.cust_id &#x3D; orders.cust_id
-AND orderitems.order_num &#x3D; orders.order_num
-AND prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
-<p><img src="/images/1606357006087.png" alt="1606357006087"></p>
+    <title>汇总数据</title>
+    <url>/2020/12/23/12.%E6%B1%87%E6%80%BB%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="聚集函数"><a class="markdownIt-Anchor" href="#聚集函数">#</a> 聚集函数</h2>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AVG()</td>
+<td>返回某列的平均值</td>
+</tr>
+<tr>
+<td>COUNT()</td>
+<td>返回某列的行数</td>
+</tr>
+<tr>
+<td>MAX()</td>
+<td>返回某列的最大值</td>
+</tr>
+<tr>
+<td>MIN()</td>
+<td>返回某列的最小值</td>
+</tr>
+<tr>
+<td>SUM()</td>
+<td>返回某列的值的和</td>
+</tr>
+</tbody>
+</table>
+<p>AVG () 函数默认忽略列值为 NULL 的行</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606208664784.png" alt="1606208664784"></p>
+<p>返回 vend_id 为 1003 的价格的平均值</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT AVG(prod_price) AS avg_price
+    -&gt; FROM products
+    -&gt; WHERE vend_id&#x3D;1003;</code></pre>
+<p><img src="/images/1606208766911.png" alt="1606208766911">COUNT()</p>
+<ul>
+<li>COUNT (*) 对表中行的数目进行计数，不管是否包含 NULL</li>
+<li>COUNT (column) 对特定列中具有值的行进行计数，忽略 NULL 值，也就是为 NULL 的不计数</li>
+</ul>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_cust
+    -&gt; FROM customers;</code></pre>
+<p><img src="/images/1606208895057.png" alt="1606208895057"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(cust_email) AS num_cust
+    -&gt; FROM customers;</code></pre>
+<p><img src="/images/1606209168755.png" alt="1606209168755"></p>
+<p>MAX()</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MAX(prod_price) AS max_price
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606209252390.png" alt="1606209252390"></p>
+<p>MAX () 函数忽略列值为 NULL 的行</p>
+<hr>
+<p>MIN()</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT MIN(prod_price) AS max_price FROM products;</code></pre>
+<p><img src="/images/1606209840756.png" alt="1606209840756"></p>
+<hr>
+<p>SUM () 函数，忽略 NULL 值</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(quantity) AS items_ordered
+    -&gt; FROM orderitems
+    -&gt; WHERE order_num &#x3D; 20005;</code></pre>
+<p><img src="/images/1606209982667.png" alt="1606209982667"></p>
+<p><img src="/images/1606210066580.png" alt="1606210066580"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT SUM(item_price*quantity) AS items_ordered FROM orderitems WHERE order_num &#x3D; 20005;</code></pre>
+<p><img src="/images/1606210140778.png" alt="1606210140778"></p>
+<h2 id="聚集不同的值"><a class="markdownIt-Anchor" href="#聚集不同的值">#</a> 聚集不同的值</h2>
+<p>DISTINCT 只考虑各个不同的价格<img src="/images/1606210295272.png" alt="1606210295272"></p>
+<h2 id="组合聚集函数"><a class="markdownIt-Anchor" href="#组合聚集函数">#</a> 组合聚集函数</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT COUNT(*) AS num_items,
+    -&gt; MIN(prod_price) AS price_min,
+    -&gt; MAX(prod_price) AS price_max,
+    -&gt; AVG(prod_price) AS price_avg
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606212027281.png" alt="1606212027281"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -534,6 +494,106 @@ AND prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
     -&gt; FROM customers
     -&gt; ORDER BY cust_name;</code></pre>
 <p><img src="/images/1606353838749.png" alt="1606353838749"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>联结表</title>
+    <url>/2020/12/23/15.%E8%81%94%E7%BB%93%E8%A1%A8/</url>
+    <content><![CDATA[<p>如果数据存储在多个表中，怎样用单条 SELECT 语句检索出数据？</p>
+<p>使用联结</p>
+<h2 id="创建联结"><a class="markdownIt-Anchor" href="#创建联结">#</a> 创建联结</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_name,prod_name,prod_price
+    -&gt; FROM vendors,products
+    -&gt; WHERE vendors.vend_id &#x3D; products.vend_id
+    -&gt; ORDER BY vend_name,prod_name;</code></pre>
+<p><img src="/images/1606355633906.png" alt="1606355633906"></p>
+<p>实际运行时是利用了 WHERE 过滤后的数据进行了笛卡尔积。如果不加 WHERE 条件过滤，就会有很多的数据。</p>
+<h2 id="内部联结"><a class="markdownIt-Anchor" href="#内部联结">#</a> 内部联结</h2>
+<p>table1 <strong>INNER JOIN</strong> table2 <strong>ON</strong> condition</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_name,prod_name,prod_price
+    -&gt; FROM vendors INNER JOIN products
+    -&gt; ON vendors.vend_id &#x3D; products.vend_id;</code></pre>
+<p><img src="/images/1606356429678.png" alt="1606356429678"></p>
+<h2 id="联结多个表"><a class="markdownIt-Anchor" href="#联结多个表">#</a> 联结多个表</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT prod_name,vend_name,prod_price,quantity
+    -&gt; FROM orderitems,products,vendors
+    -&gt; WHERE products.vend_id&#x3D;vendors.vend_id
+    -&gt; AND orderitems.prod_id &#x3D; products.prod_id
+    -&gt; AND order_item &#x3D; 20005;</code></pre>
+<p><img src="/images/1606356674912.png" alt="1606356674912"></p>
+<p>第 14 章的子查询可以使用联结查询替代</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT cust_name,cust_contact
+FROM customers,orders,orderitems
+WHERE customers.cust_id &#x3D; orders.cust_id
+AND orderitems.order_num &#x3D; orders.order_num
+AND prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
+<p><img src="/images/1606357006087.png" alt="1606357006087"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>组合查询</title>
+    <url>/2020/12/23/17.%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2/</url>
+    <content><![CDATA[<h2 id="union"><a class="markdownIt-Anchor" href="#union">#</a> UNION</h2>
+<p>单条</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
+FROM products
+WHERE prod_price &lt;&#x3D; 5;</code></pre>
+<p><img src="/images/1606360832251.png" alt="1606360832251"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price 
+FROM products 
+WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606360930967.png" alt="1606360930967"></p>
+<p>联合</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; UNION ALL
+    -&gt; SELECT vend_id,prod_id,prod_price 
+    -&gt; FROM products 
+    -&gt; WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361041162.png" alt="1606361041162"></p>
+<p>还可使用多条 WHERE 子句</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; OR vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361221571.png" alt="1606361221571"></p>
+<p>UNION 规则</p>
+<p>UNION 中的每个查询必须包含相同的列、表达式或聚集函数</p>
+<h2 id="包含或取消重复的行"><a class="markdownIt-Anchor" href="#包含或取消重复的行">#</a> 包含或取消重复的行</h2>
+<p>UNION ALL</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
+FROM products
+WHERE prod_price &lt;&#x3D; 5
+UNION ALL
+SELECT vend_id,prod_id,prod_price 
+FROM products 
+WHERE vend_id IN (1001,1002);</code></pre>
+<p><img src="/images/1606361612885.png" alt="1606361612885"></p>
+<p>返回值有两行是重复的，这是 WHERE 做不到的。</p>
+<h2 id="对组合结果排序"><a class="markdownIt-Anchor" href="#对组合结果排序">#</a> 对组合结果排序</h2>
+<p>UNION 不允许多条 GROUP BY</p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,prod_id,prod_price
+    -&gt; FROM products
+    -&gt; WHERE prod_price &lt;&#x3D; 5
+    -&gt; UNION ALL
+    -&gt; SELECT vend_id,prod_id,prod_price 
+    -&gt; FROM products 
+    -&gt; WHERE vend_id IN (1001,1002)
+    -&gt; ORDER BY vend_id,prod_price;</code></pre>
+<p><img src="/images/1606361741191.png" alt="1606361741191"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -603,66 +663,6 @@ AND prod_id &#x3D; &#39;TNT2&#39;;</code></pre>
     -&gt; ON customers.cust_id &#x3D; orders.cust_id
     -&gt; GROUP BY customers.cust_id;</code></pre>
 <p><img src="/images/1606360546829.png" alt="1606360546829"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>组合查询</title>
-    <url>/2020/12/23/17.%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2/</url>
-    <content><![CDATA[<h2 id="union"><a class="markdownIt-Anchor" href="#union">#</a> UNION</h2>
-<p>单条</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
-FROM products
-WHERE prod_price &lt;&#x3D; 5;</code></pre>
-<p><img src="/images/1606360832251.png" alt="1606360832251"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price 
-FROM products 
-WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606360930967.png" alt="1606360930967"></p>
-<p>联合</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; UNION ALL
-    -&gt; SELECT vend_id,prod_id,prod_price 
-    -&gt; FROM products 
-    -&gt; WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361041162.png" alt="1606361041162"></p>
-<p>还可使用多条 WHERE 子句</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; OR vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361221571.png" alt="1606361221571"></p>
-<p>UNION 规则</p>
-<p>UNION 中的每个查询必须包含相同的列、表达式或聚集函数</p>
-<h2 id="包含或取消重复的行"><a class="markdownIt-Anchor" href="#包含或取消重复的行">#</a> 包含或取消重复的行</h2>
-<p>UNION ALL</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT vend_id,prod_id,prod_price
-FROM products
-WHERE prod_price &lt;&#x3D; 5
-UNION ALL
-SELECT vend_id,prod_id,prod_price 
-FROM products 
-WHERE vend_id IN (1001,1002);</code></pre>
-<p><img src="/images/1606361612885.png" alt="1606361612885"></p>
-<p>返回值有两行是重复的，这是 WHERE 做不到的。</p>
-<h2 id="对组合结果排序"><a class="markdownIt-Anchor" href="#对组合结果排序">#</a> 对组合结果排序</h2>
-<p>UNION 不允许多条 GROUP BY</p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT vend_id,prod_id,prod_price
-    -&gt; FROM products
-    -&gt; WHERE prod_price &lt;&#x3D; 5
-    -&gt; UNION ALL
-    -&gt; SELECT vend_id,prod_id,prod_price 
-    -&gt; FROM products 
-    -&gt; WHERE vend_id IN (1001,1002)
-    -&gt; ORDER BY vend_id,prod_price;</code></pre>
-<p><img src="/images/1606361741191.png" alt="1606361741191"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -889,57 +889,6 @@ FROM custnew;</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>更新和删除数据</title>
-    <url>/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="update"><a class="markdownIt-Anchor" href="#update">#</a> UPDATE</h2>
-<p>UPDATE, 可以使用 SELECT 子查询。UPDATE 在未执行完出错时的处理办法时恢复原来的数据，但可以指定不恢复的关键字 IGNORE，在 UPDATE 和表明之间。</p>
-<ul>
-<li>跟新特定的行</li>
-</ul>
-<p>不要省略 WHERE。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
-SET cust_email&#x3D;&#39;elmer@fudd.com&#39;
-WHERE cust_id&#x3D;10005;</code></pre>
-<p>置空某一行的某一列</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE custnew
-SET cust_email&#x3D;NULL
-WHERE cust_id&#x3D;10008;</code></pre>
-<p><img src="/images/1606396465985.png" alt="1606396465985"></p>
-<ul>
-<li>跟新多个列，只需在 SET 中写多个值，用逗号隔开</li>
-</ul>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
-SET cust_name&#x3D;&#39;lijie&#39;,
-	cust_email&#x3D;&#39;elmer@fudd.com&#39;
-WHERE cust_id&#x3D;10005;</code></pre>
-<ul>
-<li>跟新所有的行</li>
-</ul>
-<p>不写 WHERE.</p>
-<p><img src="/images/1606396527113.png" alt="1606396527113"></p>
-<h2 id="delete"><a class="markdownIt-Anchor" href="#delete">#</a> DELETE</h2>
-<ul>
-<li>删除特定行</li>
-</ul>
-<p>写 WHERE.</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">DELETE FROM custnew
-WHERE cust_id &#x3D; 10009;</code></pre>
-<p>为了删除指定的列，使用 UPDATE</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">?</code></pre>
-<ul>
-<li>删除所有行</li>
-</ul>
-<p>不要使用 DELETE. 使用 TRUNCATE，删除表，并重新创建了一个。快的。</p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">TRUNCATE TABLE custnew;</code></pre>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>创建和操纵表</title>
     <url>/2020/12/23/21.%E5%88%9B%E5%BB%BA%E5%92%8C%E6%93%8D%E7%BA%B5%E8%A1%A8/</url>
     <content><![CDATA[<h2 id="创建表"><a class="markdownIt-Anchor" href="#创建表">#</a> 创建表</h2>
@@ -992,47 +941,6 @@ FOREIGN KEY (vend_id) REFERENCES vendors (vend_id);</code></pre>
 <p>重命名多个表，使用逗号隔开</p>
 <pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">RENAME TABLE customers2 TO customers,
 			 custnew    TO cust;</code></pre>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>检索数据</title>
-    <url>/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h2 id="select"><a class="markdownIt-Anchor" href="#select">#</a> SELECT</h2>
-<h4 id="检索单个列"><a class="markdownIt-Anchor" href="#检索单个列">#</a> 检索单个列</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT prod_name FROM products;</code></pre>
-<p><img src="/images/1606108601694.png" alt="1606108601694"></p>
-<h4 id="检索多个列"><a class="markdownIt-Anchor" href="#检索多个列">#</a> 检索多个列</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT prod_id, prod_price, prod_name FROM products;</code></pre>
-<p><img src="/images/1606108760413.png" alt="1606108760413"></p>
-<h4 id="检索所有列"><a class="markdownIt-Anchor" href="#检索所有列">#</a> 检索所有列</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT * FROM products;</code></pre>
-<p><img src="/images/1606108796551.png" alt="1606108796551"></p>
-<h4 id="检索不同行"><a class="markdownIt-Anchor" href="#检索不同行">#</a> 检索不同行</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT DISTINCT vend_id 
-    -&gt; FROM products;</code></pre>
-<p><img src="/images/1606108932327.png" alt="1606108932327"></p>
-<p><span style="color:red">DISTINCT 应用于后边的所有字段</span></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT DISTINCT vend_id,prod_price  FROM products;</code></pre>
-<p><img src="/images/1606109124953.png" alt="1606109124953"></p>
-<h4 id="限定结果"><a class="markdownIt-Anchor" href="#限定结果">#</a> 限定结果</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 取前5个
-mysql&gt; SELECT prod_name
-    -&gt; FROM products
-    -&gt; LIMIT 5;</code></pre>
-<p><img src="/images/1606109317857.png" alt="1606109317857"></p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 从第n行开始，取m个行
-mysql&gt; SELECT prod_name FROM products LIMIT 0,1;</code></pre>
-<p><img src="/images/1606109366400.png" alt="1606109366400"></p>
-<h4 id="使用完全限定的表名"><a class="markdownIt-Anchor" href="#使用完全限定的表名">#</a> 使用完全限定的表名</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT products.prod_name
-    -&gt; FROM study.products;</code></pre>
-<p><img src="/images/1606109507041.png" alt="1606109507041"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -1108,6 +1016,57 @@ WHERE order_num &#x3D; 20005;</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>更新和删除数据</title>
+    <url>/2020/12/23/20.%E6%9B%B4%E6%96%B0%E5%92%8C%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="update"><a class="markdownIt-Anchor" href="#update">#</a> UPDATE</h2>
+<p>UPDATE, 可以使用 SELECT 子查询。UPDATE 在未执行完出错时的处理办法时恢复原来的数据，但可以指定不恢复的关键字 IGNORE，在 UPDATE 和表明之间。</p>
+<ul>
+<li>跟新特定的行</li>
+</ul>
+<p>不要省略 WHERE。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
+SET cust_email&#x3D;&#39;elmer@fudd.com&#39;
+WHERE cust_id&#x3D;10005;</code></pre>
+<p>置空某一行的某一列</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE custnew
+SET cust_email&#x3D;NULL
+WHERE cust_id&#x3D;10008;</code></pre>
+<p><img src="/images/1606396465985.png" alt="1606396465985"></p>
+<ul>
+<li>跟新多个列，只需在 SET 中写多个值，用逗号隔开</li>
+</ul>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">UPDATE customers
+SET cust_name&#x3D;&#39;lijie&#39;,
+	cust_email&#x3D;&#39;elmer@fudd.com&#39;
+WHERE cust_id&#x3D;10005;</code></pre>
+<ul>
+<li>跟新所有的行</li>
+</ul>
+<p>不写 WHERE.</p>
+<p><img src="/images/1606396527113.png" alt="1606396527113"></p>
+<h2 id="delete"><a class="markdownIt-Anchor" href="#delete">#</a> DELETE</h2>
+<ul>
+<li>删除特定行</li>
+</ul>
+<p>写 WHERE.</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">DELETE FROM custnew
+WHERE cust_id &#x3D; 10009;</code></pre>
+<p>为了删除指定的列，使用 UPDATE</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">?</code></pre>
+<ul>
+<li>删除所有行</li>
+</ul>
+<p>不要使用 DELETE. 使用 TRUNCATE，删除表，并重新创建了一个。快的。</p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">TRUNCATE TABLE custnew;</code></pre>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用mysql</title>
     <url>/2020/12/23/3%E4%BD%BF%E7%94%A8mysql/</url>
     <content><![CDATA[<p>数据库结构</p>
@@ -1140,6 +1099,79 @@ SHOW ERRORS;
 SHOW WARNINGS;
 HELP SHOW; # 显示帮助信息</code></pre>
 <p><img src="/images/1606098844859.png" alt="1606098844859"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>检索数据</title>
+    <url>/2020/12/23/4%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="select"><a class="markdownIt-Anchor" href="#select">#</a> SELECT</h2>
+<h4 id="检索单个列"><a class="markdownIt-Anchor" href="#检索单个列">#</a> 检索单个列</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT prod_name FROM products;</code></pre>
+<p><img src="/images/1606108601694.png" alt="1606108601694"></p>
+<h4 id="检索多个列"><a class="markdownIt-Anchor" href="#检索多个列">#</a> 检索多个列</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT prod_id, prod_price, prod_name FROM products;</code></pre>
+<p><img src="/images/1606108760413.png" alt="1606108760413"></p>
+<h4 id="检索所有列"><a class="markdownIt-Anchor" href="#检索所有列">#</a> 检索所有列</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT * FROM products;</code></pre>
+<p><img src="/images/1606108796551.png" alt="1606108796551"></p>
+<h4 id="检索不同行"><a class="markdownIt-Anchor" href="#检索不同行">#</a> 检索不同行</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT DISTINCT vend_id 
+    -&gt; FROM products;</code></pre>
+<p><img src="/images/1606108932327.png" alt="1606108932327"></p>
+<p><span style="color:red">DISTINCT 应用于后边的所有字段</span></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">SELECT DISTINCT vend_id,prod_price  FROM products;</code></pre>
+<p><img src="/images/1606109124953.png" alt="1606109124953"></p>
+<h4 id="限定结果"><a class="markdownIt-Anchor" href="#限定结果">#</a> 限定结果</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 取前5个
+mysql&gt; SELECT prod_name
+    -&gt; FROM products
+    -&gt; LIMIT 5;</code></pre>
+<p><img src="/images/1606109317857.png" alt="1606109317857"></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 从第n行开始，取m个行
+mysql&gt; SELECT prod_name FROM products LIMIT 0,1;</code></pre>
+<p><img src="/images/1606109366400.png" alt="1606109366400"></p>
+<h4 id="使用完全限定的表名"><a class="markdownIt-Anchor" href="#使用完全限定的表名">#</a> 使用完全限定的表名</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT products.prod_name
+    -&gt; FROM study.products;</code></pre>
+<p><img src="/images/1606109507041.png" alt="1606109507041"></p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>排序检索数据</title>
+    <url>/2020/12/23/5%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h4 id="排序数据"><a class="markdownIt-Anchor" href="#排序数据">#</a> 排序数据</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 不指定排序方向时，默认升序，A--Z，1--100
+mysql&gt; SELECT prod_name
+    -&gt; FROM study.products
+    -&gt; ORDER BY prod_name;</code></pre>
+<p><img src="/images/1606109753390.png" alt="1606109753390"></p>
+<h4 id="按多个列排序"><a class="markdownIt-Anchor" href="#按多个列排序">#</a> 按多个列排序</h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 同一个prod_price的商品名字按升序排列
+mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price,prod_name;</code></pre>
+<p><img src="/images/1606110015811.png" alt="1606110015811"></p>
+<h4 id="指定排序方向"><a class="markdownIt-Anchor" href="#指定排序方向">#</a> 指定排序方向</h4>
+<p><span style="color:red">DESC 只对位于其前面的一个字段起作用，如果多个字段都要求降序，那么每个后面都要加 DESC</span></p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL"># 按prod_price降序
+mysql&gt; SELECT prod_id,prod_price,prod_name
+    -&gt; FROM products
+    -&gt; ORDER BY prod_price DESC;</code></pre>
+<p><img src="/images/1606109879637.png" alt="1606109879637"></p>
+<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price DESC,prod_name;</code></pre>
+<p><img src="/images/1606110329785.png" alt="1606110329785"></p>
+<h4 id="order-by-位于from-之后"><a class="markdownIt-Anchor" href="#order-by-位于from-之后">#</a> ORDER BY 位于 FROM 之后</h4>
+<p><img src="/images/1606110459058.png" alt="1606110459058"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -1217,38 +1249,6 @@ HELP SHOW; # 显示帮助信息</code></pre>
 	-&gt; WHERE vend_id NOT IN (1002,1003) 
 	-&gt; ORDER BY prod_name;</code></pre>
 <p><img src="/images/1606176420810.png" alt="1606176420810"></p>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>排序检索数据</title>
-    <url>/2020/12/23/5%E6%8E%92%E5%BA%8F%E6%A3%80%E7%B4%A2%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<h4 id="排序数据"><a class="markdownIt-Anchor" href="#排序数据">#</a> 排序数据</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 不指定排序方向时，默认升序，A--Z，1--100
-mysql&gt; SELECT prod_name
-    -&gt; FROM study.products
-    -&gt; ORDER BY prod_name;</code></pre>
-<p><img src="/images/1606109753390.png" alt="1606109753390"></p>
-<h4 id="按多个列排序"><a class="markdownIt-Anchor" href="#按多个列排序">#</a> 按多个列排序</h4>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"># 同一个prod_price的商品名字按升序排列
-mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price,prod_name;</code></pre>
-<p><img src="/images/1606110015811.png" alt="1606110015811"></p>
-<h4 id="指定排序方向"><a class="markdownIt-Anchor" href="#指定排序方向">#</a> 指定排序方向</h4>
-<p><span style="color:red">DESC 只对位于其前面的一个字段起作用，如果多个字段都要求降序，那么每个后面都要加 DESC</span></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL"># 按prod_price降序
-mysql&gt; SELECT prod_id,prod_price,prod_name
-    -&gt; FROM products
-    -&gt; ORDER BY prod_price DESC;</code></pre>
-<p><img src="/images/1606109879637.png" alt="1606109879637"></p>
-<pre class="line-numbers language-SQL" data-language="SQL"><code class="language-SQL">mysql&gt; SELECT prod_id,prod_price,prod_name FROM products ORDER BY prod_price DESC,prod_name;</code></pre>
-<p><img src="/images/1606110329785.png" alt="1606110329785"></p>
-<h4 id="order-by-位于from-之后"><a class="markdownIt-Anchor" href="#order-by-位于from-之后">#</a> ORDER BY 位于 FROM 之后</h4>
-<p><img src="/images/1606110459058.png" alt="1606110459058"></p>
 ]]></content>
       <categories>
         <category>mysql</category>
@@ -1528,237 +1528,6 @@ mysql&gt; SELECT vend_name
       </categories>
       <tags>
         <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hadoop-streaming</title>
-    <url>/2020/12/20/Hadoop-Streaming/</url>
-    <content><![CDATA[<h1><center>Hadoop Streaming</center></h1>
-<h2>实验目的</h2>
-了解hadoop streaming的作用，原理。使用hadoop streaming和python完成一个wordcount的任务
-<ul>
-<li>
-<p>hadoop streaming 作用:</p>
-<p>Hadoop 框架是用 Java 语言写的，也就是说，Hadoop 框架中运行的所有应用程序都要 用 Java 语言来写才能正常地在 Hadoop 集群中运行。如果不会 Java 语言怎么办？ Hadoop 提供了 Hadoop Streaming 这个编程工具，它允许用户使用任何可执行文件或 者脚本文件作为 Mapper 和 Reducer，因此我们可以选择自己熟悉的编程语言，编写 Mapper 和 Reducer 程序来使用 Hadoop 集群。</p>
-</li>
-<li>
-<p>hadoop streaming 原理：</p>
-<p>Streaming 的原理是用 Java 实现一个包装用户程序的 MapReduce 程序，该程序负责调 用 MapReduce Java 接口获取 key/value 对输入，创建一个新的进程启动包装的用户程 序，将数据通过管道传递给包装的用户程序处理，然后调用 MapReduce Java 接口将用户 程序的输出切分成 key/value 对输出。</p>
-</li>
-</ul>
-<h2>实验内容</h2>
-<h3>一、使用python 实现mapper和reducer</h3>
-<h4>项目目录</h4>
-![1602501583233](/images/1602501583233.png)
-<p style="color:red">mapper.py</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
-  
-for line in sys.stdin:
-    line &#x3D; line.strip().split(&#39; &#39;) # strip去除文件前后的空格，split(&#39; &#39;)以空格分割
-    for word in line:
-        if word.strip() !&#x3D; &quot;&quot;:
-            print(&quot;%s\t%s&quot;%(word, 1))</code></pre>
-<p style="color:red">reducer.py</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
-current_word &#x3D; None
-count_pool &#x3D; []
-sum &#x3D; 0
-
-for line in sys.stdin:
-    word, val &#x3D; line.strip().split(&#39;\t&#39;)
-
-    if current_word &#x3D;&#x3D; None:
-        current_word &#x3D; word
-
-    if current_word !&#x3D; word:
-        for count in count_pool:
-            sum +&#x3D; count
-
-        print(&quot;%s\t%s&quot;%(current_word, sum))
-        current_word &#x3D; word
-        count_pool &#x3D; []
-        sum &#x3D; 0
-
-    count_pool.append(int(val))
-
-for count in count_pool:
-    sum +&#x3D; count
-
-print(&quot;%s\t%s&quot;%(current_word, str(sum)))</code></pre>
-<p style="color:red">testfile</p>
-<pre class="line-numbers language-txt" data-language="txt"><code class="language-txt">hello big data
-hello hadoop
-hello mapreduce</code></pre>
-<h4>shell测试</h4>
-命令行
-<pre class="line-numbers language-none"><code class="language-none">cat testfile | python3 mapper.py | sort -t &#39; &#39; -k 1 | python3 reducer.py </code></pre>
-<p>参数解释：</p>
-<ul>
-<li>mapper.py 接收 testfile 的文件内容，输出两列，一列是词，一列是 1</li>
-<li>sort 是 shell 命令，-t：表示指定分割符。-k：表示排序时指定的键是在分割后的哪个 field。</li>
-<li>测试无误后就可以放在 Hadoop 集群上运行了。</li>
-</ul>
-<p>输出结果:</p>
-<pre class="line-numbers language-none"><code class="language-none">big     1
-data    1
-hadoop  1
-hello   3
-mapreduce       1</code></pre>
-<h4>放入hadoop集群</h4>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 启动hadoop
-start-all.sh</code></pre>
-hadoop 运行的命令格式：
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">$HADOOP_HOME&#x2F;bin&#x2F;hadoop jar hadoop-streaming.jar [options]</code></pre>
-<p>参数解释：</p>
-<ul>
-<li>
-<p>-input <path>:  指定作业输入，path 可以是文件或者目录，可以使用 * 通配符，-input 选项可以使用多次指定多个文件或目录作为输入。</p>
-</li>
-<li>
-<p>-output <path>:  指定作业输出目录，path 必须不存在，而且执行作业的用户必须有创 建该目录的权限，-output 只能使用一次。</p>
-</li>
-<li>
-<p>-mapper:  指定 mapper 可执行程序或 Java 类，必须指定且唯一。</p>
-</li>
-<li>
-<p>-reducer:  指定 reducer 可执行程序或 Java 类，必须指定且唯一 。</p>
-</li>
-<li>
-<p>-file：向计算节点分发<span style="color:blue">本地文件</span>。</p>
-</li>
-<li>
-<p>,-cacheFile: 向计算节点分发<span style="color:blue">HDFS 文件</span>。</p>
-</li>
-<li>
-<p>-cacheArchive: 向计算节点分发<span style="color:blue">HDFS 压缩文件 </span>。</p>
-</li>
-<li>
-<p>-numReduceTasks：指定 reducer 的个数，如果设置 - numReduceTasks 0 或者 reducer NONE 则没有 reducer 程序，mapper 的输出直接作为整个作业的输出。</p>
-</li>
-<li>
-<p>-jobconf /-D NAME=VALUE：指定作业参数，NAME 是参数名，VALUE 是参数值，可 以指定的参数参考 hadoop-default.xml。</p>
-</li>
-</ul>
-<p>可以通过以下命令查看完整的命令参数介绍</p>
-<p style="color:purple"> hadoop jar /apps/hadoop/share/hadoop/tools/lib/hadoop-streaming3.0.0.jar --help </p>
-为了方便运行，将相关配置参数写入shell脚本: vim run.sh
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
-STREAMING_JAR_PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;tools&#x2F;lib&#x2F;hadoop-streaming-3.0.0.jar
-
-INPUT_FILE_PATH&#x3D;&quot;&#x2F;input&#x2F;wordcount&#x2F;testfile*&quot;
-OUTPUT_PATH&#x3D;&quot;&#x2F;output&#x2F;streaming&#x2F;wordcount&quot;                                               
-
-if hadoop fs -test -d $OUTPUT_PATH
-then
-hadoop fs -rm -r -skipTrash $OUTPUT_PATH
-fi
-# 注意-file指定的参数后面不能有空格
-hadoop jar $STREAMING_JAR_PATH \
--D mapred.job.name&#x3D;&quot;WordCount&quot; \
--file ~&#x2F;day04&#x2F;mapper.py\
--file ~&#x2F;day04&#x2F;reducer.py \
--input $INPUT_FILE_PATH \
--output $OUTPUT_PATH \
--mapper &quot;python3 mapper.py&quot; \
--reducer &quot;python3 reducer.py&quot;</code></pre>
-<p>运行：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">bash run.sh</code></pre>
-<p>解释：</p>
-<p>从上面的过程可以看出，Mapper 和 Reducer 都是可执行文件，它们从标准输入读入数据
-（一行一行读）， 并把计算结果发给标准输出。Streaming 工具会创建一个
-Map/Reduce 作业， 并把它发送给合适的集群，同时监视这个作业的整个执行过程。
-如果一个可执行文件被用于 Mapper，则在 Mapper 初始化时， 每一个 Mapper 任务会
-把这个可执行文件作为一个单独的进程启动。 Mapper 任务运行时，它把输入切分成行并
-把每一行提供给可执行文件进程的标准输入。 同时，Mapper 收集可执行文件进程标准输
-出的内容，并把收到的每一行内容转化成 key/value 对，作为 Mapper 的输出。 默认情
-况下，一行中第一个 Tab 之前的部分作为 Key，之后的（不包括 Tab）作为 Value。 如
-果没有 Tab，整行作为 Key 值，Value 值为 null。不过，这可以定制。
-如果一个可执行文件被用于 Reducer，每个 Reducer 任务会把这个可执行文件作为一个
-单独的进程启动。 Reducer 任务运行时，它把输入切分成行并把每一行提供给可执行文
-件进程的标准输入。 同时，Reducer 收集可执行文件进程标准输出的内容，并把每一行
-内容转化成 Key/Value 对，作为 Reducer 的输出。 默认情况下，一行中第一个 Tab 之前
-的部分作为 Key，之后的（不包括 Tab）作为 Value。</p>
-<h3>二、计算微博的TF-IDF</h3>
-TF-IDF 是一种统计方法，用以评估一个词对语料库中一篇文档的重要程度。词的重要性随 着它在文档中出现的次数成正比增加，但同时会随着它在语料库中出现的文档数降低。
-<p>TFIDF 综合考虑两方面的重要性：</p>
-<ul>
-<li>
-<p>TF (Term Frequency)：词频指的是某一个给定的词语在一篇文档中出现的次数。</p>
-</li>
-<li>
-<p>IDF (Inverse Document Frequency)：逆文档频率是一个词语普遍重要性的度量。某 一特定词语的 IDF，由总文档数目除以出现该词的文档数，再将得到的商取对数得到   𝐼𝐷𝐹 = log ( 𝑁/ 𝐷𝐹)</p>
-</li>
-</ul>
-<p>其中 N 语料总的文档数，DF 为出现某个词的文档数。</p>
-<p>TF-ID 计算公式为 :  𝑇𝐹 − 𝐼𝐷𝐹 = 𝑇𝐹 × log (𝑁 /𝐷𝐹)</p>
-<p>微博数据：tf_idf</p>
-<pre class="line-numbers language-none"><code class="language-none">小时光***糖你好 我最近发现我的华为p10后置摄像头照相模糊。这个对于我个只会手机支付身上不&gt;
-小媳***结成风5  我的P10耗电太快
-人***花u    凤凰古镇
-全***信他   360全景图  教你手机拍微博全景图哦。
-你说***了没 想去拍茶卡盐湖，一望无际
-路***锡 岳麓山
-让***忧1    世界任你拍
-小***峰 我想去拍青海湖！华为P10plus有了，能送个机票吗
-19***潮 喜马拉雅
-leo***海    最想和她在长江大桥上一起拍摄全景～
-花生***商   我微薄有【落霞脆】冬枣转发抽奖哦，欢迎前来围观
-愿我***有但是   想去大草原
-EX***的 我用的去年买的华为 nova现在用着挺好的，以后也会继续支持华为手机的，我想去杭州西&gt;
-捕风***冷   西藏，超漂亮的！！！而且已经去过了，可惜评论不能发图，不是会员
-Msh***kp    香港
-ting***15   北京 北京 上海
-没钱***食了 天安门？
-御***殿 华山
-梁天***博   全景
-星***R  迪士尼
-毛***狼叼走 转发微博
-滑***师 站在鼓楼紫峰大厦楼顶拍一张</code></pre>
-<p>分析：</p>
-<p>从 TF-IDF 的计算公式可知，要计算一个词在一条微博中的 TF-IDF，我们需要统计这个词 在这条微博出现的次数，也就是这个词针对这个微博的 TF。注意 TF 是一个局部量，不同 微博中同一个词的 TF 可能是不同的。还需要统计这个词的 DF，也就是在语料中的多少篇 微博中出现过，这是一个全局量。另外还需要总的微博条数 N。针对需要计算的量，我们 将计算过程分为三个子任务，每个任务由一个 MapRecude 完成。如下图所示：</p>
-<p><img src="/images/1602503296250.png" alt="1602503296250"></p>
-<p><strong>操作流程：</strong></p>
-<ul>
-<li>项目目录：</li>
-</ul>
-<p><img src="/images/1602503528671.png" alt="1602503528671"></p>
-<ul>
-<li>导入 jar 包</li>
-</ul>
-<p><span style="color:red">包 org.wltea.analyzer.core.IKSegmenter 找不到</span></p>
-<p>将 big_data_tools 下的<span style="color:red">IKAnalyzer2012_u6.jar</span>复制到 hadoop3lib 下，再次 build path-&gt;config build path-&gt;library-&gt;add external jars 将其加入。</p>
-<p><img src="/images/1602503850492.png" alt="1602503850492"></p>
-<ul>
-<li>打 jar 包</li>
-</ul>
-<p><img src="/images/1602503936735.png" alt="1602503936735"></p>
-<p><img src="/images/1602503993037.png" alt="1602503993037"></p>
-<p><img src="/images/1602504104307.png" alt="1602504104307"></p>
-<ul>
-<li>
-<p>放入输入文件</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put tf_idf &#x2F;input&#x2F;files&#x2F;</code></pre>
-</li>
-<li>
-<p>运行</p>
-<pre class="line-numbers language-none"><code class="language-none">hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.tf_idf.FirstJob</code></pre>
-</li>
-<li>
-<p>查看结果</p>
-<pre class="line-numbers language-none"><code class="language-none">hadoop fs -cat &#x2F;output&#x2F;tf_idf&#x2F;output1&#x2F;part-r-00000</code></pre>
-<p><img src="/images/1602504447556.png" alt="1602504447556"></p>
-</li>
-<li>
-<p>输出目录</p>
-<p><img src="/images/1602504535992.png" alt="1602504535992"></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>hadoop</tag>
       </tags>
   </entry>
   <entry>
@@ -2135,214 +1904,6 @@ a1.channels.c1.type &#x3D; memory
       </tags>
   </entry>
   <entry>
-    <title>4台电脑搭建Hadoop+Spark分布式集群</title>
-    <url>/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/</url>
-    <content><![CDATA[<h1><center>搭建Hadoop+Spark分布式集群</center></h1>
-<h2>实验目的</h2>
-搭建真实的分布式计算环境。
-<h2>实验内容</h2>
-<h3>1.准备机器</h3>
-![1608541654622](/images/1608541654622.png)
-<h3>2.配置桥接网卡</h3>
-**以master为例说明网络配置：**
-<blockquote>
-<p>1. 首先关闭宿主机（windows10）的防火墙</p>
-</blockquote>
-<img src="/images/BFB92693-400D-41ca-A00A-9B43DFFC62CE.png" alt="BFB92693-400D-41ca-A00A-9B43DFFC62CE" style="zoom: 50%;" />
-<img src="/images/73568DCD-B5E4-4976-BD8D-ACC24EE9752B.png" alt="73568DCD-B5E4-4976-BD8D-ACC24EE9752B" style="zoom:50%;" />
-<img src="/images/C83663EB-7352-4fb6-87F6-4BDE1881D415.png" alt="C83663EB-7352-4fb6-87F6-4BDE1881D415" style="zoom:50%;" />
-<blockquote>
-<p>2. 在虚拟机软件上添加一张桥接网卡</p>
-</blockquote>
-<p><img src="/images/1608550728689.png" alt=""></p>
-<blockquote>
-<p>2. 编辑网卡设置</p>
-</blockquote>
-<img src="/images/D21C35D4-07A9-43d8-91C3-699DCBE49826.png" alt="D21C35D4-07A9-43d8-91C3-699DCBE49826" style="zoom:;" />
-<img src="/images/0E224AFB-82CD-4c35-87CD-737A590E3642.png" alt="0E224AFB-82CD-4c35-87CD-737A590E3642"  />
-<img src="/images/A73277A2-0EB8-4fb1-B397-5F0041BFE98C.png" alt="A73277A2-0EB8-4fb1-B397-5F0041BFE98C" style="zoom:;" />
-<blockquote>
-<p>3. 开启桥接网卡，同时关闭第一张网卡，也可以不关闭</p>
-</blockquote>
-<img src="/images/1608538652346.png" alt="1608538652346"  />
-<p><img src="/images/26084903-91C3-40df-A40A-261C175BF7F4.png" alt="26084903-91C3-40df-A40A-261C175BF7F4"></p>
-<blockquote>
-<p>4. 然后令宿主机（windows10）连接到手机热点。打开 cmd，使用命令【ipconfig】查看 ip 地址</p>
-</blockquote>
-<img src="/images/1608538040429.png" alt="1608538040429"  />
-<p>再开启虚拟机，编辑配置文件【/etc/network/interfaces】</p>
-<p>添加以下内容：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">auto ens38
-iface ens38 inet static
-# IP地址和宿主机保持在同一网段，这里指定92
-address 192.168.43.92
-# 和宿主机一致
-netmask 255.255.255.0
-# 和宿主机一致
-gateway 192.168.43.1</code></pre>
-<p><img src="/images/44CDE29B-6F85-42ba-93AA-9C83757EDEF8.png" alt="44CDE29B-6F85-42ba-93AA-9C83757EDEF8"></p>
-<p>保存退出重启【reboot】</p>
-<p style="color:red">其他的机器和master配置方法相同。配置文件写入相对自己宿主机的内容</p>
-验证互相ping，可以通。
-<h3>3.设置免密登录</h3>
-每台机器上生成密钥
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">ssh-keygen -t rsa
-# 选择覆盖原来的文件，其他都直接回车
-# 私钥id_rsa 公钥 id_rsa.pub</code></pre>
-<p>将每台机器的公钥（id_rsa.pub 里的内容）都放到 authorized_keys 文件里，authorized_keys 中有所有机器的公钥，所有机器都有 authorized_keys 这个文件。</p>
-<p><img src="/images/1608548503181.png" alt="1608548503181"></p>
-<p>因为不同的机器用户名不一样，所以如果想通过【ssh worker1】实现连接，还需要修改（创建）【~/.ssh/config】写入如下内容：然后将其复制到所有机器。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Host master
-user chen
-Host worker1
-user huang
-Host worker2
-user chen
-Host worker3
-user guo</code></pre>
-<p><img src="/images/1608551058111.png" alt="1608551058111"></p>
-<p>分发给其他机器</p>
-<pre class="line-numbers language-none"><code class="language-none">scp ~&#x2F;.ssh&#x2F;config chen@worker2:~&#x2F;.ssh&#x2F;
-scp ~&#x2F;.ssh&#x2F;config huang@worker1:~&#x2F;.ssh&#x2F;
-scp ~&#x2F;.ssh&#x2F;config guo@worker3:~&#x2F;.ssh&#x2F;</code></pre>
-<p>测试</p>
-<p><img src="/images/1608542027157.png" alt="1608542027157"></p>
-<h3>4.配置hadoop</h3>
-首先将Hadoop改为集群模式。在master主机中修改下面四个文件。
-<blockquote>
-<p>1. 修改 core-site.xml</p>
-</blockquote>
-<p>将配置文件 /apps/hadoop/etc/hadoop/core-site.xml 中 fs.defaultFS 的值由 hdfs://localhost:9000 改为 hdfs://master:9000，修改以后，如下图所示</p>
-<p><img src="/images/1608548810072.png" alt="1608548810072"></p>
-<blockquote>
-<p>2. 修改 hdfs-site.xml 文件</p>
-</blockquote>
-<p>将配置文件 /apps/hadoop/etc/hadoop/hdfs-site.xml 中 dfs.replication 的值由 1 改为 4, 修改以后如下图所示</p>
-<p><img src="/images/1608548881666.png" alt="1608548881666"></p>
-<blockquote>
-<p>3. 修改 workers 文件</p>
-</blockquote>
-<p>将配置文件 /apps/hadoop/etc/hadoop/workers 中 localhost 改为</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master 
-worker1 
-worker2
-worker3</code></pre>
-<p>修改后如下图所示</p>
-<p><img src="/images/1608548949979.png" alt="1608548949979"></p>
-<blockquote>
-<p>4. 修改 yarn-site.xml 文件</p>
-</blockquote>
-<p>将以下内容添加到配置文件 /apps/hadoop/etc/hadoop/ yarn-site.xml 中</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&lt;property&gt;
-&lt;name&gt;yarn.resourcemanager.hostname&lt;&#x2F;name&gt;
-&lt;value&gt;master&lt;&#x2F;value&gt;
-&lt;&#x2F;property&gt;</code></pre>
-<p>修改以后的文件内容如下图所示</p>
-<p><img src="/images/1608549036359.png" alt="1608549036359"></p>
-<blockquote>
-<p>5. 将上面修改的四个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
-</blockquote>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
-scp core-site.xml hdfs-site.xml workers yarn-site.xml \  worker1:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
-scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker2:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
-scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker3:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;</code></pre>
-<p style="color:red">删除伪分布式namenode文件</p>
-重新对分布式文件系统进行格式化前，需要删除四台主机中/data/tmp/hadoop/hdfs/目录下的文件和文件夹。首先删除master上/data/tmp/hadoop/hdfs/目录下的文件和文件夹
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">rm -rf &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs&#x2F;*</code></pre>
-<p>删除另外三台主机上相应的文件.</p>
-<p style="color:red">格式化分布式文件系统</p>
-在主节点master执行以下命令
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop namenode -format</code></pre>
-<p><img src="/images/1608549403821.png" alt="1608549403821"></p>
-<p>至此，Hadoop 分布式集群就设置好了，下面进行测试。</p>
-<h3>5.测试hadoop</h3>
-**启动Hadoop**
-<p>在 master 节点执行</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
-<p><strong>查看 Hadoop 进程</strong></p>
-<p>查看主节点和其他节点的 Hadoop 进程</p>
-<img src="/images/1608542873111.png" alt="1608542873111"  />
-<p>可以看到 HDFS 的 NameNode 和 SecondaryNameNode，以及 Yarn 的 ResourceManager 只运行在主节点；HDFS 的 DataNode 和 MapReduce 的 NodeManager 只运行在从节点。</p>
-<p><strong>测试 HDFS</strong></p>
-<p>在 HDFS 上创建目录 /input</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input</code></pre>
-<p>查看是否创建成功</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -ls &#x2F;</code></pre>
-<p><img src="/images/1608542925521.png" alt="1608542925521"></p>
-<p><strong>将文件传到 HDFS</strong></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input</code></pre>
-<p><strong>运行 wordcount</strong></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce&#x2F;
-hadoop jar hadoop-mapreduce-examples-3.0.0.jar wordcount &#x2F;input&#x2F;testfile &#x2F;output</code></pre>
-<p><strong>查看结果</strong></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -cat &#x2F;output&#x2F;*</code></pre>
-<p><img src="/images/1608543160006.png" alt="1608543160006"></p>
-<p><strong>webUI</strong></p>
-<p><a href="http://master:8088/">http://master:8088/</a> 可以查看 Hadoop 集群，节点及任务相关信息。可以看到现在活跃的节点数是 4。</p>
-<p><img src="/images/1608543269965.png" alt="1608543269965"></p>
-<p><strong>HDFS Web 界面</strong></p>
-<p>在浏览器中访问 <a href="http://master:9870">http://master:9870</a>，可以查看 HDFS 相关信息，浏览 HDFS 上的文件系统</p>
-<p><img src="/images/1608543382064.png" alt="1608543382064"></p>
-<h3>6.配置spark</h3>
-**修改配置文件**
-<p>在 master 节点修改下面三个文件</p>
-<blockquote>
-<p><a href="http://1.xn--spark-env-z89nz78p.sh">1. 修改 spark-env.sh</a>，将 SPARK_MASTER_IP 的值改为 master，修改后，如下图所示</p>
-</blockquote>
-<p><img src="/images/1608543544859.png" alt="1608543544859"></p>
-<blockquote>
-<p>2. 修改 slaves 文件，将 localhost 改为</p>
-</blockquote>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master
-worker1
-worker2
-worker3</code></pre>
-<p><img src="/images/1608543588672.png" alt="1608543588672"></p>
-<blockquote>
-<p>3. 修改 spark-defaults.conf，将 spark.master 改为 spark://master:7077，spark.eventLog.dir 改为 hdfs://master:9000/spark/eventLog。修改后 如下图所示</p>
-</blockquote>
-<p><img src="/images/1608543714760.png" alt="1608543714760"></p>
-<p>eventLog 用来存放日志，需要手动创建</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir -p &#x2F;spark&#x2F;eventLog</code></pre>
-<p><img src="/images/1608543754309.png" alt="1608543754309"></p>
-<p>将修改的三个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;spark&#x2F;conf
-scp spark-env.sh slaves spark-defaults.conf worker1:&#x2F;apps&#x2F;spark&#x2F;conf 
-scp spark-env.sh slaves spark-defaults.conf worker2:&#x2F;apps&#x2F;spark&#x2F;conf
-scp spark-env.sh slaves spark-defaults.conf worker3:&#x2F;apps&#x2F;spark&#x2F;conf</code></pre>
-<p><img src="/images/1608543870706.png" alt="1608543870706"></p>
-<p>至此，配置文件就修改好了，下面进行测试。</p>
-<h3>7.测试spark</h3>
-**启动spark集群**
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;start-all.sh</code></pre>
-<p><strong>查看进程</strong></p>
-<p>主节点多了两个进程 Master 和 Worker。从节点多了一个进程 Worker</p>
-<p><img src="/images/1608544157856.png" alt="1608544157856"></p>
-<p><strong>Web UI</strong></p>
-<p>查看 spark 管理界面，在浏览器中输入 http://master:8080，可以看到 Worker 有四个。</p>
-<p><img src="/images/1608544217724.png" alt="1608544217724"></p>
-<p><strong>运行演示实例</strong></p>
-<p>计算 PI 的值会出错</p>
-<h2 id="-code19-"><a class="markdownIt-Anchor" href="#-code19-">#</a> <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">java.lang.NoSuchMethodError: net.jpountz.lz4.LZ4BlockInputStream.&lt;init&gt;(Ljava&#x2F;io&#x2F;InputStream;Z)Vat</code></pre></h2>
-<p>原因：</p>
-<blockquote>
-<p>应用在执行时对数据解码（反序列化）时，使用了默认的 lz4 解压缩算法，在 spark-core 中依赖的 lz4 版本是 1.4，而 kafka-client 中依赖的 lz4 版本是 1.3 版本，在生成解压器时，版本不兼容异常。</p>
-</blockquote>
-<p>解决办法：</p>
-<blockquote>
-<p>可参考网上修改源码解决，也可通过设置 &quot;spark.io.compression.codec&quot;,&quot;snappy&quot; 或其他压缩算法规避。鉴于修改源码重新打包替换较为繁琐，建议设置其他压缩算法规避</p>
-</blockquote>
-<p><img src="/images/1608548015237.png" alt="1608548015237"></p>
-<p>参考：<a href="https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control">https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control</a></p>
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hadoop-develop</title>
     <url>/2020/12/20/Hadoop-develop/</url>
     <content><![CDATA[<center><h1>Hadoop程序开发</h1></center>
@@ -2614,6 +2175,399 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
       </tags>
   </entry>
   <entry>
+    <title>Sqoop</title>
+    <url>/2020/12/20/Sqoop/</url>
+    <content><![CDATA[<h1><center>Sqoop</center></h1>
+<h2>实验目的</h2>
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+<h2>实验内容</h2>
+安装，配置Sqoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
+if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
+    sudo rm -rf &#x2F;apps&#x2F;sqoop
+fi
+# 将Sqoop的安装包复制到&#x2F;apps下，并解压
+sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
+tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
+# 删除压缩包
+sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+# 修改名称
+mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
+# 删除有关sqoop_home的环境变量
+sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+# 添加环境变量
+echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
+# 重命令
+mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
+# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
+echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
+sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
+# 重启，使环境变量生效
+sudo reboot</code></pre>
+<p>版本信息：</p>
+<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
+<p>使用 sqoop help 查看支持的命令</p>
+<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
+<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
+<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
+<p>确保 mysql 正常运行</p>
+<p><img src="/images/1605065733969.png" alt=""></p>
+<p>查询 mysql 中的数据库。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
+<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
+use mydb;
+create table record 
+	(
+	id varchar(100),
+	buyer_id varchar(100),
+	dt varchar(100),
+	ip varchar(100),
+	opt_type varchar(100)
+	);
+    
+load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
+<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
+<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
+<ul>
+<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
+</ul>
+<p>hdfs 上的 mysqool 不能存在</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456 \
+--table record -m 1 \
+--target-dir &#x2F;mysqoop</code></pre>
+<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
+<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhdfs like record;</code></pre>
+<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhdfs -m 1 \
+--export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
+<p>检查 Mysql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhdfs limit 3,5;</code></pre>
+<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
+<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
+<p>启动 HBase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
+<p>进入 hbase shell</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
+<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
+<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hbase-table hbaserecord \
+--column-family mycf \
+--hbase-row-key dt -m 1</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
+<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
+<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
+<p>需要在～/.bashrc 添加以下内容。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
+export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hive-import \
+--hive-table hiverecord \
+--fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
+<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
+<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhive like record;             </code></pre>
+<p>导数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhive \
+--export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
+--input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
+<p>查看结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhive;</code></pre>
+<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>sqoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hadoop-streaming</title>
+    <url>/2020/12/20/Hadoop-Streaming/</url>
+    <content><![CDATA[<h1><center>Hadoop Streaming</center></h1>
+<h2>实验目的</h2>
+了解hadoop streaming的作用，原理。使用hadoop streaming和python完成一个wordcount的任务
+<ul>
+<li>
+<p>hadoop streaming 作用:</p>
+<p>Hadoop 框架是用 Java 语言写的，也就是说，Hadoop 框架中运行的所有应用程序都要 用 Java 语言来写才能正常地在 Hadoop 集群中运行。如果不会 Java 语言怎么办？ Hadoop 提供了 Hadoop Streaming 这个编程工具，它允许用户使用任何可执行文件或 者脚本文件作为 Mapper 和 Reducer，因此我们可以选择自己熟悉的编程语言，编写 Mapper 和 Reducer 程序来使用 Hadoop 集群。</p>
+</li>
+<li>
+<p>hadoop streaming 原理：</p>
+<p>Streaming 的原理是用 Java 实现一个包装用户程序的 MapReduce 程序，该程序负责调 用 MapReduce Java 接口获取 key/value 对输入，创建一个新的进程启动包装的用户程 序，将数据通过管道传递给包装的用户程序处理，然后调用 MapReduce Java 接口将用户 程序的输出切分成 key/value 对输出。</p>
+</li>
+</ul>
+<h2>实验内容</h2>
+<h3>一、使用python 实现mapper和reducer</h3>
+<h4>项目目录</h4>
+![1602501583233](/images/1602501583233.png)
+<p style="color:red">mapper.py</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
+  
+for line in sys.stdin:
+    line &#x3D; line.strip().split(&#39; &#39;) # strip去除文件前后的空格，split(&#39; &#39;)以空格分割
+    for word in line:
+        if word.strip() !&#x3D; &quot;&quot;:
+            print(&quot;%s\t%s&quot;%(word, 1))</code></pre>
+<p style="color:red">reducer.py</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">import sys
+current_word &#x3D; None
+count_pool &#x3D; []
+sum &#x3D; 0
+
+for line in sys.stdin:
+    word, val &#x3D; line.strip().split(&#39;\t&#39;)
+
+    if current_word &#x3D;&#x3D; None:
+        current_word &#x3D; word
+
+    if current_word !&#x3D; word:
+        for count in count_pool:
+            sum +&#x3D; count
+
+        print(&quot;%s\t%s&quot;%(current_word, sum))
+        current_word &#x3D; word
+        count_pool &#x3D; []
+        sum &#x3D; 0
+
+    count_pool.append(int(val))
+
+for count in count_pool:
+    sum +&#x3D; count
+
+print(&quot;%s\t%s&quot;%(current_word, str(sum)))</code></pre>
+<p style="color:red">testfile</p>
+<pre class="line-numbers language-txt" data-language="txt"><code class="language-txt">hello big data
+hello hadoop
+hello mapreduce</code></pre>
+<h4>shell测试</h4>
+命令行
+<pre class="line-numbers language-none"><code class="language-none">cat testfile | python3 mapper.py | sort -t &#39; &#39; -k 1 | python3 reducer.py </code></pre>
+<p>参数解释：</p>
+<ul>
+<li>mapper.py 接收 testfile 的文件内容，输出两列，一列是词，一列是 1</li>
+<li>sort 是 shell 命令，-t：表示指定分割符。-k：表示排序时指定的键是在分割后的哪个 field。</li>
+<li>测试无误后就可以放在 Hadoop 集群上运行了。</li>
+</ul>
+<p>输出结果:</p>
+<pre class="line-numbers language-none"><code class="language-none">big     1
+data    1
+hadoop  1
+hello   3
+mapreduce       1</code></pre>
+<h4>放入hadoop集群</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 启动hadoop
+start-all.sh</code></pre>
+hadoop 运行的命令格式：
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">$HADOOP_HOME&#x2F;bin&#x2F;hadoop jar hadoop-streaming.jar [options]</code></pre>
+<p>参数解释：</p>
+<ul>
+<li>
+<p>-input <path>:  指定作业输入，path 可以是文件或者目录，可以使用 * 通配符，-input 选项可以使用多次指定多个文件或目录作为输入。</p>
+</li>
+<li>
+<p>-output <path>:  指定作业输出目录，path 必须不存在，而且执行作业的用户必须有创 建该目录的权限，-output 只能使用一次。</p>
+</li>
+<li>
+<p>-mapper:  指定 mapper 可执行程序或 Java 类，必须指定且唯一。</p>
+</li>
+<li>
+<p>-reducer:  指定 reducer 可执行程序或 Java 类，必须指定且唯一 。</p>
+</li>
+<li>
+<p>-file：向计算节点分发<span style="color:blue">本地文件</span>。</p>
+</li>
+<li>
+<p>,-cacheFile: 向计算节点分发<span style="color:blue">HDFS 文件</span>。</p>
+</li>
+<li>
+<p>-cacheArchive: 向计算节点分发<span style="color:blue">HDFS 压缩文件 </span>。</p>
+</li>
+<li>
+<p>-numReduceTasks：指定 reducer 的个数，如果设置 - numReduceTasks 0 或者 reducer NONE 则没有 reducer 程序，mapper 的输出直接作为整个作业的输出。</p>
+</li>
+<li>
+<p>-jobconf /-D NAME=VALUE：指定作业参数，NAME 是参数名，VALUE 是参数值，可 以指定的参数参考 hadoop-default.xml。</p>
+</li>
+</ul>
+<p>可以通过以下命令查看完整的命令参数介绍</p>
+<p style="color:purple"> hadoop jar /apps/hadoop/share/hadoop/tools/lib/hadoop-streaming3.0.0.jar --help </p>
+为了方便运行，将相关配置参数写入shell脚本: vim run.sh
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+STREAMING_JAR_PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;tools&#x2F;lib&#x2F;hadoop-streaming-3.0.0.jar
+
+INPUT_FILE_PATH&#x3D;&quot;&#x2F;input&#x2F;wordcount&#x2F;testfile*&quot;
+OUTPUT_PATH&#x3D;&quot;&#x2F;output&#x2F;streaming&#x2F;wordcount&quot;                                               
+
+if hadoop fs -test -d $OUTPUT_PATH
+then
+hadoop fs -rm -r -skipTrash $OUTPUT_PATH
+fi
+# 注意-file指定的参数后面不能有空格
+hadoop jar $STREAMING_JAR_PATH \
+-D mapred.job.name&#x3D;&quot;WordCount&quot; \
+-file ~&#x2F;day04&#x2F;mapper.py\
+-file ~&#x2F;day04&#x2F;reducer.py \
+-input $INPUT_FILE_PATH \
+-output $OUTPUT_PATH \
+-mapper &quot;python3 mapper.py&quot; \
+-reducer &quot;python3 reducer.py&quot;</code></pre>
+<p>运行：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">bash run.sh</code></pre>
+<p>解释：</p>
+<p>从上面的过程可以看出，Mapper 和 Reducer 都是可执行文件，它们从标准输入读入数据
+（一行一行读）， 并把计算结果发给标准输出。Streaming 工具会创建一个
+Map/Reduce 作业， 并把它发送给合适的集群，同时监视这个作业的整个执行过程。
+如果一个可执行文件被用于 Mapper，则在 Mapper 初始化时， 每一个 Mapper 任务会
+把这个可执行文件作为一个单独的进程启动。 Mapper 任务运行时，它把输入切分成行并
+把每一行提供给可执行文件进程的标准输入。 同时，Mapper 收集可执行文件进程标准输
+出的内容，并把收到的每一行内容转化成 key/value 对，作为 Mapper 的输出。 默认情
+况下，一行中第一个 Tab 之前的部分作为 Key，之后的（不包括 Tab）作为 Value。 如
+果没有 Tab，整行作为 Key 值，Value 值为 null。不过，这可以定制。
+如果一个可执行文件被用于 Reducer，每个 Reducer 任务会把这个可执行文件作为一个
+单独的进程启动。 Reducer 任务运行时，它把输入切分成行并把每一行提供给可执行文
+件进程的标准输入。 同时，Reducer 收集可执行文件进程标准输出的内容，并把每一行
+内容转化成 Key/Value 对，作为 Reducer 的输出。 默认情况下，一行中第一个 Tab 之前
+的部分作为 Key，之后的（不包括 Tab）作为 Value。</p>
+<h3>二、计算微博的TF-IDF</h3>
+TF-IDF 是一种统计方法，用以评估一个词对语料库中一篇文档的重要程度。词的重要性随 着它在文档中出现的次数成正比增加，但同时会随着它在语料库中出现的文档数降低。
+<p>TFIDF 综合考虑两方面的重要性：</p>
+<ul>
+<li>
+<p>TF (Term Frequency)：词频指的是某一个给定的词语在一篇文档中出现的次数。</p>
+</li>
+<li>
+<p>IDF (Inverse Document Frequency)：逆文档频率是一个词语普遍重要性的度量。某 一特定词语的 IDF，由总文档数目除以出现该词的文档数，再将得到的商取对数得到   𝐼𝐷𝐹 = log ( 𝑁/ 𝐷𝐹)</p>
+</li>
+</ul>
+<p>其中 N 语料总的文档数，DF 为出现某个词的文档数。</p>
+<p>TF-ID 计算公式为 :  𝑇𝐹 − 𝐼𝐷𝐹 = 𝑇𝐹 × log (𝑁 /𝐷𝐹)</p>
+<p>微博数据：tf_idf</p>
+<pre class="line-numbers language-none"><code class="language-none">小时光***糖你好 我最近发现我的华为p10后置摄像头照相模糊。这个对于我个只会手机支付身上不&gt;
+小媳***结成风5  我的P10耗电太快
+人***花u    凤凰古镇
+全***信他   360全景图  教你手机拍微博全景图哦。
+你说***了没 想去拍茶卡盐湖，一望无际
+路***锡 岳麓山
+让***忧1    世界任你拍
+小***峰 我想去拍青海湖！华为P10plus有了，能送个机票吗
+19***潮 喜马拉雅
+leo***海    最想和她在长江大桥上一起拍摄全景～
+花生***商   我微薄有【落霞脆】冬枣转发抽奖哦，欢迎前来围观
+愿我***有但是   想去大草原
+EX***的 我用的去年买的华为 nova现在用着挺好的，以后也会继续支持华为手机的，我想去杭州西&gt;
+捕风***冷   西藏，超漂亮的！！！而且已经去过了，可惜评论不能发图，不是会员
+Msh***kp    香港
+ting***15   北京 北京 上海
+没钱***食了 天安门？
+御***殿 华山
+梁天***博   全景
+星***R  迪士尼
+毛***狼叼走 转发微博
+滑***师 站在鼓楼紫峰大厦楼顶拍一张</code></pre>
+<p>分析：</p>
+<p>从 TF-IDF 的计算公式可知，要计算一个词在一条微博中的 TF-IDF，我们需要统计这个词 在这条微博出现的次数，也就是这个词针对这个微博的 TF。注意 TF 是一个局部量，不同 微博中同一个词的 TF 可能是不同的。还需要统计这个词的 DF，也就是在语料中的多少篇 微博中出现过，这是一个全局量。另外还需要总的微博条数 N。针对需要计算的量，我们 将计算过程分为三个子任务，每个任务由一个 MapRecude 完成。如下图所示：</p>
+<p><img src="/images/1602503296250.png" alt="1602503296250"></p>
+<p><strong>操作流程：</strong></p>
+<ul>
+<li>项目目录：</li>
+</ul>
+<p><img src="/images/1602503528671.png" alt="1602503528671"></p>
+<ul>
+<li>导入 jar 包</li>
+</ul>
+<p><span style="color:red">包 org.wltea.analyzer.core.IKSegmenter 找不到</span></p>
+<p>将 big_data_tools 下的<span style="color:red">IKAnalyzer2012_u6.jar</span>复制到 hadoop3lib 下，再次 build path-&gt;config build path-&gt;library-&gt;add external jars 将其加入。</p>
+<p><img src="/images/1602503850492.png" alt="1602503850492"></p>
+<ul>
+<li>打 jar 包</li>
+</ul>
+<p><img src="/images/1602503936735.png" alt="1602503936735"></p>
+<p><img src="/images/1602503993037.png" alt="1602503993037"></p>
+<p><img src="/images/1602504104307.png" alt="1602504104307"></p>
+<ul>
+<li>
+<p>放入输入文件</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put tf_idf &#x2F;input&#x2F;files&#x2F;</code></pre>
+</li>
+<li>
+<p>运行</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.tf_idf.FirstJob</code></pre>
+</li>
+<li>
+<p>查看结果</p>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -cat &#x2F;output&#x2F;tf_idf&#x2F;output1&#x2F;part-r-00000</code></pre>
+<p><img src="/images/1602504447556.png" alt="1602504447556"></p>
+</li>
+<li>
+<p>输出目录</p>
+<p><img src="/images/1602504535992.png" alt="1602504535992"></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>auto scripts</title>
     <url>/2020/12/20/auto_install/</url>
     <content><![CDATA[<p>安装并配置 hadoop,eclipse</p>
@@ -2797,166 +2751,585 @@ schematool -dbType mysql -initSchema</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>Sqoop</title>
-    <url>/2020/12/20/Sqoop/</url>
-    <content><![CDATA[<h1><center>Sqoop</center></h1>
+    <title>4台电脑搭建Hadoop+Spark分布式集群</title>
+    <url>/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<h1><center>搭建Hadoop+Spark分布式集群</center></h1>
 <h2>实验目的</h2>
-熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+搭建真实的分布式计算环境。
 <h2>实验内容</h2>
-安装，配置Sqoop
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
-if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
-    sudo rm -rf &#x2F;apps&#x2F;sqoop
-fi
-# 将Sqoop的安装包复制到&#x2F;apps下，并解压
-sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
-tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
-# 删除压缩包
-sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
-# 修改名称
-mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
-# 删除有关sqoop_home的环境变量
-sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-# 添加环境变量
-echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
-cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
-# 重命令
-mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
-# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
-echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
-sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
-# 重启，使环境变量生效
-sudo reboot</code></pre>
-<p>版本信息：</p>
-<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
-<p>使用 sqoop help 查看支持的命令</p>
-<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
-<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
-<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
-<p>确保 mysql 正常运行</p>
-<p><img src="/images/1605065733969.png" alt=""></p>
-<p>查询 mysql 中的数据库。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
-<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
-use mydb;
-create table record 
-	(
-	id varchar(100),
-	buyer_id varchar(100),
-	dt varchar(100),
-	ip varchar(100),
-	opt_type varchar(100)
-	);
-    
-load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
-<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
-<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
-<ul>
-<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
-</ul>
-<p>hdfs 上的 mysqool 不能存在</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456 \
---table record -m 1 \
---target-dir &#x2F;mysqoop</code></pre>
-<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
-<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhdfs like record;</code></pre>
-<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhdfs -m 1 \
---export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
-<p>检查 Mysql</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhdfs limit 3,5;</code></pre>
-<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
-<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
-<p>启动 HBase</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
-<p>进入 hbase shell</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
-<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
-<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hbase-table hbaserecord \
---column-family mycf \
---hbase-row-key dt -m 1</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
-<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
-<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
-<p>需要在～/.bashrc 添加以下内容。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
-export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
-<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hive-import \
---hive-table hiverecord \
---fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
-<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
-<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhive like record;             </code></pre>
-<p>导数据</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhive \
---export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
---input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
-<p>查看结果</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhive;</code></pre>
-<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
+<h3>1.准备机器</h3>
+![1608541654622](/images/1608541654622.png)
+<h3>2.配置桥接网卡</h3>
+**以master为例说明网络配置：**
+<blockquote>
+<p>1. 首先关闭宿主机（windows10）的防火墙</p>
+</blockquote>
+<img src="/images/BFB92693-400D-41ca-A00A-9B43DFFC62CE.png" alt="BFB92693-400D-41ca-A00A-9B43DFFC62CE" style="zoom: 50%;" />
+<img src="/images/73568DCD-B5E4-4976-BD8D-ACC24EE9752B.png" alt="73568DCD-B5E4-4976-BD8D-ACC24EE9752B" style="zoom:50%;" />
+<img src="/images/C83663EB-7352-4fb6-87F6-4BDE1881D415.png" alt="C83663EB-7352-4fb6-87F6-4BDE1881D415" style="zoom:50%;" />
+<blockquote>
+<p>2. 在虚拟机软件上添加一张桥接网卡</p>
+</blockquote>
+<p><img src="/images/1608550728689.png" alt=""></p>
+<blockquote>
+<p>2. 编辑网卡设置</p>
+</blockquote>
+<img src="/images/D21C35D4-07A9-43d8-91C3-699DCBE49826.png" alt="D21C35D4-07A9-43d8-91C3-699DCBE49826" style="zoom:;" />
+<img src="/images/0E224AFB-82CD-4c35-87CD-737A590E3642.png" alt="0E224AFB-82CD-4c35-87CD-737A590E3642"  />
+<img src="/images/A73277A2-0EB8-4fb1-B397-5F0041BFE98C.png" alt="A73277A2-0EB8-4fb1-B397-5F0041BFE98C" style="zoom:;" />
+<blockquote>
+<p>3. 开启桥接网卡，同时关闭第一张网卡，也可以不关闭</p>
+</blockquote>
+<img src="/images/1608538652346.png" alt="1608538652346"  />
+<p><img src="/images/26084903-91C3-40df-A40A-261C175BF7F4.png" alt="26084903-91C3-40df-A40A-261C175BF7F4"></p>
+<blockquote>
+<p>4. 然后令宿主机（windows10）连接到手机热点。打开 cmd，使用命令【ipconfig】查看 ip 地址</p>
+</blockquote>
+<img src="/images/1608538040429.png" alt="1608538040429"  />
+<p>再开启虚拟机，编辑配置文件【/etc/network/interfaces】</p>
+<p>添加以下内容：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">auto ens38
+iface ens38 inet static
+# IP地址和宿主机保持在同一网段，这里指定92
+address 192.168.43.92
+# 和宿主机一致
+netmask 255.255.255.0
+# 和宿主机一致
+gateway 192.168.43.1</code></pre>
+<p><img src="/images/44CDE29B-6F85-42ba-93AA-9C83757EDEF8.png" alt="44CDE29B-6F85-42ba-93AA-9C83757EDEF8"></p>
+<p>保存退出重启【reboot】</p>
+<p style="color:red">其他的机器和master配置方法相同。配置文件写入相对自己宿主机的内容</p>
+验证互相ping，可以通。
+<h3>3.设置免密登录</h3>
+每台机器上生成密钥
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">ssh-keygen -t rsa
+# 选择覆盖原来的文件，其他都直接回车
+# 私钥id_rsa 公钥 id_rsa.pub</code></pre>
+<p>将每台机器的公钥（id_rsa.pub 里的内容）都放到 authorized_keys 文件里，authorized_keys 中有所有机器的公钥，所有机器都有 authorized_keys 这个文件。</p>
+<p><img src="/images/1608548503181.png" alt="1608548503181"></p>
+<p>因为不同的机器用户名不一样，所以如果想通过【ssh worker1】实现连接，还需要修改（创建）【~/.ssh/config】写入如下内容：然后将其复制到所有机器。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Host master
+user chen
+Host worker1
+user huang
+Host worker2
+user chen
+Host worker3
+user guo</code></pre>
+<p><img src="/images/1608551058111.png" alt="1608551058111"></p>
+<p>分发给其他机器</p>
+<pre class="line-numbers language-none"><code class="language-none">scp ~&#x2F;.ssh&#x2F;config chen@worker2:~&#x2F;.ssh&#x2F;
+scp ~&#x2F;.ssh&#x2F;config huang@worker1:~&#x2F;.ssh&#x2F;
+scp ~&#x2F;.ssh&#x2F;config guo@worker3:~&#x2F;.ssh&#x2F;</code></pre>
+<p>测试</p>
+<p><img src="/images/1608542027157.png" alt="1608542027157"></p>
+<h3>4.配置hadoop</h3>
+首先将Hadoop改为集群模式。在master主机中修改下面四个文件。
+<blockquote>
+<p>1. 修改 core-site.xml</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/core-site.xml 中 fs.defaultFS 的值由 hdfs://localhost:9000 改为 hdfs://master:9000，修改以后，如下图所示</p>
+<p><img src="/images/1608548810072.png" alt="1608548810072"></p>
+<blockquote>
+<p>2. 修改 hdfs-site.xml 文件</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/hdfs-site.xml 中 dfs.replication 的值由 1 改为 4, 修改以后如下图所示</p>
+<p><img src="/images/1608548881666.png" alt="1608548881666"></p>
+<blockquote>
+<p>3. 修改 workers 文件</p>
+</blockquote>
+<p>将配置文件 /apps/hadoop/etc/hadoop/workers 中 localhost 改为</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master 
+worker1 
+worker2
+worker3</code></pre>
+<p>修改后如下图所示</p>
+<p><img src="/images/1608548949979.png" alt="1608548949979"></p>
+<blockquote>
+<p>4. 修改 yarn-site.xml 文件</p>
+</blockquote>
+<p>将以下内容添加到配置文件 /apps/hadoop/etc/hadoop/ yarn-site.xml 中</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&lt;property&gt;
+&lt;name&gt;yarn.resourcemanager.hostname&lt;&#x2F;name&gt;
+&lt;value&gt;master&lt;&#x2F;value&gt;
+&lt;&#x2F;property&gt;</code></pre>
+<p>修改以后的文件内容如下图所示</p>
+<p><img src="/images/1608549036359.png" alt="1608549036359"></p>
+<blockquote>
+<p>5. 将上面修改的四个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
+</blockquote>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \  worker1:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F; 
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker2:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
+scp core-site.xml hdfs-site.xml workers yarn-site.xml \ worker3:&#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;</code></pre>
+<p style="color:red">删除伪分布式namenode文件</p>
+重新对分布式文件系统进行格式化前，需要删除四台主机中/data/tmp/hadoop/hdfs/目录下的文件和文件夹。首先删除master上/data/tmp/hadoop/hdfs/目录下的文件和文件夹
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">rm -rf &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs&#x2F;*</code></pre>
+<p>删除另外三台主机上相应的文件.</p>
+<p style="color:red">格式化分布式文件系统</p>
+在主节点master执行以下命令
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop namenode -format</code></pre>
+<p><img src="/images/1608549403821.png" alt="1608549403821"></p>
+<p>至此，Hadoop 分布式集群就设置好了，下面进行测试。</p>
+<h3>5.测试hadoop</h3>
+**启动Hadoop**
+<p>在 master 节点执行</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p><strong>查看 Hadoop 进程</strong></p>
+<p>查看主节点和其他节点的 Hadoop 进程</p>
+<img src="/images/1608542873111.png" alt="1608542873111"  />
+<p>可以看到 HDFS 的 NameNode 和 SecondaryNameNode，以及 Yarn 的 ResourceManager 只运行在主节点；HDFS 的 DataNode 和 MapReduce 的 NodeManager 只运行在从节点。</p>
+<p><strong>测试 HDFS</strong></p>
+<p>在 HDFS 上创建目录 /input</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input</code></pre>
+<p>查看是否创建成功</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -ls &#x2F;</code></pre>
+<p><img src="/images/1608542925521.png" alt="1608542925521"></p>
+<p><strong>将文件传到 HDFS</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input</code></pre>
+<p><strong>运行 wordcount</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce&#x2F;
+hadoop jar hadoop-mapreduce-examples-3.0.0.jar wordcount &#x2F;input&#x2F;testfile &#x2F;output</code></pre>
+<p><strong>查看结果</strong></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -cat &#x2F;output&#x2F;*</code></pre>
+<p><img src="/images/1608543160006.png" alt="1608543160006"></p>
+<p><strong>webUI</strong></p>
+<p><a href="http://master:8088/">http://master:8088/</a> 可以查看 Hadoop 集群，节点及任务相关信息。可以看到现在活跃的节点数是 4。</p>
+<p><img src="/images/1608543269965.png" alt="1608543269965"></p>
+<p><strong>HDFS Web 界面</strong></p>
+<p>在浏览器中访问 <a href="http://master:9870">http://master:9870</a>，可以查看 HDFS 相关信息，浏览 HDFS 上的文件系统</p>
+<p><img src="/images/1608543382064.png" alt="1608543382064"></p>
+<h3>6.配置spark</h3>
+**修改配置文件**
+<p>在 master 节点修改下面三个文件</p>
+<blockquote>
+<p><a href="http://1.xn--spark-env-z89nz78p.sh">1. 修改 spark-env.sh</a>，将 SPARK_MASTER_IP 的值改为 master，修改后，如下图所示</p>
+</blockquote>
+<p><img src="/images/1608543544859.png" alt="1608543544859"></p>
+<blockquote>
+<p>2. 修改 slaves 文件，将 localhost 改为</p>
+</blockquote>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">master
+worker1
+worker2
+worker3</code></pre>
+<p><img src="/images/1608543588672.png" alt="1608543588672"></p>
+<blockquote>
+<p>3. 修改 spark-defaults.conf，将 spark.master 改为 spark://master:7077，spark.eventLog.dir 改为 hdfs://master:9000/spark/eventLog。修改后 如下图所示</p>
+</blockquote>
+<p><img src="/images/1608543714760.png" alt="1608543714760"></p>
+<p>eventLog 用来存放日志，需要手动创建</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir -p &#x2F;spark&#x2F;eventLog</code></pre>
+<p><img src="/images/1608543754309.png" alt="1608543754309"></p>
+<p>将修改的三个文件复制到 worker1 和 worker2 和 worker3 三个节点，覆盖原来的文件</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;spark&#x2F;conf
+scp spark-env.sh slaves spark-defaults.conf worker1:&#x2F;apps&#x2F;spark&#x2F;conf 
+scp spark-env.sh slaves spark-defaults.conf worker2:&#x2F;apps&#x2F;spark&#x2F;conf
+scp spark-env.sh slaves spark-defaults.conf worker3:&#x2F;apps&#x2F;spark&#x2F;conf</code></pre>
+<p><img src="/images/1608543870706.png" alt="1608543870706"></p>
+<p>至此，配置文件就修改好了，下面进行测试。</p>
+<h3>7.测试spark</h3>
+**启动spark集群**
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;spark&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p><strong>查看进程</strong></p>
+<p>主节点多了两个进程 Master 和 Worker。从节点多了一个进程 Worker</p>
+<p><img src="/images/1608544157856.png" alt="1608544157856"></p>
+<p><strong>Web UI</strong></p>
+<p>查看 spark 管理界面，在浏览器中输入 http://master:8080，可以看到 Worker 有四个。</p>
+<p><img src="/images/1608544217724.png" alt="1608544217724"></p>
+<p><strong>运行演示实例</strong></p>
+<p>计算 PI 的值会出错</p>
+<h2 id="-code19-"><a class="markdownIt-Anchor" href="#-code19-">#</a> <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">java.lang.NoSuchMethodError: net.jpountz.lz4.LZ4BlockInputStream.&lt;init&gt;(Ljava&#x2F;io&#x2F;InputStream;Z)Vat</code></pre></h2>
+<p>原因：</p>
+<blockquote>
+<p>应用在执行时对数据解码（反序列化）时，使用了默认的 lz4 解压缩算法，在 spark-core 中依赖的 lz4 版本是 1.4，而 kafka-client 中依赖的 lz4 版本是 1.3 版本，在生成解压器时，版本不兼容异常。</p>
+</blockquote>
+<p>解决办法：</p>
+<blockquote>
+<p>可参考网上修改源码解决，也可通过设置 &quot;spark.io.compression.codec&quot;,&quot;snappy&quot; 或其他压缩算法规避。鉴于修改源码重新打包替换较为繁琐，建议设置其他压缩算法规避</p>
+</blockquote>
+<p><img src="/images/1608548015237.png" alt="1608548015237"></p>
+<p>参考：<a href="https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control">https://blog.csdn.net/zhenzi_PeppaPig/article/details/84442296?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control</a></p>
 ]]></content>
       <categories>
         <category>大数据</category>
       </categories>
       <tags>
-        <tag>sqoop</tag>
+        <tag>分布式</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>hadoop shell and java API</title>
+    <url>/2020/12/20/hadoop_shell-and-java_API/</url>
+    <content><![CDATA[<h1><center>hadoop shell & java API</center></h1>
+<h2>实验目的</h2>
+熟悉hadoop 的shell 和java API
+<h2>实验过程</h2>
+<h3>一、shell api</h3>
+<pre class="line-numbers language-none"><code class="language-none">hadoop fs -cp &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;
+hadoop fs -mv &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;
+hadoop fs -rm &#x2F;input&#x2F;testfile1
+hadoop fs -rm -r &#x2F;input&#x2F;testfile1
+hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input&#x2F;
+hadoop fs -get &#x2F;input&#x2F;testfile1 &#x2F;data&#x2F;
+hadoop fs -mkdir -p &#x2F;input&#x2F;test&#x2F;testfile1
+hadoop fs -test -e &#x2F;input&#x2F;testfile1
+hadoop fs -test -d &#x2F;input&#x2F;
+echo $? # 返回上条命令的输出，是返回0，否返回1</code></pre>
+<h4>使用hadoop自带的Wordcount</h4>
+![1603079934371](/images/1603079934371.png)
+<h4>hadoop 安全模式</h4>
+<pre class="line-numbers language-none"><code class="language-none">进入安全模式
+hdfs dfsadmin -safemode enter
+离开安全模式
+hdfs dfsadmin -safemode leave</code></pre>
+<h3>二、java api</h3>
+<h4>1.准备需要的jar文件</h4>
+ 将/apps/hadoop/share/hadoop 目录下的 common，hdfs，mapreduce，yarn 4 个子目录中的 jar 文件以及这 4 个子目录下 lib 文件夹中的所有 jar 文件复制到~/big_data_tools/hadoop3lib 中。 这些 jar 文件将作为外部的 jar 文件添加到工程中。分别切换到那几个目录下，执行一下这条命令  
+<pre class="line-numbers language-none"><code class="language-none">cp *.jar ~&#x2F;big_data_tools&#x2F;hadoop3lib&#x2F;</code></pre>
+<h4>2.新建javaproject</h4>
+![1603077812701](/images/1603077812701.png)
+<h4>3.命名为hdfs_java_api</h4>
+![1603077853154](/images/1603077853154.png)
+<h4>4.新建包</h4>
+![1603077884645](/images/1603077884645.png)
+<h4>5.命名为 hdfs.api</h4>
+![1603077935064](/images/1603077935064.png)
+<h4>5.新建java类,TestHdfsApi.java</h4>
+![1603077986412](/images/1603077986412.png)
+<h4>6.导入外部依赖的Jar包</h4>
+![1603078029259](/images/1603078029259.png)
+<p><img src="/images/1603078072711.png" alt=""></p>
+<h4>7.创建testfile</h4>
+![1603078105527](/images/1603078105527.png)
+<h4>8.运行程序</h4>
+![1603078142864](/images/1603078142864.png)
+<p><img src="/images/1603078130695.png" alt="1603078130695"></p>
+<h4>9.创建/myhadoop目录</h4>
+![1603078180150](/images/1603078180150.png)
+<h4>10.再次运行as java application</h4>
+![1603078204854](/images/1603078204854.png)
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hbase</title>
+    <url>/2020/12/20/hbase/</url>
+    <content><![CDATA[<h1><center>hbase基础</center></h1>
+<h2>实验目的</h2>
+安装hbase并熟悉常用操作
+<h2>实验过程</h2>
+<h3>一、安装hbase</h3>
+- 建立shell脚本，以普通用户身份执行
+  <pre class="line-numbers language-none"><code class="language-none">bash hbase_conf.sh</code></pre>
+<ul>
+<li>
+<p>shell 脚本</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash
+# install jdk
+cp ~&#x2F;big_data_tools&#x2F;hbase1.4.10.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hbase1.4.10.tar.gz -C &#x2F;apps&#x2F;
+rm -rf &#x2F;apps&#x2F;&#x2F;hbase1.4.10.tar.gz
+
+# add hbase to path
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hbase 
+cd &#x2F;apps&#x2F;hbase&#x2F;conf
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; hbase-env.sh
+echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; hbase-env.sh
+echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; hbase-env.sh
+cp -f ~&#x2F;big_data_tools&#x2F;conf_hbase&#x2F;hbase-site.xml &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+
+sudo reboot      </code></pre>
+</li>
+<li>
+<p>~/big_data_tools/conf_hbase/hbase-site.xml</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"> &lt;configuration&gt;                                                                  
+ &lt;property&gt;
+     &lt;name&gt;hbase.master&lt;&#x2F;name&gt;
+     &lt;value&gt;localhost&lt;&#x2F;value&gt;
+ &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.rootdir&lt;&#x2F;name&gt;
+      &lt;value&gt;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;hbase&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.cluster.distributed&lt;&#x2F;name&gt;
+      &lt;value&gt;true&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.zookeeper.quorum&lt;&#x2F;name&gt;
+      &lt;value&gt;localhost&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+  &lt;property&gt;
+      &lt;name&gt;hbase.zookeeper.property.dataDir&lt;&#x2F;name&gt;
+      &lt;value&gt;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&lt;&#x2F;value&gt;
+  &lt;&#x2F;property&gt;
+&lt;&#x2F;configuration&gt;</code></pre>
+<ul>
+<li>hbase.master：HBase 主节点地址。</li>
+<li>hbase.rootdir：HBase 文件在 HDFS 上的存储位置。</li>
+<li>hbase.cluster.distributed：HBase 是否为分布式模式。</li>
+<li>hbase.zookeeper.quorum：配置 ZooKeeper 服务器地址。</li>
+<li>hbase.zookeeper.property.dataDir：HBase 在 ZooKeeper 上存储数据的位置。</li>
+</ul>
+</li>
+<li>
+<p>启动 hbase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh
+start-hbase.sh</code></pre>
+<p><img src="/images/1603684102731.png" alt="1603684102731"></p>
+</li>
+</ul>
+<h3>二、熟悉hbase常用操作</h3>
+- 测试hbase,进入hbase shell接口
+<p><img src="/images/1603684415504.png" alt="1603684415504"></p>
+<ul>
+<li>
+<p>list 查看表</p>
+<p><img src="/images/1603684445271.png" alt="1603684445271"></p>
+</li>
+<li>
+<p>创建一张表 tb，表中含有一个列簇 mycf。</p>
+</li>
+</ul>
+<p><img src="/images/1603684492782.png" alt="1603684492782"></p>
+<ul>
+<li>HBase 在 HDFS 上的存储位置是在 hbase-site.xml 设置的，可以使用 HDFS shell 命令进 行查看</li>
+</ul>
+<p><img src="/images/1603684553447.png" alt="1603684553447"></p>
+<ul>
+<li>
+<p>help</p>
+<p><img src="/images/1603684649100.png" alt="1603684649100"></p>
+</li>
+</ul>
+<h4>general命令</h4>
+- 查看服务状态
+<p><img src="/images/1603684748383.png" alt="1603684748383"></p>
+<ul>
+<li>
+<p>查看版本号</p>
+<p><img src="/images/1603684773276.png" alt="1603684773276"></p>
+</li>
+</ul>
+<h4>DDL操作（data defination language）定义、修改、查询</h4>
+- 创建一个表，包含两个列族
+<p><img src="/images/1603684900280.png" alt="1603684900280"></p>
+<ul>
+<li>
+<p>列出所有表</p>
+<p><img src="/images/1603684933889.png" alt="1603684933889"></p>
+</li>
+<li>
+<p>获取表的描述</p>
+<p><img src="/images/1603685365606.png" alt="1603685365606"></p>
+</li>
+<li>
+<p>删除一个列族</p>
+<p><img src="/images/1603688906830.png" alt="1603688906830"></p>
+</li>
+<li>
+<p>删除一个表，先 disable, 再 drop</p>
+<p><img src="/images/1603689047213.png" alt="1603689047213"></p>
+</li>
+<li>
+<p>查询表是否可用</p>
+<p><img src="/images/1603689125724.png" alt="1603689125724"></p>
+</li>
+</ul>
+<h4>DML操作(data manupulation language)增、删、改、查</h4>
+- 创建一个具有三个列族(name,address,info)的表students
+<p><img src="/images/1603689464049.png" alt="1603689464049"></p>
+<ul>
+<li>
+<p>插入数据（put）</p>
+<p><img src="/images/1603689664259.png" alt="1603689664259"></p>
+</li>
+<li>
+<p>获取数据（get）</p>
+<ul>
+<li>获取 students 表的 xiaoming 行的所有数据</li>
+</ul>
+<p><img src="/images/1603689759984.png" alt="1603689759984"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族的所有数据</li>
+</ul>
+<p><img src="/images/1603689849355.png" alt="1603689849355"></p>
+<ul>
+<li>获取 students 表的 xiaoming 行的 address 列族中 city 列的数据</li>
+</ul>
+<p><img src="/images/1603689895403.png" alt="1603689895403"></p>
+</li>
+<li>
+<p>更新一条记录（put）</p>
+<ul>
+<li>更新 students 表的 xiaoming 行、address 列族中 province 列的值</li>
+</ul>
+<p><img src="/images/1603690020203.png" alt="1603690020203"></p>
+<ul>
+<li>查看更新的结果</li>
+</ul>
+<p><img src="/images/1603690059663.png" alt="1603690059663"></p>
+</li>
+<li>
+<p>全表扫描（scan）</p>
+<p><img src="/images/1603690098444.png" alt="1603690098444"></p>
+</li>
+<li>
+<p>删除一列（delete）</p>
+<ul>
+<li>删除 students 表 xiaoming 行的 address 列族的列 city</li>
+</ul>
+<p><img src="/images/1603690263254.png" alt="1603690263254"></p>
+<ul>
+<li>查看操作结果</li>
+</ul>
+<p><img src="/images/1603690364530.png" alt="1603690364530"></p>
+</li>
+<li>
+<p>删除行的所有单元格（deleteall）</p>
+<ul>
+<li>使用 deleteall 命令删除 students 表 xiaoming 行的所有列</li>
+</ul>
+<p><img src="/images/1603690709013.png" alt="dd"></p>
+</li>
+<li>
+<p>统计表中的行数</p>
+<p><img src="/images/1603690974518.png" alt="1603690974518"></p>
+</li>
+<li>
+<p>清空整张表</p>
+<p><img src="/images/1603691074155.png" alt="1603691074155"></p>
+</li>
+<li>
+<p>存储多各版本的数据 创建的表，默认列族的 VERSIONS=1，也就是只会存取一个版本的列数据，当再次插入的 时候，后面的值会覆盖前面的值</p>
+</li>
+</ul>
+<p><img src="/images/1603691262153.png" alt="1603691262153"></p>
+<ul>
+<li>修改表结构，让表支持存储 3 个本版</li>
+</ul>
+<p><img src="/images/1603691355303.png" alt="1603691355303"></p>
+<p><img src="/images/1603691377795.png" alt="1603691377795"></p>
+<ul>
+<li>
+<p>插入三行数据</p>
+<p><img src="/images/1603691457623.png" alt="1603691457623"></p>
+</li>
+<li>
+<p>一次去除三个数据</p>
+<p><img src="/images/1603691528463.png" alt="1603691528463"></p>
+</li>
+</ul>
+<h3>三、hbase的API</h3>
+<ul>
+<li>
+<p>新建项目 hbase_api</p>
+<p><img src="/images/1603860576873.png" alt="1603860576873"></p>
+</li>
+<li>
+<p>将 HBase 目录 /apps/hbase/lib 中所 有的 jar 包和 /apps/hbase/lib/client-facing-thirdparty 下的所有 jar 包导入到 hbase 的 工程当中。</p>
+</li>
+<li>
+<p>将以上 jar 包先导入到～/big_data_tools/hbase_lib/</p>
+</li>
+</ul>
+<p><img src="/images/1603861069752.png" alt="1603861069752"></p>
+<ul>
+<li>导入 jar 包</li>
+</ul>
+<p><img src="/images/1603861286795.png" alt="1603861286795"></p>
+<ul>
+<li>
+<p>运行 as java</p>
+<p><img src="/images/1603861510250.png" alt="1603861510250"></p>
+</li>
+</ul>
+<h3>四、将tsv文件存入hbase</h3>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input&#x2F;music&#x2F;
+hadoop fs -put ~&#x2F;music.txt &#x2F;input&#x2F;music&#x2F;</code></pre>
+<ul>
+<li>调用 HBase 提供的 importtsv 工具在 HBase 上创建表 music, 并指定列族和列。</li>
+</ul>
+  <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop jar &#x2F;apps&#x2F;hbase&#x2F;lib&#x2F;hbase-server-1.4.10.jar importtsv -Dimporttsv.bulk.output&#x3D;&#x2F;user&#x2F;li -Dimporttsv.columns&#x3D;HBASE_ROW_KEY,info:name,info:singer,info:gender,info:ryghme,info:terminal music &#x2F;input&#x2F;music&#x2F;</code></pre>
+<ul>
+<li><img src="/images/1603862187841.png" alt="1603862187841"></li>
+</ul>
+<p>​       此时数据还没有存入 HBase，数据暂存在 HDFS 上的 /user/chen/tmp</p>
+<ul>
+<li>
+<p><img src="/images/1603864669150.png" alt="1603864669150"></p>
+</li>
+<li>
+<p>要把数据存入 HBase，还需要调用 HBase 提供的 completebulkload 工具</p>
+</li>
+</ul>
+<p><img src="/images/1603865004256.png" alt="1603865004256"></p>
+<ul>
+<li>
+<p>查看表中数据</p>
+<p><img src="/images/1603865032469.png" alt="1603865032469"></p>
+</li>
+<li>
+<p>创建 namelist 用于存储 mapreduce 的结果</p>
+<p><img src="/images/1603865151095.png" alt="1603865151095"></p>
+</li>
+<li>
+<p>新建项目 hbase_mapreduce</p>
+<p><img src="/images/1603865489410.png" alt="1603865489410"></p>
+</li>
+<li>
+<p>导入新的 jar 包</p>
+<p><img src="/images/1603865467696.png" alt="1603865467696"></p>
+</li>
+<li>
+<p>run as hadoop</p>
+<p><img src="/images/1603865580989.png" alt="1603865580989"></p>
+</li>
+<li>
+<p>查看结果</p>
+<p><img src="/images/1603865645364.png" alt="1603865645364"></p>
+</li>
+<li>
+<p>浏览器查看 localhost:16010</p>
+<p><img src="/images/1603865804764.png" alt="1603865804764"></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>hbase</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2020/12/18/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
+<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
   </entry>
   <entry>
     <title>Hive-practice</title>
@@ -3274,377 +3647,30 @@ public class StringExt extends UDF &#123;
       </tags>
   </entry>
   <entry>
-    <title>hbase</title>
-    <url>/2020/12/20/hbase/</url>
-    <content><![CDATA[<h1><center>hbase基础</center></h1>
-<h2>实验目的</h2>
-安装hbase并熟悉常用操作
-<h2>实验过程</h2>
-<h3>一、安装hbase</h3>
-- 建立shell脚本，以普通用户身份执行
-  <pre class="line-numbers language-none"><code class="language-none">bash hbase_conf.sh</code></pre>
-<ul>
-<li>
-<p>shell 脚本</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash
-# install jdk
-cp ~&#x2F;big_data_tools&#x2F;hbase1.4.10.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;hbase1.4.10.tar.gz -C &#x2F;apps&#x2F;
-rm -rf &#x2F;apps&#x2F;&#x2F;hbase1.4.10.tar.gz
+    <title>安装mysql</title>
+    <url>/2020/12/23/indatll_mysql_on_centos/</url>
+    <content><![CDATA[<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql-community-release-el7-5.noarch.rpm
 
-# add hbase to path
-echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+yum install mysql-community-release-el7-5.noarch.rpm 
 
-# config hbase 
-cd &#x2F;apps&#x2F;hbase&#x2F;conf
-echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; hbase-env.sh
-echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; hbase-env.sh
-echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; hbase-env.sh
-cp -f ~&#x2F;big_data_tools&#x2F;conf_hbase&#x2F;hbase-site.xml &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+yum install -y mysql-community-server
 
-sudo reboot      </code></pre>
-</li>
-<li>
-<p>~/big_data_tools/conf_hbase/hbase-site.xml</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"> &lt;configuration&gt;                                                                  
- &lt;property&gt;
-     &lt;name&gt;hbase.master&lt;&#x2F;name&gt;
-     &lt;value&gt;localhost&lt;&#x2F;value&gt;
- &lt;&#x2F;property&gt;
-  &lt;property&gt;
-      &lt;name&gt;hbase.rootdir&lt;&#x2F;name&gt;
-      &lt;value&gt;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;hbase&lt;&#x2F;value&gt;
-  &lt;&#x2F;property&gt;
-  &lt;property&gt;
-      &lt;name&gt;hbase.cluster.distributed&lt;&#x2F;name&gt;
-      &lt;value&gt;true&lt;&#x2F;value&gt;
-  &lt;&#x2F;property&gt;
-  &lt;property&gt;
-      &lt;name&gt;hbase.zookeeper.quorum&lt;&#x2F;name&gt;
-      &lt;value&gt;localhost&lt;&#x2F;value&gt;
-  &lt;&#x2F;property&gt;
-  &lt;property&gt;
-      &lt;name&gt;hbase.zookeeper.property.dataDir&lt;&#x2F;name&gt;
-      &lt;value&gt;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&lt;&#x2F;value&gt;
-  &lt;&#x2F;property&gt;
-&lt;&#x2F;configuration&gt;</code></pre>
-<ul>
-<li>hbase.master：HBase 主节点地址。</li>
-<li>hbase.rootdir：HBase 文件在 HDFS 上的存储位置。</li>
-<li>hbase.cluster.distributed：HBase 是否为分布式模式。</li>
-<li>hbase.zookeeper.quorum：配置 ZooKeeper 服务器地址。</li>
-<li>hbase.zookeeper.property.dataDir：HBase 在 ZooKeeper 上存储数据的位置。</li>
-</ul>
-</li>
-<li>
-<p>启动 hbase</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh
-start-hbase.sh</code></pre>
-<p><img src="/images/1603684102731.png" alt="1603684102731"></p>
-</li>
-</ul>
-<h3>二、熟悉hbase常用操作</h3>
-- 测试hbase,进入hbase shell接口
-<p><img src="/images/1603684415504.png" alt="1603684415504"></p>
-<ul>
-<li>
-<p>list 查看表</p>
-<p><img src="/images/1603684445271.png" alt="1603684445271"></p>
-</li>
-<li>
-<p>创建一张表 tb，表中含有一个列簇 mycf。</p>
-</li>
-</ul>
-<p><img src="/images/1603684492782.png" alt="1603684492782"></p>
-<ul>
-<li>HBase 在 HDFS 上的存储位置是在 hbase-site.xml 设置的，可以使用 HDFS shell 命令进 行查看</li>
-</ul>
-<p><img src="/images/1603684553447.png" alt="1603684553447"></p>
-<ul>
-<li>
-<p>help</p>
-<p><img src="/images/1603684649100.png" alt="1603684649100"></p>
-</li>
-</ul>
-<h4>general命令</h4>
-- 查看服务状态
-<p><img src="/images/1603684748383.png" alt="1603684748383"></p>
-<ul>
-<li>
-<p>查看版本号</p>
-<p><img src="/images/1603684773276.png" alt="1603684773276"></p>
-</li>
-</ul>
-<h4>DDL操作（data defination language）定义、修改、查询</h4>
-- 创建一个表，包含两个列族
-<p><img src="/images/1603684900280.png" alt="1603684900280"></p>
-<ul>
-<li>
-<p>列出所有表</p>
-<p><img src="/images/1603684933889.png" alt="1603684933889"></p>
-</li>
-<li>
-<p>获取表的描述</p>
-<p><img src="/images/1603685365606.png" alt="1603685365606"></p>
-</li>
-<li>
-<p>删除一个列族</p>
-<p><img src="/images/1603688906830.png" alt="1603688906830"></p>
-</li>
-<li>
-<p>删除一个表，先 disable, 再 drop</p>
-<p><img src="/images/1603689047213.png" alt="1603689047213"></p>
-</li>
-<li>
-<p>查询表是否可用</p>
-<p><img src="/images/1603689125724.png" alt="1603689125724"></p>
-</li>
-</ul>
-<h4>DML操作(data manupulation language)增、删、改、查</h4>
-- 创建一个具有三个列族(name,address,info)的表students
-<p><img src="/images/1603689464049.png" alt="1603689464049"></p>
-<ul>
-<li>
-<p>插入数据（put）</p>
-<p><img src="/images/1603689664259.png" alt="1603689664259"></p>
-</li>
-<li>
-<p>获取数据（get）</p>
-<ul>
-<li>获取 students 表的 xiaoming 行的所有数据</li>
-</ul>
-<p><img src="/images/1603689759984.png" alt="1603689759984"></p>
-<ul>
-<li>获取 students 表的 xiaoming 行的 address 列族的所有数据</li>
-</ul>
-<p><img src="/images/1603689849355.png" alt="1603689849355"></p>
-<ul>
-<li>获取 students 表的 xiaoming 行的 address 列族中 city 列的数据</li>
-</ul>
-<p><img src="/images/1603689895403.png" alt="1603689895403"></p>
-</li>
-<li>
-<p>更新一条记录（put）</p>
-<ul>
-<li>更新 students 表的 xiaoming 行、address 列族中 province 列的值</li>
-</ul>
-<p><img src="/images/1603690020203.png" alt="1603690020203"></p>
-<ul>
-<li>查看更新的结果</li>
-</ul>
-<p><img src="/images/1603690059663.png" alt="1603690059663"></p>
-</li>
-<li>
-<p>全表扫描（scan）</p>
-<p><img src="/images/1603690098444.png" alt="1603690098444"></p>
-</li>
-<li>
-<p>删除一列（delete）</p>
-<ul>
-<li>删除 students 表 xiaoming 行的 address 列族的列 city</li>
-</ul>
-<p><img src="/images/1603690263254.png" alt="1603690263254"></p>
-<ul>
-<li>查看操作结果</li>
-</ul>
-<p><img src="/images/1603690364530.png" alt="1603690364530"></p>
-</li>
-<li>
-<p>删除行的所有单元格（deleteall）</p>
-<ul>
-<li>使用 deleteall 命令删除 students 表 xiaoming 行的所有列</li>
-</ul>
-<p><img src="/images/1603690709013.png" alt="dd"></p>
-</li>
-<li>
-<p>统计表中的行数</p>
-<p><img src="/images/1603690974518.png" alt="1603690974518"></p>
-</li>
-<li>
-<p>清空整张表</p>
-<p><img src="/images/1603691074155.png" alt="1603691074155"></p>
-</li>
-<li>
-<p>存储多各版本的数据 创建的表，默认列族的 VERSIONS=1，也就是只会存取一个版本的列数据，当再次插入的 时候，后面的值会覆盖前面的值</p>
-</li>
-</ul>
-<p><img src="/images/1603691262153.png" alt="1603691262153"></p>
-<ul>
-<li>修改表结构，让表支持存储 3 个本版</li>
-</ul>
-<p><img src="/images/1603691355303.png" alt="1603691355303"></p>
-<p><img src="/images/1603691377795.png" alt="1603691377795"></p>
-<ul>
-<li>
-<p>插入三行数据</p>
-<p><img src="/images/1603691457623.png" alt="1603691457623"></p>
-</li>
-<li>
-<p>一次去除三个数据</p>
-<p><img src="/images/1603691528463.png" alt="1603691528463"></p>
-</li>
-</ul>
-<h3>三、hbase的API</h3>
-<ul>
-<li>
-<p>新建项目 hbase_api</p>
-<p><img src="/images/1603860576873.png" alt="1603860576873"></p>
-</li>
-<li>
-<p>将 HBase 目录 /apps/hbase/lib 中所 有的 jar 包和 /apps/hbase/lib/client-facing-thirdparty 下的所有 jar 包导入到 hbase 的 工程当中。</p>
-</li>
-<li>
-<p>将以上 jar 包先导入到～/big_data_tools/hbase_lib/</p>
-</li>
-</ul>
-<p><img src="/images/1603861069752.png" alt="1603861069752"></p>
-<ul>
-<li>导入 jar 包</li>
-</ul>
-<p><img src="/images/1603861286795.png" alt="1603861286795"></p>
-<ul>
-<li>
-<p>运行 as java</p>
-<p><img src="/images/1603861510250.png" alt="1603861510250"></p>
-</li>
-</ul>
-<h3>四、将tsv文件存入hbase</h3>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -mkdir &#x2F;input&#x2F;music&#x2F;
-hadoop fs -put ~&#x2F;music.txt &#x2F;input&#x2F;music&#x2F;</code></pre>
-<ul>
-<li>调用 HBase 提供的 importtsv 工具在 HBase 上创建表 music, 并指定列族和列。</li>
-</ul>
-  <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop jar &#x2F;apps&#x2F;hbase&#x2F;lib&#x2F;hbase-server-1.4.10.jar importtsv -Dimporttsv.bulk.output&#x3D;&#x2F;user&#x2F;li -Dimporttsv.columns&#x3D;HBASE_ROW_KEY,info:name,info:singer,info:gender,info:ryghme,info:terminal music &#x2F;input&#x2F;music&#x2F;</code></pre>
-<ul>
-<li><img src="/images/1603862187841.png" alt="1603862187841"></li>
-</ul>
-<p>​       此时数据还没有存入 HBase，数据暂存在 HDFS 上的 /user/chen/tmp</p>
-<ul>
-<li>
-<p><img src="/images/1603864669150.png" alt="1603864669150"></p>
-</li>
-<li>
-<p>要把数据存入 HBase，还需要调用 HBase 提供的 completebulkload 工具</p>
-</li>
-</ul>
-<p><img src="/images/1603865004256.png" alt="1603865004256"></p>
-<ul>
-<li>
-<p>查看表中数据</p>
-<p><img src="/images/1603865032469.png" alt="1603865032469"></p>
-</li>
-<li>
-<p>创建 namelist 用于存储 mapreduce 的结果</p>
-<p><img src="/images/1603865151095.png" alt="1603865151095"></p>
-</li>
-<li>
-<p>新建项目 hbase_mapreduce</p>
-<p><img src="/images/1603865489410.png" alt="1603865489410"></p>
-</li>
-<li>
-<p>导入新的 jar 包</p>
-<p><img src="/images/1603865467696.png" alt="1603865467696"></p>
-</li>
-<li>
-<p>run as hadoop</p>
-<p><img src="/images/1603865580989.png" alt="1603865580989"></p>
-</li>
-<li>
-<p>查看结果</p>
-<p><img src="/images/1603865645364.png" alt="1603865645364"></p>
-</li>
-<li>
-<p>浏览器查看 localhost:16010</p>
-<p><img src="/images/1603865804764.png" alt="1603865804764"></p>
-</li>
-</ul>
+systemctl start mysqld.service
+
+mysql -uroot -p
+
+set password for &#39;root&#39;@&#39;localhost&#39;&#x3D;password(&#39;hutu123&#39;);
+
+grant all privileges on *.* to &#39;root&#39;@&#39;%&#39; identified by &#39;password&#39; with grant option; 
+
+flush privileges; </code></pre>
 ]]></content>
       <categories>
-        <category>大数据</category>
+        <category>mysql</category>
       </categories>
       <tags>
-        <tag>hbase</tag>
+        <tag>mysql</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>hadoop shell and java API</title>
-    <url>/2020/12/20/hadoop_shell-and-java_API/</url>
-    <content><![CDATA[<h1><center>hadoop shell & java API</center></h1>
-<h2>实验目的</h2>
-熟悉hadoop 的shell 和java API
-<h2>实验过程</h2>
-<h3>一、shell api</h3>
-<pre class="line-numbers language-none"><code class="language-none">hadoop fs -cp &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;
-hadoop fs -mv &#x2F;input&#x2F;testfile1 &#x2F;input&#x2F;test&#x2F;
-hadoop fs -rm &#x2F;input&#x2F;testfile1
-hadoop fs -rm -r &#x2F;input&#x2F;testfile1
-hadoop fs -put &#x2F;data&#x2F;testfile &#x2F;input&#x2F;
-hadoop fs -get &#x2F;input&#x2F;testfile1 &#x2F;data&#x2F;
-hadoop fs -mkdir -p &#x2F;input&#x2F;test&#x2F;testfile1
-hadoop fs -test -e &#x2F;input&#x2F;testfile1
-hadoop fs -test -d &#x2F;input&#x2F;
-echo $? # 返回上条命令的输出，是返回0，否返回1</code></pre>
-<h4>使用hadoop自带的Wordcount</h4>
-![1603079934371](/images/1603079934371.png)
-<h4>hadoop 安全模式</h4>
-<pre class="line-numbers language-none"><code class="language-none">进入安全模式
-hdfs dfsadmin -safemode enter
-离开安全模式
-hdfs dfsadmin -safemode leave</code></pre>
-<h3>二、java api</h3>
-<h4>1.准备需要的jar文件</h4>
- 将/apps/hadoop/share/hadoop 目录下的 common，hdfs，mapreduce，yarn 4 个子目录中的 jar 文件以及这 4 个子目录下 lib 文件夹中的所有 jar 文件复制到~/big_data_tools/hadoop3lib 中。 这些 jar 文件将作为外部的 jar 文件添加到工程中。分别切换到那几个目录下，执行一下这条命令  
-<pre class="line-numbers language-none"><code class="language-none">cp *.jar ~&#x2F;big_data_tools&#x2F;hadoop3lib&#x2F;</code></pre>
-<h4>2.新建javaproject</h4>
-![1603077812701](/images/1603077812701.png)
-<h4>3.命名为hdfs_java_api</h4>
-![1603077853154](/images/1603077853154.png)
-<h4>4.新建包</h4>
-![1603077884645](/images/1603077884645.png)
-<h4>5.命名为 hdfs.api</h4>
-![1603077935064](/images/1603077935064.png)
-<h4>5.新建java类,TestHdfsApi.java</h4>
-![1603077986412](/images/1603077986412.png)
-<h4>6.导入外部依赖的Jar包</h4>
-![1603078029259](/images/1603078029259.png)
-<p><img src="/images/1603078072711.png" alt=""></p>
-<h4>7.创建testfile</h4>
-![1603078105527](/images/1603078105527.png)
-<h4>8.运行程序</h4>
-![1603078142864](/images/1603078142864.png)
-<p><img src="/images/1603078130695.png" alt="1603078130695"></p>
-<h4>9.创建/myhadoop目录</h4>
-![1603078180150](/images/1603078180150.png)
-<h4>10.再次运行as java application</h4>
-![1603078204854](/images/1603078204854.png)
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>hadoop</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/12/18/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
   </entry>
   <entry>
     <title>hive-QL</title>
@@ -3946,32 +3972,6 @@ desc database hive_db_test;</code></pre>
       </categories>
       <tags>
         <tag>hive</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>安装mysql</title>
-    <url>/2020/12/23/indatll_mysql_on_centos/</url>
-    <content><![CDATA[<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql-community-release-el7-5.noarch.rpm
-
-yum install mysql-community-release-el7-5.noarch.rpm 
-
-yum install -y mysql-community-server
-
-systemctl start mysqld.service
-
-mysql -uroot -p
-
-set password for &#39;root&#39;@&#39;localhost&#39;&#x3D;password(&#39;hutu123&#39;);
-
-grant all privileges on *.* to &#39;root&#39;@&#39;%&#39; identified by &#39;password&#39; with grant option; 
-
-flush privileges; </code></pre>
-]]></content>
-      <categories>
-        <category>mysql</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -4374,88 +4374,6 @@ class Student&#123;
       </tags>
   </entry>
   <entry>
-    <title>稀疏矩阵压缩java实现</title>
-    <url>/2020/12/20/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E5%8E%8B%E7%BC%A9/</url>
-    <content><![CDATA[<h3 id="效果展示"><a class="markdownIt-Anchor" href="#效果展示">#</a> 效果展示</h3>
-<p><img src="https://img-blog.csdnimg.cn/20200807214637482.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h3 id="代码"><a class="markdownIt-Anchor" href="#代码">#</a> 代码</h3>
-<pre class="line-numbers language-none"><code class="language-none">package com.atguigu.sparsearray;
-
-public class SparseArray &#123;
-    public static void main(String[] args) &#123;
-&#x2F;&#x2F;        手动创建一个稀疏的二维数组，为了后面使用
-        int[][] chessArr1 &#x3D; new int[11][11];
-        chessArr1[1][2] &#x3D; 1;
-        chessArr1[2][3] &#x3D; 2;
-&#x2F;&#x2F;        遍历数组，打印元素
-        for (int[] row: chessArr1
-             ) &#123;
-            for (int col:row
-                 ) &#123;
-                System.out.printf(&quot;%d\t&quot;,col);
-            &#125;
-            System.out.println();
-        &#125;
-
-&#x2F;&#x2F;        根据稀疏数组，创建小数组
-        &#x2F;&#x2F; 1.首先，遍历稀疏数组，找到所有非零的数，并计数
-        int sum &#x3D; 0;
-        for (int[] row: chessArr1
-        ) &#123;
-            for (int col:row
-            ) &#123;
-                if(col !&#x3D; 0)&#123;
-                    sum++;
-                &#125;
-            &#125;
-        &#125;
-        int[][] sparseArr &#x3D; new int[sum+1][3];
-        sparseArr[0][0] &#x3D; chessArr1.length;
-        sparseArr[0][1] &#x3D; chessArr1.length;
-        sparseArr[0][2] &#x3D; sum;
-        int count &#x3D; 0;
-        for(int i &#x3D; 0; i &lt; chessArr1.length; i++)&#123;
-            for(int j &#x3D; 0; j &lt; chessArr1.length; j++)&#123;
-                if(chessArr1[i][j] !&#x3D; 0)&#123;
-                    count++;
-                    sparseArr[count][0] &#x3D; i;
-                    sparseArr[count][1] &#x3D; j;
-                    sparseArr[count][2] &#x3D; chessArr1[i][j];
-                &#125;
-            &#125;
-        &#125;
-        &#x2F;&#x2F; 稀疏数组
-        for (int i &#x3D; 0; i &lt; sparseArr.length; i++)&#123;
-            System.out.printf(&quot;%d\t%d\t%d\t&quot;,sparseArr[i][0], sparseArr[i][1], sparseArr[i][2]);
-            System.out.println();
-        &#125;
-
-&#x2F;&#x2F;        还原稀疏数组
-        int[][] chessArr2 &#x3D; new int[sparseArr[0][0]][sparseArr[0][1]];
-        for(int i &#x3D; 1; i &lt; sparseArr.length; i++)&#123;
-            chessArr2[sparseArr[i][0]][sparseArr[i][1]] &#x3D; sparseArr[i][2];
-        &#125;
-
-        &#x2F;&#x2F; 打印还原的数组
-        for (int[] row: chessArr2
-             ) &#123;
-            for (int col: row
-                 ) &#123;
-                System.out.printf(&quot;%d\t&quot;,col);
-            &#125;
-            System.out.println();
-        &#125;
-    &#125;
-&#125;
-</code></pre>]]></content>
-      <categories>
-        <category>算法与数据结构</category>
-      </categories>
-      <tags>
-        <tag>稀疏矩阵</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>学生系统管理-C实现</title>
     <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>C 语言链表实现学生管理系统</p>
@@ -4701,6 +4619,88 @@ int main()
       </categories>
       <tags>
         <tag>C语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>稀疏矩阵压缩java实现</title>
+    <url>/2020/12/20/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E5%8E%8B%E7%BC%A9/</url>
+    <content><![CDATA[<h3 id="效果展示"><a class="markdownIt-Anchor" href="#效果展示">#</a> 效果展示</h3>
+<p><img src="https://img-blog.csdnimg.cn/20200807214637482.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="代码"><a class="markdownIt-Anchor" href="#代码">#</a> 代码</h3>
+<pre class="line-numbers language-none"><code class="language-none">package com.atguigu.sparsearray;
+
+public class SparseArray &#123;
+    public static void main(String[] args) &#123;
+&#x2F;&#x2F;        手动创建一个稀疏的二维数组，为了后面使用
+        int[][] chessArr1 &#x3D; new int[11][11];
+        chessArr1[1][2] &#x3D; 1;
+        chessArr1[2][3] &#x3D; 2;
+&#x2F;&#x2F;        遍历数组，打印元素
+        for (int[] row: chessArr1
+             ) &#123;
+            for (int col:row
+                 ) &#123;
+                System.out.printf(&quot;%d\t&quot;,col);
+            &#125;
+            System.out.println();
+        &#125;
+
+&#x2F;&#x2F;        根据稀疏数组，创建小数组
+        &#x2F;&#x2F; 1.首先，遍历稀疏数组，找到所有非零的数，并计数
+        int sum &#x3D; 0;
+        for (int[] row: chessArr1
+        ) &#123;
+            for (int col:row
+            ) &#123;
+                if(col !&#x3D; 0)&#123;
+                    sum++;
+                &#125;
+            &#125;
+        &#125;
+        int[][] sparseArr &#x3D; new int[sum+1][3];
+        sparseArr[0][0] &#x3D; chessArr1.length;
+        sparseArr[0][1] &#x3D; chessArr1.length;
+        sparseArr[0][2] &#x3D; sum;
+        int count &#x3D; 0;
+        for(int i &#x3D; 0; i &lt; chessArr1.length; i++)&#123;
+            for(int j &#x3D; 0; j &lt; chessArr1.length; j++)&#123;
+                if(chessArr1[i][j] !&#x3D; 0)&#123;
+                    count++;
+                    sparseArr[count][0] &#x3D; i;
+                    sparseArr[count][1] &#x3D; j;
+                    sparseArr[count][2] &#x3D; chessArr1[i][j];
+                &#125;
+            &#125;
+        &#125;
+        &#x2F;&#x2F; 稀疏数组
+        for (int i &#x3D; 0; i &lt; sparseArr.length; i++)&#123;
+            System.out.printf(&quot;%d\t%d\t%d\t&quot;,sparseArr[i][0], sparseArr[i][1], sparseArr[i][2]);
+            System.out.println();
+        &#125;
+
+&#x2F;&#x2F;        还原稀疏数组
+        int[][] chessArr2 &#x3D; new int[sparseArr[0][0]][sparseArr[0][1]];
+        for(int i &#x3D; 1; i &lt; sparseArr.length; i++)&#123;
+            chessArr2[sparseArr[i][0]][sparseArr[i][1]] &#x3D; sparseArr[i][2];
+        &#125;
+
+        &#x2F;&#x2F; 打印还原的数组
+        for (int[] row: chessArr2
+             ) &#123;
+            for (int col: row
+                 ) &#123;
+                System.out.printf(&quot;%d\t&quot;,col);
+            &#125;
+            System.out.println();
+        &#125;
+    &#125;
+&#125;
+</code></pre>]]></content>
+      <categories>
+        <category>算法与数据结构</category>
+      </categories>
+      <tags>
+        <tag>稀疏矩阵</tag>
       </tags>
   </entry>
   <entry>

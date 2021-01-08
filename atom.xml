@@ -6,10 +6,87 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-01-08T12:38:41.646Z</updated>
+  <updated>2021-01-08T14:47:50.037Z</updated>
   <id>http://example.com/</id>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>选队长游戏</title>
+    <link href="http://example.com/2021/01/08/%E9%80%89%E9%98%9F%E9%95%BF%E6%B8%B8%E6%88%8F/"/>
+    <id>http://example.com/2021/01/08/%E9%80%89%E9%98%9F%E9%95%BF%E6%B8%B8%E6%88%8F/</id>
+    <published>2021-01-08T14:48:06.163Z</published>
+    <updated>2021-01-08T14:47:50.037Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;题目为：&lt;/p&gt;
+&lt;p&gt;今天同学们相约一起爬山游玩，为了更好的进行这场活动，大家准备推举 一个人作为出游的临时队长。为了体现合理公平，大家提出了一个比较有趣的 规则。所有人围成一圈，顺序排号。从第一个人开始报数（从 1 到 3 报数）， 凡报到 3</summary>
+        
+      
+    
+    
+    
+    <category term="算法" scheme="http://example.com/categories/%E7%AE%97%E6%B3%95/"/>
+    
+    
+    <category term="算法" scheme="http://example.com/tags/%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>java内存分析</title>
+    <link href="http://example.com/2021/01/08/java%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/"/>
+    <id>http://example.com/2021/01/08/java%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/</id>
+    <published>2021-01-08T14:48:06.160Z</published>
+    <updated>2021-01-08T14:47:56.385Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;在 java</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://example.com/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://example.com/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>种花问题</title>
+    <link href="http://example.com/2021/01/08/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/"/>
+    <id>http://example.com/2021/01/08/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/</id>
+    <published>2021-01-08T14:46:45.138Z</published>
+    <updated>2021-01-08T14:47:23.991Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;问题：&lt;/p&gt;
+&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="leetcode" scheme="http://example.com/categories/leetcode/"/>
+    
+    
+    <category term="leetcode" scheme="http://example.com/tags/leetcode/"/>
+    
+  </entry>
   
   <entry>
     <title>python1-15天</title>
@@ -464,94 +541,6 @@
     
     
     <category term="java" scheme="http://example.com/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>auto scripts</title>
-    <link href="http://example.com/2020/12/20/auto_install/"/>
-    <id>http://example.com/2020/12/20/auto_install/</id>
-    <published>2020-12-20T01:35:31.392Z</published>
-    <updated>2020-12-20T01:36:16.185Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;安装并配置 hadoop,eclipse&lt;/p&gt;
-&lt;pre class=&quot;line-numbers language-none&quot;&gt;&lt;code class=&quot;language-none&quot;&gt;if [ -d &amp;#39;&amp;#x2F;apps&amp;#39; ];then
-   </summary>
-        
-      
-    
-    
-    
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-    <category term="scripts" scheme="http://example.com/tags/scripts/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>spark-practice</title>
-    <link href="http://example.com/2020/12/20/spark-practice/"/>
-    <id>http://example.com/2020/12/20/spark-practice/</id>
-    <published>2020-12-20T01:23:00.707Z</published>
-    <updated>2020-12-20T01:23:00.708Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1&gt;&lt;center&gt;Spark&lt;/center&gt;&lt;/h1&gt;
-&lt;h2&gt;实验目的&lt;/h2&gt;
-安装spark并熟悉pyspark 的RDD算子操作
-&lt;h2&gt;实验过程&lt;/h2&gt;
-## 一、Spark local模式安装
-&lt;h4 id=&quot;11安装scala&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-    <category term="spark" scheme="http://example.com/tags/spark/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>hive-QL</title>
-    <link href="http://example.com/2020/12/20/hive_QL/"/>
-    <id>http://example.com/2020/12/20/hive_QL/</id>
-    <published>2020-12-20T01:22:42.546Z</published>
-    <updated>2020-12-20T13:41:49.305Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1&gt;&lt;center&gt;Hive&lt;/center&gt;&lt;/h1&gt;
-&lt;h2&gt;实验目的&lt;/h2&gt;
-了解hive中的数据模型，熟悉hive QL语句。
-&lt;h2&gt;实验内容&lt;/h2&gt;
-&lt;h3&gt;一、安装Hive并配置&lt;/h3&gt;
-- hive安装并配置
-&lt;pre</summary>
-        
-      
-    
-    
-    
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-    <category term="hive" scheme="http://example.com/tags/hive/"/>
     
   </entry>
   

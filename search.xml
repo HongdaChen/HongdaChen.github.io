@@ -876,351 +876,6 @@ ting***15   北京 北京 上海
       </tags>
   </entry>
   <entry>
-    <title>Sqoop</title>
-    <url>/2020/12/20/Sqoop/</url>
-    <content><![CDATA[<h1><center>Sqoop</center></h1>
-<h2>实验目的</h2>
-熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
-<h2>实验内容</h2>
-安装，配置Sqoop
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
-if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
-    sudo rm -rf &#x2F;apps&#x2F;sqoop
-fi
-# 将Sqoop的安装包复制到&#x2F;apps下，并解压
-sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
-tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
-# 删除压缩包
-sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
-# 修改名称
-mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
-# 删除有关sqoop_home的环境变量
-sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-# 添加环境变量
-echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
-cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
-# 重命令
-mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
-# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
-echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
-# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
-sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
-# 重启，使环境变量生效
-sudo reboot</code></pre>
-<p>版本信息：</p>
-<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
-<p>使用 sqoop help 查看支持的命令</p>
-<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
-<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
-<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
-<p>确保 mysql 正常运行</p>
-<p><img src="/images/1605065733969.png" alt=""></p>
-<p>查询 mysql 中的数据库。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
-<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
-use mydb;
-create table record 
-	(
-	id varchar(100),
-	buyer_id varchar(100),
-	dt varchar(100),
-	ip varchar(100),
-	opt_type varchar(100)
-	);
-    
-load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
-<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456</code></pre>
-<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
-<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
-<ul>
-<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
-</ul>
-<p>hdfs 上的 mysqool 不能存在</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
---username root \
---password 123456 \
---table record -m 1 \
---target-dir &#x2F;mysqoop</code></pre>
-<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
-<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhdfs like record;</code></pre>
-<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhdfs -m 1 \
---export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
-<p>检查 Mysql</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhdfs limit 3,5;</code></pre>
-<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
-<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
-<p>启动 HBase</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
-<p>进入 hbase shell</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
-<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
-<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hbase-table hbaserecord \
---column-family mycf \
---hbase-row-key dt -m 1</code></pre>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
-<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
-<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
-<p>需要在～/.bashrc 添加以下内容。</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
-export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
-<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table record \
---hive-import \
---hive-table hiverecord \
---fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
-<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
-<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-create table recordfromhive like record;             </code></pre>
-<p>导数据</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
---connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
---username root \
---password 123456 \
---table recordfromhive \
---export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
---input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
-<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
-<p>查看结果</p>
-<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
-select * from recordfromhive;</code></pre>
-<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>sqoop</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>auto scripts</title>
-    <url>/2020/12/20/auto_install/</url>
-    <content><![CDATA[<p>安装并配置 hadoop,eclipse</p>
-<pre class="line-numbers language-none"><code class="language-none">if [ -d &#39;&#x2F;apps&#39; ];then
-    sudo rm -rf &#x2F;apps
-fi
-if [ -d &#39;&#x2F;data&#39; ];then
-    sudo rm -rf &#x2F;data
-fi
-sudo rm -rf ~&#x2F;.ssh&#x2F;*
-# clear env
-sed -i &#39;&#x2F;JAVA_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-sed -i &#39;&#x2F;HADOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-
-mkdir apps
-mkdir data
-
-sudo mv apps &#x2F;
-sudo mv data &#x2F;
-# install openssh-server
-sudo apt -y update 
-sudo apt -y upgrade 
-echo &quot;install vim ...&quot;
-sudo apt -y install vim
-echo &quot;install openssh-server&quot;
-sudo apt -y install openssh-server
-ssh-keygen -t rsa 
-cp ~&#x2F;.ssh&#x2F;id_rsa.pub ~&#x2F;.ssh&#x2F;authorized_keys
-
-# install jdk
-cp ~&#x2F;big_data_tools&#x2F;jdk-8u191-linux-x64.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;jdk1.8.0_191 &#x2F;apps&#x2F;java
-rm -rf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  
-
-# add jdk to path
-echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$JAVA_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-# install hadoop
-cp ~&#x2F;big_data_tools&#x2F;hadoop-3.0.0.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;hadoop-3.0.0 &#x2F;apps&#x2F;hadoop
-rm -rf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz 
-
-# add hadoop to path
-echo &#39;export HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-# config hadoop
-#cp -f ~&#x2F;big_data_tools&#x2F;conf_hadoop&#x2F;* &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hadoop.tmp.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;tmp&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;fs.defaultFS&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;dfs.namenode.name.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;name&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.datanode.data.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;data&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.replication&lt;\&#x2F;name&gt;&lt;value&gt;1&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.permissions.enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hdfs-site.xml
-
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;mapreduce.framework.name&lt;\&#x2F;name&gt;&lt;value&gt;yarn&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml
-
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;yarn.nodemanager.aux-services&lt;\&#x2F;name&gt;&lt;value&gt;mapreduce_shuffle&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-check-enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;\&#x2F;name&gt;&lt;value&gt;5&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml
-
-sed -i &quot;54,54s&#x2F;.*&#x2F;export JAVA_HOME&#x3D;\&#x2F;apps\&#x2F;java&#x2F;g&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;tmp
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs
-
-export PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;bin:$PATH
-
-hadoop namenode -format
-
-# install eclipse
-cp ~&#x2F;big_data_tools&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz -C &#x2F;apps&#x2F;
-cp ~&#x2F;big_data_tools&#x2F;hadoop-eclipse-plugin-2.6.0.jar &#x2F;apps&#x2F;eclipse&#x2F;dropins&#x2F;
-rm -rf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz
-sudo reboot</code></pre>
-<p>安装并配置 hbase</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-# install hbase
-
-if [-d &#39;&#x2F;apps&#x2F;hbase&#39;];then
-    sudo rm -rf &#x2F;apps&#x2F;hbase
-fi
-
-cp ~&#x2F;big_data_tools&#x2F;hbase-1.4.0-bin.tar.gz &#x2F;apps&#x2F;
-tar -xzvf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz -C &#x2F;apps&#x2F;
-rm -rf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz 
-mv &#x2F;apps&#x2F;hbase-1.4.0 &#x2F;apps&#x2F;hbase
-# clear env
-if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&#39; ];then
-    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
-fi
-sed -i &#39;&#x2F;HBASE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-
-# add hbase to path
-echo &#39;export HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-# config hbase 
-echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
-sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hbase.master&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.rootdir&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000\&#x2F;hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.cluster.distributed&lt;\&#x2F;name&gt;&lt;value&gt;true&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.quorum&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.property.dataDir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;zookeeper-hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-site.xml
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
-
-sudo reboot</code></pre>
-<p>安装并配置 hive</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-if [ -d &#39;&#x2F;apps&#x2F;hive&#39;  ];then
-    sudo rm -rf &#x2F;apps&#x2F;hive
-fi
-if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp&#39; ];then
-    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
-fi
-# clear env
-sed -i &#39;&#x2F;HIVE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
-
-cp ~&#x2F;big_data_tools&#x2F;apache-hive-2.3.5-bin.tar.gz &#x2F;apps&#x2F;
-tar zxvf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz -C &#x2F;apps&#x2F;
-mv &#x2F;apps&#x2F;apache-hive-2.3.5-bin &#x2F;apps&#x2F;hive 
-rm -rf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz
-
-# add hive to path
-echo &#39;export HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; ~&#x2F;.bashrc
-echo &#39;export PATH&#x3D;$HIVE_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
-
-cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;hive&#x2F;lib&#x2F;
-# config hive
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-default.xml.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-mkdir -p &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
-
-sed -i &quot;s&#x2F;\$&#123;system:java.io.tmpdir&#125;&#x2F;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-sed -i &quot;s&#x2F;\$&#123;system:user.name&#125;&#x2F;root&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-sed -i &quot;545,545s&#x2F;.*&#x2F;&lt;value&gt;jdbc:mysql:\&#x2F;\&#x2F;localhost:3306\&#x2F;hive?createDatabaseIfNotExsit&#x3D;true;characterEncoding&#x3D;latin1\&amp;useSSL&#x3D;false&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;1020,1020s&#x2F;.*&#x2F;&lt;value&gt;com.mysql.jdbc.Driver&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;1045,1045s&#x2F;.*&#x2F;&lt;value&gt;root&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-sed -i &quot;530,530s&#x2F;.*&#x2F;&lt;value&gt;123456&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
-
-# 
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh 
-echo &#39;HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
-echo &#39;export HIVE_CONF_DIR&#x3D;&#x2F;apps&#x2F;hive&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
-# logger
-mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
-
-sed -i &quot;24,24s&#x2F;.*&#x2F;property.hive.log.dir&#x3D;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp\&#x2F;log&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
-
-# restart
-sudo reboot</code></pre>
-<p>安装并配置 mysql</p>
-<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
-sudo apt -y update
-sudo apt -y upgrade
-sudo apt -y install mysql-server
-
-sudo service mysql restart
-
-
-sudo mysql&lt;&lt;EOF
-update mysql.user set authentication_string&#x3D;PASSWORD(&#39;123456&#39;),plugin&#x3D;&#39;mysql_native_password&#39; where user&#x3D;&#39;root&#39;;
-
-create database hive CHARACTER SET latin1;
-
-grant all privileges on *.* to root@&#39;%&#39; identified by &#39;123456&#39;;
-flush privileges;
-EOF
-exit;
-
-sed -i &quot;43,43s&#x2F;.*&#x2F;#bind-address&#x3D;127.0.0.1&#x2F;g&quot; &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf
-
-service mysql restart
-
-# init meta database
-schematool -dbType mysql -initSchema</code></pre>
-<p style="color:red">如果是重新安装hive，mysql不用重装的情况下，运行完hive_install_config.sh后需要将mysql中的hive数据库删除，重新建立hive数据库，之后再退出mysql在终端执行初始化元数据库的命令schematool -dbType mysql -initSchema。运行hbase shell前要先启动hadoop和hbase。运行hive之前要先启动hadoop</p>
-]]></content>
-      <categories>
-        <category>大数据</category>
-      </categories>
-      <tags>
-        <tag>scripts</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>4台电脑搭建Hadoop+Spark分布式集群</title>
     <url>/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/</url>
     <content><![CDATA[<h1><center>搭建Hadoop+Spark分布式集群</center></h1>
@@ -1429,6 +1084,168 @@ scp spark-env.sh slaves spark-defaults.conf worker3:&#x2F;apps&#x2F;spark&#x2F;c
       </tags>
   </entry>
   <entry>
+    <title>Sqoop</title>
+    <url>/2020/12/20/Sqoop/</url>
+    <content><![CDATA[<h1><center>Sqoop</center></h1>
+<h2>实验目的</h2>
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+<h2>实验内容</h2>
+安装，配置Sqoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
+if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
+    sudo rm -rf &#x2F;apps&#x2F;sqoop
+fi
+# 将Sqoop的安装包复制到&#x2F;apps下，并解压
+sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
+tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
+# 删除压缩包
+sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+# 修改名称
+mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
+# 删除有关sqoop_home的环境变量
+sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+# 添加环境变量
+echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
+# 重命令
+mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
+# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
+echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
+sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
+# 重启，使环境变量生效
+sudo reboot</code></pre>
+<p>版本信息：</p>
+<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
+<p>使用 sqoop help 查看支持的命令</p>
+<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
+<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
+<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
+<p>确保 mysql 正常运行</p>
+<p><img src="/images/1605065733969.png" alt=""></p>
+<p>查询 mysql 中的数据库。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
+<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
+use mydb;
+create table record 
+	(
+	id varchar(100),
+	buyer_id varchar(100),
+	dt varchar(100),
+	ip varchar(100),
+	opt_type varchar(100)
+	);
+    
+load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
+<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
+<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
+<ul>
+<li>启动 hadoop   【<a href="http://start-all.sh">start-all.sh</a>】</li>
+</ul>
+<p>hdfs 上的 mysqool 不能存在</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456 \
+--table record -m 1 \
+--target-dir &#x2F;mysqoop</code></pre>
+<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
+<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhdfs like record;</code></pre>
+<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhdfs -m 1 \
+--export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
+<p>检查 Mysql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhdfs limit 3,5;</code></pre>
+<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
+<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
+<p>启动 HBase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
+<p>进入 hbase shell</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
+<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
+<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hbase-table hbaserecord \
+--column-family mycf \
+--hbase-row-key dt -m 1</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
+<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
+<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
+<p>需要在～/.bashrc 添加以下内容。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
+export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hive-import \
+--hive-table hiverecord \
+--fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
+<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
+<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhive like record;             </code></pre>
+<p>导数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhive \
+--export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
+--input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
+<p>查看结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhive;</code></pre>
+<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>sqoop</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hadoop shell and java API</title>
     <url>/2020/12/20/hadoop_shell-and-java_API/</url>
     <content><![CDATA[<h1><center>hadoop shell & java API</center></h1>
@@ -1485,6 +1302,208 @@ hdfs dfsadmin -safemode leave</code></pre>
       </categories>
       <tags>
         <tag>hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2020/12/18/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
+<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>auto scripts</title>
+    <url>/2020/12/20/auto_install/</url>
+    <content><![CDATA[<p>安装并配置 hadoop,eclipse</p>
+<pre class="line-numbers language-none"><code class="language-none">if [ -d &#39;&#x2F;apps&#39; ];then
+    sudo rm -rf &#x2F;apps
+fi
+if [ -d &#39;&#x2F;data&#39; ];then
+    sudo rm -rf &#x2F;data
+fi
+sudo rm -rf ~&#x2F;.ssh&#x2F;*
+# clear env
+sed -i &#39;&#x2F;JAVA_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+sed -i &#39;&#x2F;HADOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+mkdir apps
+mkdir data
+
+sudo mv apps &#x2F;
+sudo mv data &#x2F;
+# install openssh-server
+sudo apt -y update 
+sudo apt -y upgrade 
+echo &quot;install vim ...&quot;
+sudo apt -y install vim
+echo &quot;install openssh-server&quot;
+sudo apt -y install openssh-server
+ssh-keygen -t rsa 
+cp ~&#x2F;.ssh&#x2F;id_rsa.pub ~&#x2F;.ssh&#x2F;authorized_keys
+
+# install jdk
+cp ~&#x2F;big_data_tools&#x2F;jdk-8u191-linux-x64.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;jdk1.8.0_191 &#x2F;apps&#x2F;java
+rm -rf &#x2F;apps&#x2F;jdk-8u191-linux-x64.tar.gz  
+
+# add jdk to path
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$JAVA_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# install hadoop
+cp ~&#x2F;big_data_tools&#x2F;hadoop-3.0.0.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;hadoop-3.0.0 &#x2F;apps&#x2F;hadoop
+rm -rf &#x2F;apps&#x2F;hadoop-3.0.0.tar.gz 
+
+# add hadoop to path
+echo &#39;export HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hadoop
+#cp -f ~&#x2F;big_data_tools&#x2F;conf_hadoop&#x2F;* &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hadoop.tmp.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;tmp&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;fs.defaultFS&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;dfs.namenode.name.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;name&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.datanode.data.dir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;hadoop\&#x2F;hdfs\&#x2F;data&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.replication&lt;\&#x2F;name&gt;&lt;value&gt;1&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;dfs.permissions.enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hdfs-site.xml
+
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;mapreduce.framework.name&lt;\&#x2F;name&gt;&lt;value&gt;yarn&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml
+
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;yarn.nodemanager.aux-services&lt;\&#x2F;name&gt;&lt;value&gt;mapreduce_shuffle&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.application.classpath&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;apps\&#x2F;hadoop\&#x2F;etc\&#x2F;hadoop:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;common\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;hdfs\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;mapreduce\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;lib\&#x2F;\*:\&#x2F;apps\&#x2F;hadoop\&#x2F;share\&#x2F;hadoop\&#x2F;yarn\&#x2F;\*&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-check-enabled&lt;\&#x2F;name&gt;&lt;value&gt;false&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;\&#x2F;name&gt;&lt;value&gt;5&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml
+
+sed -i &quot;54,54s&#x2F;.*&#x2F;export JAVA_HOME&#x3D;\&#x2F;apps\&#x2F;java&#x2F;g&quot; &#x2F;apps&#x2F;hadoop&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;tmp
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hadoop&#x2F;hdfs
+
+export PATH&#x3D;&#x2F;apps&#x2F;hadoop&#x2F;bin:$PATH
+
+hadoop namenode -format
+
+# install eclipse
+cp ~&#x2F;big_data_tools&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz -C &#x2F;apps&#x2F;
+cp ~&#x2F;big_data_tools&#x2F;hadoop-eclipse-plugin-2.6.0.jar &#x2F;apps&#x2F;eclipse&#x2F;dropins&#x2F;
+rm -rf &#x2F;apps&#x2F;eclipse-java-2020-06-R-linux-gtk-x86_64.tar.gz
+sudo reboot</code></pre>
+<p>安装并配置 hbase</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+# install hbase
+
+if [-d &#39;&#x2F;apps&#x2F;hbase&#39;];then
+    sudo rm -rf &#x2F;apps&#x2F;hbase
+fi
+
+cp ~&#x2F;big_data_tools&#x2F;hbase-1.4.0-bin.tar.gz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz -C &#x2F;apps&#x2F;
+rm -rf &#x2F;apps&#x2F;hbase-1.4.0-bin.tar.gz 
+mv &#x2F;apps&#x2F;hbase-1.4.0 &#x2F;apps&#x2F;hbase
+# clear env
+if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase&#39; ];then
+    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+fi
+sed -i &#39;&#x2F;HBASE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+# add hbase to path
+echo &#39;export HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HBASE_HOME&#x2F;bin:$HBASE_HOME&#x2F;sbin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+# config hbase 
+echo &#39;export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+echo &#39;export HBASE_MANAGES_ZK&#x3D;true&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+echo &#39;export HBASE_CLASSPATH&#x3D;&#x2F;apps&#x2F;hbase&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-env.sh
+sed -i &quot;s&#x2F;&lt;configuration&gt;&#x2F;&amp;&lt;property&gt;&lt;name&gt;hbase.master&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.rootdir&lt;\&#x2F;name&gt;&lt;value&gt;hdfs:\&#x2F;\&#x2F;localhost:9000\&#x2F;hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.cluster.distributed&lt;\&#x2F;name&gt;&lt;value&gt;true&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.quorum&lt;\&#x2F;name&gt;&lt;value&gt;localhost&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&lt;property&gt;&lt;name&gt;hbase.zookeeper.property.dataDir&lt;\&#x2F;name&gt;&lt;value&gt;\&#x2F;data\&#x2F;tmp\&#x2F;zookeeper-hbase&lt;\&#x2F;value&gt;&lt;\&#x2F;property&gt;&#x2F;&quot; &#x2F;apps&#x2F;hbase&#x2F;conf&#x2F;hbase-site.xml
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;zookeeper-hbase
+
+sudo reboot</code></pre>
+<p>安装并配置 hive</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+if [ -d &#39;&#x2F;apps&#x2F;hive&#39;  ];then
+    sudo rm -rf &#x2F;apps&#x2F;hive
+fi
+if [ -d &#39;&#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp&#39; ];then
+    sudo rm -rf &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
+fi
+# clear env
+sed -i &#39;&#x2F;HIVE_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+
+cp ~&#x2F;big_data_tools&#x2F;apache-hive-2.3.5-bin.tar.gz &#x2F;apps&#x2F;
+tar zxvf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;apache-hive-2.3.5-bin &#x2F;apps&#x2F;hive 
+rm -rf &#x2F;apps&#x2F;apache-hive-2.3.5-bin.tar.gz
+
+# add hive to path
+echo &#39;export HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$HIVE_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;hive&#x2F;lib&#x2F;
+# config hive
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-default.xml.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+mkdir -p &#x2F;data&#x2F;tmp&#x2F;hive&#x2F;tmp
+
+sed -i &quot;s&#x2F;\$&#123;system:java.io.tmpdir&#125;&#x2F;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+sed -i &quot;s&#x2F;\$&#123;system:user.name&#125;&#x2F;root&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+sed -i &quot;545,545s&#x2F;.*&#x2F;&lt;value&gt;jdbc:mysql:\&#x2F;\&#x2F;localhost:3306\&#x2F;hive?createDatabaseIfNotExsit&#x3D;true;characterEncoding&#x3D;latin1\&amp;useSSL&#x3D;false&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;1020,1020s&#x2F;.*&#x2F;&lt;value&gt;com.mysql.jdbc.Driver&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;1045,1045s&#x2F;.*&#x2F;&lt;value&gt;root&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+sed -i &quot;530,530s&#x2F;.*&#x2F;&lt;value&gt;123456&lt;\&#x2F;value&gt;&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-site.xml
+
+# 
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh 
+echo &#39;HADOOP_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
+echo &#39;export HIVE_CONF_DIR&#x3D;&#x2F;apps&#x2F;hive&#x2F;conf&#39; &gt;&gt; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-env.sh
+# logger
+mv &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties.template &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
+
+sed -i &quot;24,24s&#x2F;.*&#x2F;property.hive.log.dir&#x3D;\&#x2F;data\&#x2F;tmp\&#x2F;hive\&#x2F;tmp\&#x2F;log&#x2F;g&quot; &#x2F;apps&#x2F;hive&#x2F;conf&#x2F;hive-log4j2.properties
+
+# restart
+sudo reboot</code></pre>
+<p>安装并配置 mysql</p>
+<pre class="line-numbers language-none"><code class="language-none">#!&#x2F;bin&#x2F;bash
+sudo apt -y update
+sudo apt -y upgrade
+sudo apt -y install mysql-server
+
+sudo service mysql restart
+
+
+sudo mysql&lt;&lt;EOF
+update mysql.user set authentication_string&#x3D;PASSWORD(&#39;123456&#39;),plugin&#x3D;&#39;mysql_native_password&#39; where user&#x3D;&#39;root&#39;;
+
+create database hive CHARACTER SET latin1;
+
+grant all privileges on *.* to root@&#39;%&#39; identified by &#39;123456&#39;;
+flush privileges;
+EOF
+exit;
+
+sed -i &quot;43,43s&#x2F;.*&#x2F;#bind-address&#x3D;127.0.0.1&#x2F;g&quot; &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf
+
+service mysql restart
+
+# init meta database
+schematool -dbType mysql -initSchema</code></pre>
+<p style="color:red">如果是重新安装hive，mysql不用重装的情况下，运行完hive_install_config.sh后需要将mysql中的hive数据库删除，重新建立hive数据库，之后再退出mysql在终端执行初始化元数据库的命令schematool -dbType mysql -initSchema。运行hbase shell前要先启动hadoop和hbase。运行hive之前要先启动hadoop</p>
+]]></content>
+      <categories>
+        <category>大数据</category>
+      </categories>
+      <tags>
+        <tag>scripts</tag>
       </tags>
   </entry>
   <entry>
@@ -1781,25 +1800,6 @@ hadoop fs -put ~&#x2F;music.txt &#x2F;input&#x2F;music&#x2F;</code></pre>
       <tags>
         <tag>hbase</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/12/18/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
-<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
   </entry>
   <entry>
     <title>Hive-practice</title>
@@ -2419,6 +2419,101 @@ desc database hive_db_test;</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>java内存分析</title>
+    <url>/2021/01/08/java%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在 java 中内存分为三块：</p>
+<ul>
+<li>栈内存</li>
+<li>堆内存</li>
+<li>静态方法区</li>
+</ul>
+<p>栈的结构要求存取的数据具有确定的大小，一般存储基本数据类型。像对象这种没有确定存储空间的结构存在于堆内存中，栈内存中存放对象的引用，当一个对象从栈内存里没有引用指向它时，他就会被 GC 当作垃圾回收。静态方法区存放 static 修饰的方法、变量。这里的数据属于类模板，对象和类都可以找到这里并修改数据。</p>
+<p>构造方法的公共代码可以被拿出来，成为构造方法块，每次 new 都会执行。静态方法块就不同了，因为有 static 修饰，所以存在于方法区，在类加载时执行，且只执行这一次，直到类被销毁。因为有 static 修饰的最早执行，所以 static&quot;化&quot; 的不可以调用或访问无 static 的方法或变量，因为要访问的变量或方法还没有被载入内存。反之，无 static 修饰的可以访问有 static 修饰的。</p>
+<p>例题：</p>
+<p>通过类描述衣服，每个衣服对象创建时需要自动生成一个序号值。要求：每个衣服的序号是不同的，且是依次递增 1 的。</p>
+<p>代码：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 3. 通过类描述衣服， 每个衣服对象创建时需要自动生成一个序号值。
+ * 要求：每个衣服的序号是不同的， 且是依次递增 1 的。
+ * @author chenhongda
+ *
+ *&#x2F;
+public class Clothes &#123;
+	private String name;
+	private String brand;
+	private int price;
+	private int number; &#x2F;&#x2F; 由于每次创建一个对象，count会变化，所以还要有一个变量用来记录属于对象自己的编号
+	private static int count &#x3D; 0; &#x2F;&#x2F; 存储在静态方法区，为所有的对象共有，属于类成员变量
+	
+	&#123;
+		count++;
+	&#125; &#x2F;&#x2F; 构造块，类加载后，每new一个对象，就会执行一次。可以认为是构造方法共有的部分。
+	public Clothes() &#123;
+		this.number &#x3D; count;
+		
+	&#125;
+	public Clothes(String name, String brand, int price) &#123;
+		this.name &#x3D; name;
+		this.brand &#x3D; brand;
+		this.price &#x3D; price;
+		this.number &#x3D; count; &#x2F;&#x2F; 将创建当前对象的count累计值记录在当前对象私有的变量number里
+	&#125;
+
+
+	public String getName() &#123;
+		return name;
+	&#125;
+	public void setName(String name) &#123;
+		this.name &#x3D; name;
+	&#125;
+	public String getBrand() &#123;
+		return brand;
+	&#125;
+	public void setBrand(String brand) &#123;
+		this.brand &#x3D; brand;
+	&#125;
+	public int getPrice() &#123;
+		return price;
+	&#125;
+	public void setPrice(int price) &#123;
+		this.price &#x3D; price;
+	&#125;
+	public int getNum() &#123;
+		return number;
+	&#125;	
+&#125;</code></pre>
+<p>测试类：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class ClothesTest &#123;
+	public static void main(String[] args) &#123;
+		
+		Clothes clothes1 &#x3D; new Clothes();
+		Clothes clothes2 &#x3D; new Clothes(&quot;裤子&quot;,&quot;adidas&quot;,2000);
+		Clothes clothes3 &#x3D; new Clothes(&quot;外套&quot;,&quot;lining&quot;,2000);
+		Clothes clothes4 &#x3D; new Clothes(&quot;帽子&quot;,&quot;newbailun&quot;,2000);
+		Clothes clothes5 &#x3D; new Clothes(&quot;鞋子&quot;,&quot;Jordan&quot;,1000);
+		
+		System.out.println(&quot;clothes1,&quot;+clothes1.getNum());
+		System.out.println(&quot;clothes2,&quot;+clothes2.getNum());
+		System.out.println(&quot;clothes3,&quot;+clothes3.getNum());
+		System.out.println(&quot;clothes4,&quot;+clothes4.getNum());
+		System.out.println(&quot;clothes5,&quot;+clothes5.getNum());
+	&#125;
+&#125;</code></pre>
+<p>执行结果：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">clothes1,1
+clothes2,2
+clothes3,3
+clothes4,4
+clothes5,5</code></pre>
+]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>安装mysql</title>
     <url>/2020/12/23/indatll_mysql_on_centos/</url>
     <content><![CDATA[<pre class="line-numbers language-none"><code class="language-none">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql-community-release-el7-5.noarch.rpm
@@ -2570,6 +2665,60 @@ ssc.awaitTermination()                                                          
       </tags>
   </entry>
   <entry>
+    <title>和你一样</title>
+    <url>/2020/12/23/%E5%92%8C%E4%BD%A0%E4%B8%80%E6%A0%B7/</url>
+    <content><![CDATA[<blockquote>
+<p>谁在最需要的时候轻轻拍着我的肩膀</p>
+<p>谁在最快乐的时候愿意和我分享</p>
+<p>日子那么长</p>
+<p>我在你身旁</p>
+<p>见证你成长让我感到充满力量</p>
+<p>谁能忘记过去一路走来陪你受的伤</p>
+<p>谁能预料未来茫茫漫长你在何方</p>
+<p>笑容在脸上</p>
+<p>和你一样</p>
+<p>大声唱 为自己鼓掌</p>
+<p>我和你一样</p>
+<p>一样的坚强</p>
+<p>一样的全力以赴追逐我的梦想</p>
+<p>哪怕会受伤 哪怕有风浪</p>
+<p>风雨过后才会有迷人芬芳</p>
+<p>我和你一样</p>
+<p>一样的善良</p>
+<p>一样为需要的人打造一个天堂</p>
+<p>歌声是翅膀 唱出了希望</p>
+<p>所有的付出只因爱的力量</p>
+<p>和你一样</p>
+<p>谁能忘记过去一路走来陪你受的伤</p>
+<p>谁能预料未来茫茫漫长你在何方</p>
+<p>笑容在脸上</p>
+<p>和你一样</p>
+<p>大声唱 为自己鼓掌</p>
+<p>我和你一样</p>
+<p>一样的坚强</p>
+<p>一样的全力以赴追逐我的梦想</p>
+<p>哪怕会受伤 哪怕有风浪</p>
+<p>风雨之后才会有迷人芬芳</p>
+<p>我和你一样</p>
+<p>一样的善良</p>
+<p>一样为需要的人打造一个天堂</p>
+<p>歌声是翅膀 唱出了希望</p>
+<p>所有的付出只因为爱的力量</p>
+<p>我们都一样</p>
+<p>一样的坚强</p>
+<p>一样的青春焕发金黄色的光茫</p>
+<p>哪怕会受伤 哪怕有风浪</p>
+<p>。。。。。。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>music</category>
+      </categories>
+      <tags>
+        <tag>music</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>批量处理文件</title>
     <url>/2020/12/29/steps/</url>
     <content><![CDATA[<h2 id="step1重命名文件"><a class="markdownIt-Anchor" href="#step1重命名文件">#</a> step1: 重命名文件</h2>
@@ -2626,60 +2775,6 @@ def rename():
       </categories>
       <tags>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>和你一样</title>
-    <url>/2020/12/23/%E5%92%8C%E4%BD%A0%E4%B8%80%E6%A0%B7/</url>
-    <content><![CDATA[<blockquote>
-<p>谁在最需要的时候轻轻拍着我的肩膀</p>
-<p>谁在最快乐的时候愿意和我分享</p>
-<p>日子那么长</p>
-<p>我在你身旁</p>
-<p>见证你成长让我感到充满力量</p>
-<p>谁能忘记过去一路走来陪你受的伤</p>
-<p>谁能预料未来茫茫漫长你在何方</p>
-<p>笑容在脸上</p>
-<p>和你一样</p>
-<p>大声唱 为自己鼓掌</p>
-<p>我和你一样</p>
-<p>一样的坚强</p>
-<p>一样的全力以赴追逐我的梦想</p>
-<p>哪怕会受伤 哪怕有风浪</p>
-<p>风雨过后才会有迷人芬芳</p>
-<p>我和你一样</p>
-<p>一样的善良</p>
-<p>一样为需要的人打造一个天堂</p>
-<p>歌声是翅膀 唱出了希望</p>
-<p>所有的付出只因爱的力量</p>
-<p>和你一样</p>
-<p>谁能忘记过去一路走来陪你受的伤</p>
-<p>谁能预料未来茫茫漫长你在何方</p>
-<p>笑容在脸上</p>
-<p>和你一样</p>
-<p>大声唱 为自己鼓掌</p>
-<p>我和你一样</p>
-<p>一样的坚强</p>
-<p>一样的全力以赴追逐我的梦想</p>
-<p>哪怕会受伤 哪怕有风浪</p>
-<p>风雨之后才会有迷人芬芳</p>
-<p>我和你一样</p>
-<p>一样的善良</p>
-<p>一样为需要的人打造一个天堂</p>
-<p>歌声是翅膀 唱出了希望</p>
-<p>所有的付出只因为爱的力量</p>
-<p>我们都一样</p>
-<p>一样的坚强</p>
-<p>一样的青春焕发金黄色的光茫</p>
-<p>哪怕会受伤 哪怕有风浪</p>
-<p>。。。。。。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>music</category>
-      </categories>
-      <tags>
-        <tag>music</tag>
       </tags>
   </entry>
   <entry>
@@ -3077,6 +3172,371 @@ public static char readConfirmSelection()&#123;
       </categories>
       <tags>
         <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学生系统管理-C实现</title>
+    <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>C 语言链表实现学生管理系统</p>
+<p>修改成绩并重新排序流程图</p>
+<p><img src="/images/1608471473621.png" alt="ss"></p>
+<pre class="line-numbers language-none"><code class="language-none">#include &quot;stdio.h&quot;
+#include &quot;stdlib.h&quot;
+#include &quot;string.h&quot;
+
+struct Student
+&#123;
+	unsigned long	ID;
+	char			Name[21];
+	float			Score;
+&#125;;
+
+struct Node
+&#123;
+	struct Student	data;
+	struct Node *	next;
+&#125;;
+
+int Count&#x3D;0;
+struct Node * H&#x3D;NULL;
+
+struct Node * Insert(struct Node * Head, struct Node * pNode)
+&#123;
+	struct Node * p&#x3D;Head,*q&#x3D;Head;
+
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		Head&#x3D;pNode;
+		
+	&#125;
+	else 
+	&#123;
+		while(p)
+		&#123;
+			if (pNode-&gt;data.Score &lt; p-&gt;data.Score)
+			&#123;
+				q&#x3D;p;
+				p&#x3D;p-&gt;next;
+			&#125;
+			else
+			&#123;
+				if (p&#x3D;&#x3D;Head)
+				&#123;
+					Head&#x3D;pNode;
+					pNode-&gt;next&#x3D;p;
+
+				&#125;
+				else
+				&#123;
+					q-&gt;next&#x3D;pNode;
+					pNode-&gt;next&#x3D;p;
+				    
+				&#125;
+				break;
+			&#125;
+		&#125;
+		if (p&#x3D;&#x3D;NULL)
+		&#123;
+			q-&gt;next&#x3D;pNode;
+		&#125;
+	&#125;
+	return Head;
+&#125;
+
+void Display(struct Node * Head)
+&#123;
+	if (Head&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;当前没有学生成绩信息！\n&quot;);
+		return;
+	&#125;
+
+	struct Node * p&#x3D;Head;
+	for (int i&#x3D;0;i&lt;Count;i++)
+	&#123;
+		printf(&quot;学号：%lu\t姓名：%s\t成绩：%.1f\n&quot;,p-&gt;data.ID,p-&gt;data.Name,p-&gt;data.Score);
+		p&#x3D;p-&gt;next;
+	&#125;
+&#125;
+
+void Add() 
+&#123;
+	unsigned long ID;
+	char Name[21];
+	float Score;
+	struct Node * Head&#x3D;NULL;
+
+	printf(&quot;请输入学号：&quot;);
+	scanf(&quot;%lu&quot;,&amp;ID);
+
+	while (ID)
+	&#123;
+		printf(&quot;请输入姓名：&quot;);
+		scanf(&quot;%s&quot;,Name);
+		printf(&quot;请输入成绩：&quot;);
+		scanf(&quot;%f&quot;,&amp;Score);
+
+		struct Node * pNew&#x3D;(struct Node *) malloc(sizeof (struct Node));
+		pNew-&gt;data.ID&#x3D;ID;
+		strcpy(pNew-&gt;data.Name,Name);
+		pNew-&gt;data.Score&#x3D;Score;
+		pNew-&gt;next&#x3D;NULL;
+
+		Count++;
+
+		Head&#x3D;Insert(Head,pNew);
+
+		printf(&quot;请输入学号：&quot;);
+		scanf(&quot;%lu&quot;,&amp;ID);
+	&#125;
+
+	H&#x3D;Head;
+&#125;
+
+
+void Search(struct Node * Head)
+&#123;
+	char Name[21];
+	int i&#x3D;0;
+	struct Node * p&#x3D;Head;
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;当前没有学生成绩信息！\n&quot;);
+		return;
+	&#125;
+	printf(&quot;请输入姓名：&quot;);
+	scanf(&quot;%s&quot;,Name);
+	while(p)
+	&#123;
+		for(i&#x3D;0;Name[i]!&#x3D;0;i++)
+		&#123;
+			if(Name[i]!&#x3D;p-&gt;data.Name[i])
+			break;
+		&#125;
+		if(Name[i])
+		p&#x3D;p-&gt;next;
+		else
+		&#123;
+			printf(&quot;%.2f\n&quot;,p-&gt;data.Score);
+			return ;	
+		&#125;
+		
+	&#125;
+	if (p&#x3D;&#x3D;NULL)
+	&#123;
+		printf(&quot;无当前学生信息\n&quot;);
+		return;
+	&#125;
+	
+&#125;
+
+void Change(struct Node * Head)
+&#123;
+	unsigned long ID;
+	struct Node *m&#x3D;Head,*n&#x3D;Head,*d&#x3D;Head;
+	float Score;
+	printf(&quot;请输入学号：&quot;);
+	scanf(&quot;%lu&quot;,&amp;ID);
+	printf(&quot;请输入成绩：&quot;);
+	scanf(&quot;%f&quot;,&amp;Score);
+	while(m)
+	&#123;
+		if(ID&#x3D;&#x3D;m-&gt;data.ID)
+		&#123;
+			if(m&#x3D;&#x3D;Head)
+			&#123;
+				m-&gt;data.Score&#x3D;Score;
+				Head&#x3D;m-&gt;next;
+			
+			&#125;
+			else if(m-&gt;next&#x3D;&#x3D;NULL)
+			&#123;
+				n-&gt;next&#x3D;NULL;
+				m-&gt;data.Score&#x3D;Score;
+			&#125;
+			else
+			&#123;
+				d&#x3D;m-&gt;next;
+			    m-&gt;data.Score&#x3D;Score;
+			    n-&gt;next&#x3D;d;
+			&#125;
+			Head&#x3D;Insert(Head,m);
+			H&#x3D;Head;
+			return;
+		&#125;
+		else
+		&#123;
+			n&#x3D;m;
+			m&#x3D;m-&gt;next;
+		&#125;	
+	&#125;
+	if(m&#x3D;&#x3D;NULL)
+	printf(&quot;无当前学生信息\n&quot;);
+	return;
+&#125;
+
+int main()
+&#123;
+	
+	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	printf(&quot;&lt;                   学生管理系统                          &gt;\n&quot;);
+ 	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
+	int a&#x3D;0;
+	scanf(&quot;%d&quot;,&amp;a);
+	while (a)
+	&#123;
+
+		switch(a)
+		&#123;
+			case 1:
+				Add(); 
+				break;
+			case 2:
+				Display(H);
+				break;
+			case 3:
+				Search(H);
+				break;
+			case 4:
+				Change(H);
+				break;
+		
+		&#125;
+    printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
+	scanf(&quot;%d&quot;,&amp;a);
+
+	 &#125; 
+	 printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
+ 	return 0;
+&#125;</code></pre>
+<img src="https://img-blog.csdnimg.cn/20190627224645441.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom: 33%;" />
+<ul>
+<li></li>
+</ul>
+]]></content>
+      <categories>
+        <category>C语言</category>
+      </categories>
+      <tags>
+        <tag>C语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>选队长游戏</title>
+    <url>/2021/01/08/%E9%80%89%E9%98%9F%E9%95%BF%E6%B8%B8%E6%88%8F/</url>
+    <content><![CDATA[<p>题目为：</p>
+<p>今天同学们相约一起爬山游玩，为了更好的进行这场活动，大家准备推举 一个人作为出游的临时队长。为了体现合理公平，大家提出了一个比较有趣的 规则。所有人围成一圈，顺序排号。从第一个人开始报数（从 1 到 3 报数）， 凡报到 3 的人退出圈子，剩下的人继续报数，最后留下的当选为队长。 请你通过编写程序，求出一组人中的队长是原来第几位同学。</p>
+<p>代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 今天同学们相约一起爬山游玩，为了更好的进行这场活动，大家准备推举一个人作为出游的临时队长。为了体现合理公平，大家提出了一个比较有趣的
+ * 规则。所有人围成一圈，顺序排号。从第一个人开始报数（从 1 到 3 报数），凡报到 3 的人退出圈子，剩下的人继续报数，最后留下的当选为队长。
+ * 请你通过编写程序，求出一组人中的队长是原来第几位同学。
+ * @author chenhongda
+ *
+ *&#x2F;
+public class Queue &#123;
+
+	public static void main(String[] args) &#123;
+		
+		&#x2F;&#x2F; 初始化学生数
+		int N &#x3D; 100;
+		&#x2F;&#x2F; 下面这个数组是记录学生的一些相关信息，比如姓名等等，但在这里我们只考虑第几个学生，所以这个数组暂时没有什么用。
+&#x2F;&#x2F;		int[] init &#x3D; new int[N];
+		&#x2F;&#x2F; 使用数组tmp记录init的下标，来模拟删除数组init中的元素。
+		int[] tmp &#x3D; new int[N];
+		&#x2F;&#x2F; 使length记录init的长度
+		int length &#x3D; tmp.length;
+		&#x2F;&#x2F; 记录每圈后剩下的学生数
+		int len &#x3D; length;
+		&#x2F;&#x2F; 迭代器的重要参数
+		int x &#x3D; 1;
+		&#x2F;&#x2F; 记录迭代器生成结果
+		int y;
+
+		&#x2F;&#x2F; 用tmp记录init的索引，这里在初始化。
+		for (int i &#x3D; 0; i &lt; tmp.length; i++) &#123;
+			tmp[i] &#x3D; i;
+		&#125;
+		&#x2F;&#x2F; 每一圈结束后，只要剩下的学生数（len）不为1，就继续报数
+		while (len !&#x3D; 1) &#123;
+			&#x2F;&#x2F; 模拟一圈的报数
+			for (int i &#x3D; 0; i &lt; len; i++) &#123;
+				
+				y &#x3D; gen(x);
+				x++;       &#x2F;&#x2F; 只有这样才可以持续迭代，必须紧跟gen();
+				
+				if (y &#x3D;&#x3D; 3) &#123;
+					
+					&#x2F;&#x2F; tmp记录的下标向前移动一个位置
+					for (int j &#x3D; i; j &lt; length - 1; j++) &#123;
+						tmp[j] &#x3D; tmp[j + 1];
+					&#125;
+					&#x2F;&#x2F; 长度减一
+					length -&#x3D; 1;
+				&#125;
+			&#125;
+			&#x2F;&#x2F; 这一圈结束还剩下的学生数量length
+			len &#x3D; length;
+		&#125;
+		System.out.println(&quot;队长为原来队伍中第[&quot;+(tmp[0]+1)+&quot;]位同学&quot;);
+	&#125;
+	
+	&#x2F;&#x2F; 模拟迭代器，生成1231231...序列
+	static int gen(int x) &#123;
+		return (x % 3 &#x3D;&#x3D; 0) ? 3 : (x % 3);
+	&#125;
+&#125;</code></pre>
+<p>执行结果：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">队长为原来队伍中第[36]位同学</code></pre>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>种花问题</title>
+    <url>/2021/01/08/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>问题：</p>
+<p><a href="https://leetcode-cn.com/problems/can-place-flowers/">官网地址</a></p>
+<p>假设有一个很长的花坛，一部分地块种植了花，另一部分却没有。可是，花不能种植在相邻的地块上，它们会争夺水源，两者都会死去。</p>
+<p>给你一个整数数组  flowerbed 表示花坛，由若干 0 和 1 组成，其中 0 表示没种植花，1 表示种植了花。另有一个数 n ，能否在不打破种植规则的情况下种入 n 朵花？能则返回 true ，不能则返回 false。</p>
+<img src="/images/1610116924782.png" alt="1610116924782"  />
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">class Solution &#123;
+    public boolean canPlaceFlowers(int[] flowerbed, int n) &#123;
+        int count &#x3D; 0;
+        int m &#x3D; flowerbed.length;
+        int prev &#x3D; -1;
+        for (int i &#x3D; 0; i &lt; m; i++) &#123;
+            if (flowerbed[i] &#x3D;&#x3D; 1) &#123;
+                if (prev &lt; 0) &#123;
+                    count +&#x3D; i &#x2F; 2;
+                &#125; else &#123;
+                    count +&#x3D; (i - prev - 2) &#x2F; 2;
+                &#125;
+                if (count &gt;&#x3D; n) &#123;
+                    return true;
+                &#125;
+                prev &#x3D; i;
+            &#125;
+        &#125;
+        if (prev &lt; 0) &#123;
+            count +&#x3D; (m + 1) &#x2F; 2;
+        &#125; else &#123;
+            count +&#x3D; (m - prev - 1) &#x2F; 2;
+        &#125;
+        return count &gt;&#x3D; n;
+    &#125;
+&#125;</code></pre>
+]]></content>
+      <categories>
+        <category>leetcode</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
       </tags>
   </entry>
   <entry>
@@ -3589,254 +4049,6 @@ public static char readConfirmSelection()&#123;
       </categories>
       <tags>
         <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学生系统管理-C实现</title>
-    <url>/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p>C 语言链表实现学生管理系统</p>
-<p>修改成绩并重新排序流程图</p>
-<p><img src="/images/1608471473621.png" alt="ss"></p>
-<pre class="line-numbers language-none"><code class="language-none">#include &quot;stdio.h&quot;
-#include &quot;stdlib.h&quot;
-#include &quot;string.h&quot;
-
-struct Student
-&#123;
-	unsigned long	ID;
-	char			Name[21];
-	float			Score;
-&#125;;
-
-struct Node
-&#123;
-	struct Student	data;
-	struct Node *	next;
-&#125;;
-
-int Count&#x3D;0;
-struct Node * H&#x3D;NULL;
-
-struct Node * Insert(struct Node * Head, struct Node * pNode)
-&#123;
-	struct Node * p&#x3D;Head,*q&#x3D;Head;
-
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		Head&#x3D;pNode;
-		
-	&#125;
-	else 
-	&#123;
-		while(p)
-		&#123;
-			if (pNode-&gt;data.Score &lt; p-&gt;data.Score)
-			&#123;
-				q&#x3D;p;
-				p&#x3D;p-&gt;next;
-			&#125;
-			else
-			&#123;
-				if (p&#x3D;&#x3D;Head)
-				&#123;
-					Head&#x3D;pNode;
-					pNode-&gt;next&#x3D;p;
-
-				&#125;
-				else
-				&#123;
-					q-&gt;next&#x3D;pNode;
-					pNode-&gt;next&#x3D;p;
-				    
-				&#125;
-				break;
-			&#125;
-		&#125;
-		if (p&#x3D;&#x3D;NULL)
-		&#123;
-			q-&gt;next&#x3D;pNode;
-		&#125;
-	&#125;
-	return Head;
-&#125;
-
-void Display(struct Node * Head)
-&#123;
-	if (Head&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;当前没有学生成绩信息！\n&quot;);
-		return;
-	&#125;
-
-	struct Node * p&#x3D;Head;
-	for (int i&#x3D;0;i&lt;Count;i++)
-	&#123;
-		printf(&quot;学号：%lu\t姓名：%s\t成绩：%.1f\n&quot;,p-&gt;data.ID,p-&gt;data.Name,p-&gt;data.Score);
-		p&#x3D;p-&gt;next;
-	&#125;
-&#125;
-
-void Add() 
-&#123;
-	unsigned long ID;
-	char Name[21];
-	float Score;
-	struct Node * Head&#x3D;NULL;
-
-	printf(&quot;请输入学号：&quot;);
-	scanf(&quot;%lu&quot;,&amp;ID);
-
-	while (ID)
-	&#123;
-		printf(&quot;请输入姓名：&quot;);
-		scanf(&quot;%s&quot;,Name);
-		printf(&quot;请输入成绩：&quot;);
-		scanf(&quot;%f&quot;,&amp;Score);
-
-		struct Node * pNew&#x3D;(struct Node *) malloc(sizeof (struct Node));
-		pNew-&gt;data.ID&#x3D;ID;
-		strcpy(pNew-&gt;data.Name,Name);
-		pNew-&gt;data.Score&#x3D;Score;
-		pNew-&gt;next&#x3D;NULL;
-
-		Count++;
-
-		Head&#x3D;Insert(Head,pNew);
-
-		printf(&quot;请输入学号：&quot;);
-		scanf(&quot;%lu&quot;,&amp;ID);
-	&#125;
-
-	H&#x3D;Head;
-&#125;
-
-
-void Search(struct Node * Head)
-&#123;
-	char Name[21];
-	int i&#x3D;0;
-	struct Node * p&#x3D;Head;
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;当前没有学生成绩信息！\n&quot;);
-		return;
-	&#125;
-	printf(&quot;请输入姓名：&quot;);
-	scanf(&quot;%s&quot;,Name);
-	while(p)
-	&#123;
-		for(i&#x3D;0;Name[i]!&#x3D;0;i++)
-		&#123;
-			if(Name[i]!&#x3D;p-&gt;data.Name[i])
-			break;
-		&#125;
-		if(Name[i])
-		p&#x3D;p-&gt;next;
-		else
-		&#123;
-			printf(&quot;%.2f\n&quot;,p-&gt;data.Score);
-			return ;	
-		&#125;
-		
-	&#125;
-	if (p&#x3D;&#x3D;NULL)
-	&#123;
-		printf(&quot;无当前学生信息\n&quot;);
-		return;
-	&#125;
-	
-&#125;
-
-void Change(struct Node * Head)
-&#123;
-	unsigned long ID;
-	struct Node *m&#x3D;Head,*n&#x3D;Head,*d&#x3D;Head;
-	float Score;
-	printf(&quot;请输入学号：&quot;);
-	scanf(&quot;%lu&quot;,&amp;ID);
-	printf(&quot;请输入成绩：&quot;);
-	scanf(&quot;%f&quot;,&amp;Score);
-	while(m)
-	&#123;
-		if(ID&#x3D;&#x3D;m-&gt;data.ID)
-		&#123;
-			if(m&#x3D;&#x3D;Head)
-			&#123;
-				m-&gt;data.Score&#x3D;Score;
-				Head&#x3D;m-&gt;next;
-			
-			&#125;
-			else if(m-&gt;next&#x3D;&#x3D;NULL)
-			&#123;
-				n-&gt;next&#x3D;NULL;
-				m-&gt;data.Score&#x3D;Score;
-			&#125;
-			else
-			&#123;
-				d&#x3D;m-&gt;next;
-			    m-&gt;data.Score&#x3D;Score;
-			    n-&gt;next&#x3D;d;
-			&#125;
-			Head&#x3D;Insert(Head,m);
-			H&#x3D;Head;
-			return;
-		&#125;
-		else
-		&#123;
-			n&#x3D;m;
-			m&#x3D;m-&gt;next;
-		&#125;	
-	&#125;
-	if(m&#x3D;&#x3D;NULL)
-	printf(&quot;无当前学生信息\n&quot;);
-	return;
-&#125;
-
-int main()
-&#123;
-	
-	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	printf(&quot;&lt;                   学生管理系统                          &gt;\n&quot;);
- 	printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
-	int a&#x3D;0;
-	scanf(&quot;%d&quot;,&amp;a);
-	while (a)
-	&#123;
-
-		switch(a)
-		&#123;
-			case 1:
-				Add(); 
-				break;
-			case 2:
-				Display(H);
-				break;
-			case 3:
-				Search(H);
-				break;
-			case 4:
-				Change(H);
-				break;
-		
-		&#125;
-    printf(&quot;                       （请选择功能）\n（1）成绩录入 （2）显示全部（3）成绩查询 （4）成绩修改 (0)退出\n&quot;);
-	scanf(&quot;%d&quot;,&amp;a);
-
-	 &#125; 
-	 printf(&quot; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;\n&quot;);
- 	return 0;
-&#125;</code></pre>
-<img src="https://img-blog.csdnimg.cn/20190627224645441.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" style="zoom: 33%;" />
-<ul>
-<li></li>
-</ul>
-]]></content>
-      <categories>
-        <category>C语言</category>
-      </categories>
-      <tags>
-        <tag>C语言</tag>
       </tags>
   </entry>
   <entry>

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    11注册1_Java发送邮件 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-11注册1_Java发送邮件a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  11注册1_Java发送邮件
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/11%E6%B3%A8%E5%86%8C1_Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.028Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">30 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>经过前面 10 篇的学习，我们按照<strong>课程的整体介绍 — 需求分析 — 文档设计 — 架构选择 — 效率提升</strong>的思路，带大家完成了实际项目开发前的准备工作。从本篇起，正式进入业务代码开发阶段。</p>
+<p>在这个阶段要特别注意：</p>
+<ol>
+<li>本项目完全按照实际开发流程实现，在业务代码编写过程中要紧密结合需求分析、数据库设计、接口文档设计，不能未经沟通擅自修改接口文档、设计方案等。</li>
+<li>本课程后续的内容与前面的需求分析、数据库设计、接口文档设计、前后端架构选择、MyBatis 通用 Mapper 等紧密结合，在学习过程中遇到疑惑要记得翻阅前面的内容。</li>
+</ol>
+<!-- -->
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>需求分析中，指定注册功能要按照<strong>邮箱验证码注册</strong>的方式实现，那么我们就要有发送邮件的技术储备。</p>
+<h4 id="javax-mail"><a class="markdownIt-Anchor" href="#javax-mail">#</a> <strong>javax-mail</strong></h4>
+<p>使用 Java 发送邮件，离不开 javax-mail，它是 SUN 提供的实现邮件收发的标准开发类库，支持常用的邮件协议有 SMTP、POP3、IMAP 等。使用时无需考虑底层通信的过程，只需要指定邮件服务器、接收人、邮件内容等配置性的工作即可。</p>
+<p>云笔记项目通过在项目文件 pom.xml 中引入依赖即可：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;javax.mail&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;mail&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;1.4.7&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<h3 id="功能分析"><a class="markdownIt-Anchor" href="#功能分析">#</a> 功能分析</h3>
+<h4 id="流程设计"><a class="markdownIt-Anchor" href="#流程设计">#</a> <strong>流程设计</strong></h4>
+<p><strong>1. 用户填写邮箱</strong>，填写完毕后触发验证邮箱的请求。</p>
+<ul>
+<li>如果邮箱未注册，可以继续注册流程</li>
+<li>否则，告诉用户该邮箱已注册，跳转到登录界面</li>
+</ul>
+<!-- -->
+<p><strong>2. 邮箱校验成功后，发送邮件验证码。</strong></p>
+<ul>
+<li>邮件验证码发送成功后，告诉用户验证码发送成功，请及时查收邮件</li>
+<li>否则，告诉用户验证码发送失败，请重新获取</li>
+</ul>
+<!-- -->
+<p><strong>3. 用户填写收到的邮件验证码</strong>，并设置登录密码，完成，触发注册用户的请求。</p>
+<ul>
+<li>先验证验证码是否正确，如果正确，注册用户，并告诉用户已成功注册，可以登录了，注册流程结束</li>
+<li>否则，告诉用户验证码不正确，请重新填写或获取邮件验证码</li>
+</ul>
+<!-- -->
+<p>注册流程的流程图设计如下：</p>
+<p><img src="https://images.gitbook.cn/5140d720-7277-11ea-9c78-13c8e455a47a" alt="注册流程"></p>
+<h4 id="总体方案"><a class="markdownIt-Anchor" href="#总体方案">#</a> <strong>总体方案</strong></h4>
+<ol>
+<li>获取注册邮件验证码：实现接口 <strong>1001</strong> （获取注册邮件验证码）</li>
+<li>创建邮件发送记录实体类</li>
+<li>验证邮箱</li>
+<li>生成验证码</li>
+<li>配置邮件服务器</li>
+<li>发送验证码并记录</li>
+<li>根据邮件注册用户：实现接口 <strong>1002</strong>（根据邮件验证码注册账号）</li>
+<li>校验验证码</li>
+<li>注册用户</li>
+</ol>
+<!-- -->
+<h3 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h3>
+<h4 id="创建实体类-emaillog"><a class="markdownIt-Anchor" href="#创建实体类-emaillog">#</a> <strong>创建实体类 EmailLog</strong></h4>
+<p>实现接口的基础是有相应的数据结构，首先要按照第 3 篇《数据库设计》中<strong>邮件发送记录表</strong>的设计创建实体类 <strong>EmailLog</strong>，<strong>EmailLog.java</strong> 代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@TableAttribute&lt;&#x2F;span&gt;(name &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;email_log&quot;&lt;&#x2F;span&gt;)
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;EmailLog&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;extends&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;BaseEntity&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@FieldAttribute&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@KeyAttribute&lt;&#x2F;span&gt;(autoIncr &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;)
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; id;
+
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@FieldAttribute&lt;&#x2F;span&gt;(value &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;邮件发送类型,不能为空&quot;&lt;&#x2F;span&gt;,notNull &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;)
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@IndexAttribute&lt;&#x2F;span&gt;
+     &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; Integer type;
+        ... ...
+&#125;</code></pre>
+<p>创建好实体类后，添加对应的 Mapper：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Mapper&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;interface&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;EmailMapper&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;extends&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;BaseMapper&lt;&#x2F;span&gt;&lt;&lt;span class&#x3D;&quot;hljs-title&quot;&gt;EmailLog&lt;&#x2F;span&gt;&gt; &lt;&#x2F;span&gt;&#123;
+&#125;</code></pre>
+<h4 id="验证邮箱"><a class="markdownIt-Anchor" href="#验证邮箱">#</a> <strong>验证邮箱</strong></h4>
+<p>有了实体类后按照上面的流程设计，就开始做第一步：验证邮箱。</p>
+<p>邮箱的校验分为两部分：</p>
+<p><strong>1. 校验邮箱地址格式是否正确</strong></p>
+<p>校验邮箱地址格式使用正则表达式即可，属于字符串格式的验证，将其写在 <strong>StringUtil</strong> 工具类中，<strong>StringUtils.java</strong> 代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String EMAIL_ADDRESS_PATTERN &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;^[a-zA-Z0-9.!#$%&amp;&#39;*+&#x2F;&#x3D;?^_&#96;&#123;|&#125;~-]+@((\\[[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\])|&quot;&lt;&#x2F;span&gt; +
+        &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]&#123;2,&#125;))$&quot;&lt;&#x2F;span&gt;;
+
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;boolean&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;isEmail&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String string)&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(isEmpty(string))&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;false&lt;&#x2F;span&gt;;
+        &#125;
+        Pattern pattern &#x3D; Pattern.compile(EMAIL_ADDRESS_PATTERN);
+        Matcher matcher &#x3D; pattern.matcher(string);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; matcher.matches();
+    &#125;</code></pre>
+<p><strong>2. 查询该邮箱是否已经注册过</strong></p>
+<p>根据用户类型和邮箱地址从用户信息表中查询有没有符合条件的记录，这里用到了<strong>通用 Mapper</strong> 中的条件查询，<strong>UserService.java</strong> 新增代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 根据类型和邮箱查询用户
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; type
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; email
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; UserInfo &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getByEmailAndType&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type,String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    UserInfo userInfo &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; UserInfo();
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定邮箱地址为第一个查询条件&lt;&#x2F;span&gt;
+    userInfo.setEmail(email);
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定用户类型为第二个查询条件&lt;&#x2F;span&gt;
+    userInfo.setType(type);
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定多条件间使用 AND 连接&lt;&#x2F;span&gt;
+    userInfo.setBaseKyleUseAnd(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;);
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;使用通用 Mapper 实现条件查询&lt;&#x2F;span&gt;
+    List&lt;UserInfo&gt; list &#x3D; userMapper.baseSelectByCondition(userInfo);
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(list !&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt; &amp;&amp; list.size() &gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;)&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; list.get(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;);
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+&#125;</code></pre>
+<h4 id="生成验证码"><a class="markdownIt-Anchor" href="#生成验证码">#</a> <strong>生成验证码</strong></h4>
+<p>邮箱验证通过后就可以生成验证码并发送了。验证码有纯数字的和字母加数字两种形式，推荐在短信验证码中使用纯数字，在邮件验证码中使用字母加数字的形式。</p>
+<p>验证码的生成也是纯字符串操作，<strong>StringUtil.java</strong> 中新增代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String allChar &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&quot;&lt;&#x2F;span&gt;;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 生成指定长度的字符串（含大小写字母及数字）
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; length
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getAllCharString&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; length)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        StringBuffer sb &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; StringBuffer();
+        Random random &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; Random();
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; i &#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;; i &lt; length; i++) &#123;
+            sb.append(allChar.charAt(random.nextInt(allChar.length())));
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; sb.toString();
+    &#125;</code></pre>
+<h4 id="配置邮件服务器"><a class="markdownIt-Anchor" href="#配置邮件服务器">#</a> <strong>配置邮件服务器</strong></h4>
+<p>生成验证码之后就需要通过邮件发送了，这里用到了 <strong>javax-mail</strong>，先新建一个工具类 <strong>SendEmailUtils</strong> 专门用来发送邮件：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;SendEmailUtils&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 邮件验证码标题
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String TITLE &#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;【From】&quot;&lt;&#x2F;span&gt; + PublicConstant.appName;
+
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 邮件验证码正文内容
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String RegisterBody &#x3D;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;验证码:%1$s，用于账号： %2$s 注册，泄露有风险。&quot;&lt;&#x2F;span&gt;
+                    + PublicConstant.EMAIL_CODE_TIME + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;分钟内使用有效。&quot;&lt;&#x2F;span&gt;;
+&#125;</code></pre>
+<p>这几行代码定义了邮件的标题和内容，以保证向每个用户发送的邮件都是同样格式的，只需要将生成的验证码放入指定位置即可。</p>
+<p>使用 <strong>javax-mail</strong> 发送邮件只需要两步：</p>
+<p><strong>1. 根据邮件服务器地址初始化 Session</strong></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt;  Session &lt;span class&#x3D;&quot;hljs-title&quot;&gt;initSession&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(session &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;) &#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+            Properties prop &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; Properties();
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件服务器地址&lt;&#x2F;span&gt;
+            prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.host&quot;&lt;&#x2F;span&gt;, PublicConstant.mailServerHost);
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件发送协议&lt;&#x2F;span&gt;
+            prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.transport.protocol&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;smtp&quot;&lt;&#x2F;span&gt;);
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;是否需要身份验证&lt;&#x2F;span&gt;
+            prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.smtp.auth&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;true&quot;&lt;&#x2F;span&gt;);
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;创建session&lt;&#x2F;span&gt;
+            session &#x3D; Session.getInstance(prop);
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;开启Session的debug模式，这样就可以查看到程序发送Email的运行状态&lt;&#x2F;span&gt;
+            session.setDebug(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;);
+        &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e) &#123;
+            e.printStackTrace();
+        &#125;
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; session;
+&#125;</code></pre>
+<p><strong>2. 根据邮件服务器账号、密码创建连接，指定收件人地址、邮件标题和内容发送邮件</strong></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;sendSimpleMail&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String toEmailAddress,String title,String content)&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;throws&lt;&#x2F;span&gt; Exception &lt;&#x2F;span&gt;&#123;
+    Session session &#x3D; initSession();
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;创建邮件对象&lt;&#x2F;span&gt;
+    MimeMessage message &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; MimeMessage(session);
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指明邮件的发件人&lt;&#x2F;span&gt;
+    message.setFrom(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; InternetAddress(PublicConstant.mailServerUser));
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指明邮件的收件人&lt;&#x2F;span&gt;
+    message.setRecipient(Message.RecipientType.TO, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; InternetAddress(toEmailAddress));
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件的标题&lt;&#x2F;span&gt;
+    message.setSubject(title);
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件的文本内容&lt;&#x2F;span&gt;
+    message.setContent(content, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;text&#x2F;html;charset&#x3D;UTF-8&quot;&lt;&#x2F;span&gt;);
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;返回创建好的邮件对象&lt;&#x2F;span&gt;
+    Transport transport &#x3D; session.getTransport();
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;使用邮箱的用户名和密码连上邮件服务器，发送邮件时，发件人需要提交邮箱的用户名和密码给smtp服务器,用户名和密码都通过验证之后才能够正常发送邮件给收件人&lt;&#x2F;span&gt;
+    transport.connect(PublicConstant.mailServerHost,PublicConstant.mailServerUser,PublicConstant.mailServerPassword);
+    transport.sendMessage(message, message.getAllRecipients());
+    transport.close();
+&#125;</code></pre>
+<p>由于现在的邮箱服务器安全措施做得都很到位，这里提到的密码一般都是申请的授权码，这里以 QQ 邮箱的配置举例：</p>
+<ul>
+<li>QQ 邮箱服务器地址为：<strong><a target="_blank" rel="noopener" href="http://smtp.qq.com">smtp.qq.com</a></strong>；</li>
+<li>用户名是邮箱地址，如：2221167890@qq.com；</li>
+<li>授权码需要在网页中打开申请：登录 QQ 邮箱，设置 -&gt; 账户 -&gt; 生成授权码即可</li>
+</ul>
+<!-- -->
+<p>QQ 邮箱登录地址： <a target="_blank" rel="noopener" href="https://mail.qq.com">https://mail.qq.com</a>。</p>
+<p><img src="https://images.gitbook.cn/91fe0580-7277-11ea-b3fa-5b760b39398d" alt="QQ邮箱登录"></p>
+<p>QQ 邮箱授权码申请，这里记得开启 SMTP 服务，否则访问不了：</p>
+<p><img src="https://images.gitbook.cn/9cfa3760-7277-11ea-8b3a-93665903b876" alt="QQ邮箱授权码"></p>
+<h4 id="发送验证码并记录"><a class="markdownIt-Anchor" href="#发送验证码并记录">#</a> <strong>发送验证码并记录</strong></h4>
+<p>配置好邮件服务器后，我们只需要指定给谁发，就可以将生成的验证码发送过去了，发送完毕后将邮件发送记录保存到数据库，以供用户注册时进行验证，按照以下步骤进行：</p>
+<ol>
+<li>随机生成指定位数的验证码</li>
+<li>创建邮件实体类，设置收件人地址、邮件标题、邮件内容、验证码</li>
+<li>发送邮件并记录发送结果</li>
+<li>返回包含发送结果的邮件实体类</li>
+</ol>
+<!-- -->
+<p><strong>SendEmailUtils</strong> 新增代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; EmailLog &lt;span class&#x3D;&quot;hljs-title&quot;&gt;sendVCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type, String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    String code &#x3D; StringUtils.getAllCharString(PublicConstant.EMAIL_CODE_LENGTH);
+    EmailLog entity &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; EmailLog();
+    entity.setEmail(email);
+    entity.setType(type);
+    entity.setTitle(TITLE);
+    entity.setContent(String.format(RegisterBody,code,email));
+    entity.setCode(code);
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+        sendSimpleMail(entity.getEmail(),entity.getTitle(),entity.getContent());
+    &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e)&#123;
+        Console.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;send sendVerificationCode error :&quot;&lt;&#x2F;span&gt;,e.getMessage());
+        entity.setResult(e.getMessage());
+        entity.setStatusCode(PublicConstant.FAILED);
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; entity;
+&#125;</code></pre>
+<h4 id="service-层"><a class="markdownIt-Anchor" href="#service-层">#</a> <strong>Service 层</strong></h4>
+<p>做完上面的逻辑处理工作后，由 Server 层进行调用即可，在 <strong>UserService.java</strong> 中新增如下代码：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Resource&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; EmailService emailService;
+
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResultData &lt;span class&#x3D;&quot;hljs-title&quot;&gt;sendRegisterCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type,String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+
+    UserInfo userInfo &#x3D; getByEmailAndType(type,email);
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(userInfo !&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;)&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;该邮箱已被注册&quot;&lt;&#x2F;span&gt;);
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; emailService.sendCode(PublicConstant.REGISTER_TYPE,email);
+&#125;</code></pre>
+<p>这个方法用于查询邮箱是否注册：若已注册，则返回 “该邮箱已被注册”；否则，调用 <strong>EmailService</strong> 发送邮件验证码。</p>
+<p>在 <strong>EmailService.java</strong> 中新增方法，调用工具类发送邮件：如果发送成功，保存发送日志，返回成功；否则，返回 “邮件发送失败”，示例代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Service&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;EmailService&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Resource&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; EmailMapper mapper;
+
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;发送验证码并记录&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResultData &lt;span class&#x3D;&quot;hljs-title&quot;&gt;sendCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type, String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        EmailLog emailLog &#x3D; SendEmailUtils.sendVCode(type,email);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(emailLog &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;)&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;邮件发送失败&quot;&lt;&#x2F;span&gt;);
+        &#125;
+        mapper.baseInsertAndReturnKey(emailLog);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.success();
+    &#125;
+&#125;</code></pre>
+<h4 id="controller-层"><a class="markdownIt-Anchor" href="#controller-层">#</a> <strong>Controller 层</strong></h4>
+<p>参照接口文档来看，接口 <strong>1001</strong> 和 <strong>1002</strong> 属于不需要登录就能访问的接口，为了安全起见，将所有这样的接口放在同一个 <strong>Controller</strong> 进行管理。</p>
+<p>新建 <strong>BaseController</strong>，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@RestController&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@RequestMapping&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;base&quot;&lt;&#x2F;span&gt;)
+&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@CrossOrigin&lt;&#x2F;span&gt;(origins &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;*&quot;&lt;&#x2F;span&gt;,allowedHeaders&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;*&quot;&lt;&#x2F;span&gt;, maxAge &#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;3600&lt;&#x2F;span&gt;)
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;BaseController&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Resource&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; UserService userService;
+
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@GetMapping&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;getCodeForRegister&quot;&lt;&#x2F;span&gt;)
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResponseEntity &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type,String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(type &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt; || StringUtils.notEmail(email))&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; Response.badRequest();
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; Response.ok(userService.sendRegisterCode(type,email));
+    &#125;
+&#125;</code></pre>
+<p>Controller 层的主要作用是接收请求、对参数做初步校验并将其转换为方便处理的格式，因此，邮件格式的校验就放在这里，保证后续所处理的 email 参数都是合法的邮件地址。</p>
+<p>接口 <strong>1002</strong> 相对 <strong>1001</strong> 而言没有新的技术特点，在这里就不再重复讲了，大家可以按照流程设计的第 3 步自己实现一下，在本篇末尾的源码地址中有完整的代码可供参考。</p>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>接口 1001（获取验证码） 访问测试，测试场景：</p>
+<ul>
+<li>邮箱 A 已注册，此时仍调用接口向其发送邮件验证码</li>
+<li>返回 HttpStatus 200 OK</li>
+<li>返回的业务代码为 success 1，表示业务失败</li>
+<li>返回失败信息为：该邮箱已被注册</li>
+</ul>
+<!-- -->
+<p><img src="https://images.gitbook.cn/bc7db0d0-7277-11ea-aa9c-4b75f9a497aa" alt="获取验证码"></p>
+<p>接口 1002 （注册用户）访问测试，测试场景为：</p>
+<ul>
+<li>邮箱 A 已成功获取邮件验证码，调用注册接口</li>
+<li>上传的验证码正确，注册成功</li>
+<li>返回 HttpStatus 200 OK</li>
+<li>返回的业务代码为 success 0，表示业务成功</li>
+<li>返回注册成功的用户 ID</li>
+</ul>
+<!-- -->
+<p><img src="https://images.gitbook.cn/c77e7690-7277-11ea-8b3a-93665903b876" alt="注册用户"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/11.%E6%B3%A8%E5%86%8C/server">https://github.com/tianlanlandelan/KellerNotes/tree/master/11. 注册 /server</a></p>
+</blockquote>
+<p>注意：因为邮件发送涉及到个人的隐私数据，在配置文件中的账号和密码都为空，需要自己申请邮箱授权码后配置使用。</p>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家完成第一个接口的业务代码部分，按照一个接口实现的步骤逐一讲解，从工具类的封装到 Service、Controller 层的代码实现都有一个合理的设计，紧密结合需求分析、数据库设计、接口文档设计来实现业务代码。通过本篇的学习，能使你正式进入项目的实战环节，从容优雅地完成工作。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/11%E6%B3%A8%E5%86%8C1_Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/12%E6%B3%A8%E5%86%8C2_Axios%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            12注册2_Axios发送HTTP请求
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/10%E7%BB%9F%E4%B8%80%E7%9A%84HTTP%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">10统一的HTTP请求处理</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

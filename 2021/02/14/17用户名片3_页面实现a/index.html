@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    17用户名片3_页面实现 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-17用户名片3_页面实现a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  17用户名片3_页面实现
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/17%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873_%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.035Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">10.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">60 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>通过前两篇的学习，我们实现了用户名片的设置和读取功能，其中包括图片的上传、压缩及存储在 Nginx 服务器上。本篇我们将在前端实现用户名片的设置和读取，并在不同的场景中分别获取头像的缩略图和原图。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>本篇内容主要是页面的布局，主要涉及到了 Vue 的生命周期以及 Element UI 中的组件，在学习前，先给大家做下简单介绍。</p>
+<ul>
+<li>Vue 生命周：Vue 对象从创建到销毁的全过程，其中的每个过程都有对应的钩子函数，我们可以通过这些钩子函数指定其在某个过程中要执行的动作。</li>
+<li>Container 布局容器：用于布局的容器组件，方便快速搭建页面的基本结构。</li>
+<li>Upload 上传：通过点击或者拖拽上传文件。</li>
+<li>Dropdown 下拉菜单：将动作或菜单折叠到下拉菜单中。</li>
+</ul>
+<!-- -->
+<h4 id="vue-生命周期"><a class="markdownIt-Anchor" href="#vue-生命周期">#</a> <strong>Vue 生命周期</strong></h4>
+<p>Vue 对象从创建到销毁经历了以下过程，每个过程都有相应的钩子函数可供调用：</p>
+<ol>
+<li>beforeCreate：创建 Vue 对象前，初始化事件，生命周期的开始。</li>
+<li>created：Vue 对象创建完成，对语法格式和函数进行校验，创建 Vue 对象。</li>
+<li>beforeMount：Vue 对象挂载前，对模板  <code>&amp;lt;template&amp;gt;</code>  进行编译。</li>
+<li>mounted：Vue 对象挂载完成，模板、数据、方法均准备完毕，Vue 对象完全挂载到页面上。</li>
+<li>boforeDestory：销毁前，解除绑定，销毁子组件以及事件监听器。</li>
+<li>destoryed：销毁完毕，Vue 生命周期结束。</li>
+</ol>
+<!-- -->
+<h4 id="container"><a class="markdownIt-Anchor" href="#container">#</a> <strong>Container</strong></h4>
+<p>Container 主要用来进行页面布局，主要包含以下几个标签：</p>
+<ul>
+<li><code>&amp;lt;el-container&amp;gt;</code> ：外层容器。当子元素中包含  <code>&amp;lt;el-header&amp;gt;</code>  或  <code>&amp;lt;el-footer&amp;gt;</code>  时，全部子元素会垂直上下排列，否则会水平左右排列</li>
+<li><code>&amp;lt;el-header&amp;gt;</code> ：顶栏容器</li>
+<li><code>&amp;lt;el-aside&amp;gt;</code> ：侧边栏容器</li>
+<li><code>&amp;lt;el-main&amp;gt;</code> ：主要区域容器</li>
+<li><code>&amp;lt;el-footer&amp;gt;</code> ：底栏容器</li>
+</ul>
+<!-- -->
+<p>使用 Container 进行页面布局的优点在于兼顾了布局效果和语义化，云笔记项目中用户主页 <strong>Home.vue</strong> 使用 Container 按照如下格式进行页面布局：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-container&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+  &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-header&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;Header&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-header&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+  &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-container&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-aside&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;width&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;200px&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;Aside&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-aside&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-aside&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;width&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;200px&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;Aside&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-aside&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-main&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;Main&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-main&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+  &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-container&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-container&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<p>效果如图：</p>
+<p><img src="https://images.gitbook.cn/0d6cc000-7a73-11ea-a523-c58f0b4e76ea" alt="布局"></p>
+<p>整个页面分为上下两部分：页头和内容区。页头用来展示应用名、用户名片等，内容区又从左到右分为三部分：</p>
+<ul>
+<li>左：笔记本列表</li>
+<li>中：笔记列表</li>
+<li>右：笔记内容</li>
+</ul>
+<!-- -->
+<h4 id="upload"><a class="markdownIt-Anchor" href="#upload">#</a> <strong>Upload</strong></h4>
+<p>Upload 用于文件上传，提供了文件列表展示、头像展示、照片墙展示、缩略图列表展示等几种预定义的上传效果，同时支持文件点击上传和拖拽上传两种方式。使用方式如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-upload&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;avatar-uploader&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:action&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;uploadUrl&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:show-file-list&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;false&quot;&lt;&#x2F;span&gt; 
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:on-success&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleAvatarSuccess&quot;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:before-upload&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;beforeAvatarUpload&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;img&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-if&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;imageUrl&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:src&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;imageUrl&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;avatar&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-else&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-icon-plus avatar-uploader-icon&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-upload&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<ul>
+<li>action：指定文件上传要调用的接口地址</li>
+<li>on-success：文件上传成功后的处理</li>
+<li>before-upload：文件上传前的处理，可用于校验文件格式、大小等</li>
+<li><code>&amp;lt;img&amp;gt;</code> ：图片上传成功后展示的缩略图</li>
+<li><code>&amp;lt;i&amp;gt;</code> ：上传图片的图标</li>
+</ul>
+<!-- -->
+<h4 id="dropdown"><a class="markdownIt-Anchor" href="#dropdown">#</a> <strong>Dropdown</strong></h4>
+<p>Dropdown 展示下拉菜单，支持 click 激活或 hover 激活，预置三种不同的尺寸，支持指令事件，使用方式如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown&lt;&#x2F;span&gt; @&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleCommand&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-dropdown-link&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-icon-arrow-down el-icon--right&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-menu&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;slot&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;dropdown&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userCard&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;修改名片&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userPassword&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;修改密码&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;logout&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;退出登录&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-menu&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<ul>
+<li>@command：指定当下拉选项被点击时触发的事件</li>
+<li>command：指定当该下拉选项被点击时回传给 @command 事件的参数</li>
+</ul>
+<!-- -->
+<h3 id="流程设计"><a class="markdownIt-Anchor" href="#流程设计">#</a> <strong>流程设计</strong></h3>
+<p>用户名片的页面操作主要分为创建、展示和修改：</p>
+<ol>
+<li>用户注册成功后，填写昵称、头像等个人信息，点击 “完成” 按钮后完成设置（接口：2001、2003）</li>
+<li>设置完毕后，进入用户主页，主页里显示用户昵称、头像等信息（接口：2002）</li>
+<li>用户主页里可以修改用户昵称、头像等信息（接口：2001、2003）</li>
+</ol>
+<!-- -->
+<h3 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h3>
+<p>本篇代码结构如下：</p>
+<ul>
+<li>
+<p>api.js：根据接口文档声明要用到的接口</p>
+</li>
+<li>
+<p>views- Register.vue：注册完毕后设置用户名片</p>
+<ul>
+<li>Home.vue：展示和修改用户名片</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h4 id="定义接口"><a class="markdownIt-Anchor" href="#定义接口">#</a> <strong>定义接口</strong></h4>
+<p>在 api.js 中，按照接口文档中接口 2001 设置个人名片、接口 2002 获取个人名片的说明对接口做如下声明：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 设置个人名片 2001
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; req_setUserCard &#x3D; &lt;span class&#x3D;&quot;hljs-function&quot;&gt;(&lt;span class&#x3D;&quot;hljs-params&quot;&gt;user&lt;&#x2F;span&gt;) &#x3D;&gt;&lt;&#x2F;span&gt; &#123; 
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; axios.post(api, &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;nickName&lt;&#x2F;span&gt;:user.nickName,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;email&lt;&#x2F;span&gt;:user.email,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;label&lt;&#x2F;span&gt;:user.label
+    &#125;,&#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;headers&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;method&#39;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;userCard&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;token&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.localStorage.getItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;token&quot;&lt;&#x2F;span&gt;)
+        &#125;
+    &#125;).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;res&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; res.data).catch(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;err&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; err); 
+&#125;;
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 获取用户名片 2002
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; req_getUserCard &#x3D; &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &#123; 
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; axios.get(form, &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;headers&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;method&#39;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;userCard&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;token&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.localStorage.getItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;token&quot;&lt;&#x2F;span&gt;)
+        &#125;
+    &#125;).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;res&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; res.data).catch(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;err&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; err);  
+&#125;;</code></pre>
+<p>在这两个接口的声明中，根据文档要求，在请求的 Header 中添加了登录时获取到的 JWT，作为用户身份验证的唯一凭据，并按照要求传入指定的参数。</p>
+<p>接口 2002 传头像并未在此定义，是因为这是一个特殊的接口，通过 Upload 组价的 action 属性指定，在使用时再声明。</p>
+<h4 id="创建名片"><a class="markdownIt-Anchor" href="#创建名片">#</a> <strong>创建名片</strong></h4>
+<p>接口声明完成后，按照顺序一一实现用户名片功能，首先是创建名片。</p>
+<p>在注册页面我们留了最后一步待实现：需要在用户注册完成之后完善资料。这一步就是创建名片，需要用户设置昵称，并选择头像，界面设计如下：</p>
+<p><img src="https://images.gitbook.cn/4e870280-7a73-11ea-9792-81939fbf7f0c" alt="null"></p>
+<p>打开 Register.vue，按照页面布局添加第三步的 HTML 标签，注意使用 Upload 组件，代码如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 第三步，设置昵称和头像，完善个人信息 --&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-if&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;step &#x3D;&#x3D; 2&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 昵称 --&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;ColorCommon font-bold&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;设置昵称&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-input&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;type&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;text&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-model&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;user.nickName&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;placeholder&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;往后余生&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;autofocus&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;autofocus&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-input&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;style&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;width:100%;&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!--头像--&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;ColorCommon font-bold&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;选择头像&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-upload&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;avatar-uploader&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:action&lt;&#x2F;span&gt;&#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;uploadUrl&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:show-file-list&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;false&quot;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:on-success&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleAvatarSuccess&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:before-upload&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;beforeAvatarUpload&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;img&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-if&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;imageUrl&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:src&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;imageUrl&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;avatar&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-else&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-icon-plus avatar-uploader-icon&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-upload&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;style&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;width:100%;&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-button&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;type&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;primary&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;style&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;width:100%;&quot;&lt;&#x2F;span&gt; @&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;click&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleSetUserCard&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;完成&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-button&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<p>在这里将  <code>&amp;lt;el-upload&amp;gt;</code>  标签中的  <code>:action</code>  属性设置为 uploadUrl，在这里需要对注册成功后的处理方法进行修改，使其保存 JWT 并对 uploadUrl 的值进行设置：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;var&lt;&#x2F;span&gt; userName &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.email;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$notify.success(&#123;
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;title&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;注册成功&quot;&lt;&#x2F;span&gt;,
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;message&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;您的账号：&quot;&lt;&#x2F;span&gt; + userName + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot; 已成功注册&quot;&lt;&#x2F;span&gt;
+&#125;);
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.step++;
+&lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.localStorage.setItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;token&quot;&lt;&#x2F;span&gt;, data);
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.uploadUrl &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.uploadUrl + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;?token&#x3D;&quot;&lt;&#x2F;span&gt; + data;</code></pre>
+<p>通过  <code>:before-upload=&quot;beforeAvatarUpload&quot;</code>  绑定上传前的处理方法，可以对图片的格式和大小进行限制：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">beforeAvatarUpload(file) &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; isJPG &#x3D; file.type &#x3D;&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;image&#x2F;jpeg&#39;&lt;&#x2F;span&gt;;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; isLt2M &#x3D; file.size &#x2F; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1024&lt;&#x2F;span&gt; &#x2F; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1024&lt;&#x2F;span&gt; &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;2&lt;&#x2F;span&gt;;
+
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (!isJPG) &#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;上传头像图片只能是 JPG 格式!&#39;&lt;&#x2F;span&gt;);
+                &#125;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (!isLt2M) &#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;上传头像图片大小不能超过 2MB!&#39;&lt;&#x2F;span&gt;);
+                &#125;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; isJPG &amp;&amp; isLt2M;
+            &#125;</code></pre>
+<p>最后，在 handleAvatarSuccess 方法中将图片地址赋值给  <code>&amp;lt;img&amp;gt;</code>  标签就可以展示出刚上传的图片了：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">handleAvatarSuccess(res, file) &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.imageUrl &#x3D; URL.createObjectURL(file.raw);
+            &#125;</code></pre>
+<p>至此，上传图片的功能完成。在点击 “完成” 按钮后，调用接口 2001 设置个人名片，设置成功后跳转到用户主页，设置失败则弹出错误提示，代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">handleSetUserCard() &#123;
+                req_setUserCard(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;response&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析接口应答的json串&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; &#123;
+                        message,
+                        success
+                    &#125; &#x3D; response;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;应答不成功，提示错误信息&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (success !&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;) &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message(&#123;
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;message&lt;&#x2F;span&gt;: message,
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;type&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;error&#39;&lt;&#x2F;span&gt;
+                        &#125;);
+                    &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;应答成功，提示验证码发送成功&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$notify.success(&#123;
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;title&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.nickName,
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;message&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;名片设置成功&quot;&lt;&#x2F;span&gt;
+                        &#125;);
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$router.push(&#123;
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;Home&quot;&lt;&#x2F;span&gt;
+                        &#125;);
+                    &#125;
+                &#125;);
+            &#125;,</code></pre>
+<p>至此，用户名片创建完成。</p>
+<h4 id="显示名片"><a class="markdownIt-Anchor" href="#显示名片">#</a> <strong>显示名片</strong></h4>
+<p>名片设置完成后跳转到用户主页，在主页中要显示用户昵称和头像，效果如下：</p>
+<p><img src="https://images.gitbook.cn/abb14290-7a73-11ea-b348-9df247d9e896" alt="显示名片"></p>
+<p>上面提到，用户主页用的是 Container 进行的页面布局。我们在 Container 组件的  <code>&amp;lt;el-header&amp;gt;</code>  标签中依次布局头像、昵称、个性签名和应用名。其中，昵称后面是个 Dropdown 组件，可以进行修改名片、修改密码、退出登录等操作。代码如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 页头 --&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-header&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;header&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:span&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;4&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:offset&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;4&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 头像，添加一个超连接，点击可以查看原图 --&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;a&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:href&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;user.protraitUrl&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;target&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;_blank&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;img&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;span smallAvatar&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:src&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;user.protraitThumUrl&quot;&lt;&#x2F;span&gt; &#x2F;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;a&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 昵称 --&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;span ColorInfo&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt; &#123;&#123;user.nickName&#125;&#125;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 下拉菜单，用于进行修改名片、修改密码、退出登录等操作 --&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown&lt;&#x2F;span&gt; @&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleCommand&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-dropdown-link&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-icon-arrow-down el-icon--right&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;span&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-menu&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;slot&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;dropdown&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userCard&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;修改名片&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userPassword&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;修改密码&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;command&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;logout&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;退出登录&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown-menu&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-dropdown&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 个性签名 --&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:span&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;8&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;ColorInfo&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &#123;&#123;user.label&#125;&#125;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 应用名 --&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:span&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;4&quot;&lt;&#x2F;span&gt;  &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;font20 ColorPrimary font-bold alignRight&quot;&lt;&#x2F;span&gt; &gt;&lt;&#x2F;span&gt;
+                        Keller Notes
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-header&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<p>页面需要的昵称、头像等数据是在进入用户主页时就要展示出来的，不需要用户执行其他操作，这个时候就用到 Vue 生命周期的相关知识。通常，这些方法都要在 Vue 对象挂载完成后自动执行，也就是 mounted 阶段，钩子函数写法如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">mounted() &#123;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;进入用户主页，首先获取用户名片&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.getUserCard();
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;将登录时保存的 JWT 取出来，在上传头像时使用&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.uploadUrl &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.uploadUrl + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;?token&#x3D;&quot;&lt;&#x2F;span&gt; + &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.localStorage.getItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;token&quot;&lt;&#x2F;span&gt;);
+        &#125;</code></pre>
+<p>其中，getUserCard () 方法就是实际调用接口 2002 获取用户名片的方法 —— 调用接口，将获取到的数据返回，代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">getUserCard()&#123;
+                req_getUserCard().then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;response&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析接口应答的json串&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; &#123;
+                        data,
+                        message,
+                        success
+                    &#125; &#x3D; response;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;应答不成功，提示错误信息&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (success !&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;) &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message(&#123;
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;message&lt;&#x2F;span&gt;: message,
+                            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;type&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;error&#39;&lt;&#x2F;span&gt;
+                        &#125;);
+                    &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user &#x3D; data;
+                    &#125;
+                &#125;);
+            &#125;</code></pre>
+<p>至此，页面就可以显示出用户的名片了，大家可以将其 mounted 函数换成不用的钩子函数，观察页面不同的展示效果，以此来加深对 Vue 各个生命阶段的理解。</p>
+<h4 id="遮罩层"><a class="markdownIt-Anchor" href="#遮罩层">#</a> <strong>遮罩层</strong></h4>
+<p>经过上一步操作后，鼠标放在昵称后的小箭头，就会弹出修改名片、修改密码、退出登录等操作，修改名片将使用遮罩层的方式。在 index.css 文件中是为项目统一定义的样式，可以在里面添加遮罩层的实现：</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;* 遮罩层 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-selector-class&quot;&gt;.box&lt;&#x2F;span&gt; &#123;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;width&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;100%&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;height&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;100%&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;background-color&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;#000000&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;opacity&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0.4&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;position&lt;&#x2F;span&gt;: absolute;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;top&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;left&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;;
+&#125;
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;* 遮罩层里的内容 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-selector-class&quot;&gt;.boxCenter&lt;&#x2F;span&gt; &#123;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;position&lt;&#x2F;span&gt;: absolute;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;top&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;left&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;width&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60%&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;margin-left&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;20%&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;margin-top&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;10%&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;background-color&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;#FFFFFF&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;opacity&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;border-radius&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;20px&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;padding&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;20px&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;z-index&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;999&lt;&#x2F;span&gt;;
+&#125;</code></pre>
+<p>在使用时，只需要引用这两个样式即可，如：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;box&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;boxCenter&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<p>页面展示效果如下：</p>
+<p><img src="https://images.gitbook.cn/fbdc06b0-7a73-11ea-8dae-453849991cc6" alt="遮罩层"></p>
+<h4 id="修改名片"><a class="markdownIt-Anchor" href="#修改名片">#</a> <strong>修改名片</strong></h4>
+<p>修改名片页面效果如下：</p>
+<p><img src="https://images.gitbook.cn/1482c190-7a74-11ea-a711-0f902cb8434c" alt="修改名片"></p>
+<p>这个功能的页面设计和调用的接口与创建名片一样，在这里就不再赘述了，大家可以参照创建名片来实现该功能，页面布局代码如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 遮罩层 --&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-if&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mask &#x3D;&#x3D; &#39;userCard&#39; || mask &#x3D;&#x3D; &#39;userPassword&#39;&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;box&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 修改用户名片 --&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;v-if&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mask &#x3D;&#x3D; &#39;userCard&#39;&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;boxCenter&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+      &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;label-position&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;left&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;label-width&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;0px&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:span&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;16&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:offset&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;4&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;alignCenter font24 font-bold&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            修改名片
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:span&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;4&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;alignRight&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;class&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;el-icon-circle-close font24&quot;&lt;&#x2F;span&gt; @&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;click&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleCommand()&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;i&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-col&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-row&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+          ... ...
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;style&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;width:100%;&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!-- 修改名片 --&gt;&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-button&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;type&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;primary&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;style&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;width:100%;&quot;&lt;&#x2F;span&gt; @&lt;span class&#x3D;&quot;hljs-attr&quot;&gt;click&lt;&#x2F;span&gt; &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;handleSetUserCard()&quot;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;:disabled&lt;&#x2F;span&gt;&#x3D;&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;!checkEmail()&quot;&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;保存修改&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-button&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form-item&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;el-form&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;div&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/17.%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873">https://github.com/tianlanlandelan/KellerNotes/tree/master/17. 用户名片 3</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇通过 Element UI 组件的使用，完成了设置名片、显示名片、上传头像等功能，并在上传头像前实现了对文件格式、大小的限制。通过本篇的学习，能使大家对页面布局、文件上传、遮罩层等操作有深入的了解。其中，Upload 组件有多种不同的展示效果，大家在学习之余可以多多尝试，希望大家收获多多，快乐多多。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/17%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873_%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/18%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81_%E4%B8%A4%E7%A7%8D%E5%9C%BA%E6%99%AF%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8Fa/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            18重置密码_两种场景三种方式
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/16%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872_Nginx%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">16用户名片2_Nginx与图片深度解析</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

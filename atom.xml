@@ -1,546 +1,530 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Aikedaer</title>
+  <title>伞</title>
   
   
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-01-08T14:47:50.037Z</updated>
+  <updated>2021-02-14T06:31:04.787Z</updated>
   <id>http://example.com/</id>
   
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>选队长游戏</title>
-    <link href="http://example.com/2021/01/08/%E9%80%89%E9%98%9F%E9%95%BF%E6%B8%B8%E6%88%8F/"/>
-    <id>http://example.com/2021/01/08/%E9%80%89%E9%98%9F%E9%95%BF%E6%B8%B8%E6%88%8F/</id>
-    <published>2021-01-08T14:48:06.163Z</published>
-    <updated>2021-01-08T14:47:50.037Z</updated>
+    <title>32分布式部署_下篇</title>
+    <link href="http://example.com/2021/02/14/32%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%8B%E7%AF%87a/"/>
+    <id>http://example.com/2021/02/14/32%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%8B%E7%AF%87a/</id>
+    <published>2021-02-14T06:32:38.057Z</published>
+    <updated>2021-02-14T06:31:04.787Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;题目为：&lt;/p&gt;
-&lt;p&gt;今天同学们相约一起爬山游玩，为了更好的进行这场活动，大家准备推举 一个人作为出游的临时队长。为了体现合理公平，大家提出了一个比较有趣的 规则。所有人围成一圈，顺序排号。从第一个人开始报数（从 1 到 3 报数）， 凡报到 3</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;代理服务和用户服务搭建完毕后，我们继续搭建剩下的服务：笔记服务和日志服务。&lt;/p&gt;
+&lt;h3 id=&quot;笔记服务-note&quot;&gt;&lt;a</summary>
         
       
     
     
     
-    <category term="算法" scheme="http://example.com/categories/%E7%AE%97%E6%B3%95/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="算法" scheme="http://example.com/tags/%E7%AE%97%E6%B3%95/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>java内存分析</title>
-    <link href="http://example.com/2021/01/08/java%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/"/>
-    <id>http://example.com/2021/01/08/java%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/</id>
-    <published>2021-01-08T14:48:06.160Z</published>
-    <updated>2021-01-08T14:47:56.385Z</updated>
+    <title>31分布式部署_中篇</title>
+    <link href="http://example.com/2021/02/14/31%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%AD%E7%AF%87a/"/>
+    <id>http://example.com/2021/02/14/31%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%AD%E7%AF%87a/</id>
+    <published>2021-02-14T06:32:38.055Z</published>
+    <updated>2021-02-14T06:30:44.479Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;在 java</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://example.com/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://example.com/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>种花问题</title>
-    <link href="http://example.com/2021/01/08/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/"/>
-    <id>http://example.com/2021/01/08/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/</id>
-    <published>2021-01-08T14:46:45.138Z</published>
-    <updated>2021-01-08T14:47:23.991Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;问题：&lt;/p&gt;
-&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="leetcode" scheme="http://example.com/categories/leetcode/"/>
-    
-    
-    <category term="leetcode" scheme="http://example.com/tags/leetcode/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python1-15天</title>
-    <link href="http://example.com/2021/01/08/python1-15/"/>
-    <id>http://example.com/2021/01/08/python1-15/</id>
-    <published>2021-01-08T12:38:23.535Z</published>
-    <updated>2021-01-08T12:38:41.646Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;day-1python-两大特性和四大基本语法&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#day-1python-两大特性和四大基本语法&quot;&gt;#&lt;/a&gt; Day 1：Python 两大特性和四大基本语法&lt;/h1&gt;
-&lt;p&gt;Python</summary>
-        
-      
-    
-    
-    
-    <category term="python" scheme="http://example.com/categories/python/"/>
-    
-    
-    <category term="python" scheme="http://example.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python60天46-61天</title>
-    <link href="http://example.com/2021/01/08/python46-61/"/>
-    <id>http://example.com/2021/01/08/python46-61/</id>
-    <published>2021-01-08T12:37:30.355Z</published>
-    <updated>2021-01-08T12:39:36.169Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;day-46必备统计学知识概率-期望-方差-标准差-协方差-相关系数-t-检验-f-检验-卡方检验&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="python" scheme="http://example.com/categories/python/"/>
-    
-    
-    <category term="python" scheme="http://example.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python60天30-45天</title>
-    <link href="http://example.com/2021/01/08/python60%E5%A4%A930-45/"/>
-    <id>http://example.com/2021/01/08/python60%E5%A4%A930-45/</id>
-    <published>2021-01-08T12:33:28.082Z</published>
-    <updated>2021-01-08T12:39:41.010Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;day-30numpy-进阶高效使用逻辑掌握这-5-方面功能&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#day-30numpy-进阶高效使用逻辑掌握这-5-方面功能&quot;&gt;#&lt;/a&gt; Day 30：NumPy 进阶高效使用逻辑，掌握这</summary>
-        
-      
-    
-    
-    
-    <category term="python" scheme="http://example.com/categories/python/"/>
-    
-    
-    <category term="python" scheme="http://example.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python16-30天</title>
-    <link href="http://example.com/2021/01/08/python16-30%E5%A4%A9/"/>
-    <id>http://example.com/2021/01/08/python16-30%E5%A4%A9/</id>
-    <published>2021-01-08T09:59:21.521Z</published>
-    <updated>2021-01-08T12:39:07.847Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;day-16pyinstaller-打包过程详解&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#day-16pyinstaller-打包过程详解&quot;&gt;#&lt;/a&gt; Day 16：PyInstaller 打包过程详解&lt;/h1&gt;
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;准备好 common 后，就可以分别搭建项目的各个服务了，本篇带领大家搭建 Proxy 和 User 服务。&lt;/p&gt;
 &lt;h3</summary>
         
       
     
     
     
-    <category term="python" scheme="http://example.com/categories/python/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="python" scheme="http://example.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>大数据原理与应用课件</title>
-    <link href="http://example.com/2021/01/04/%E5%A4%A7%E6%95%B0%E6%8D%AE%E8%AF%BE%E4%BB%B6/"/>
-    <id>http://example.com/2021/01/04/%E5%A4%A7%E6%95%B0%E6%8D%AE%E8%AF%BE%E4%BB%B6/</id>
-    <published>2021-01-04T04:07:08.408Z</published>
-    <updated>2021-01-04T05:08:16.681Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;大数据概述&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#大数据概述&quot;&gt;#&lt;/a&gt; 大数据概述&lt;/h2&gt;
-&lt;p&gt;&lt;img</summary>
-        
-      
-    
-    
-    
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-    <category term="大数据" scheme="http://example.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>批量处理文件</title>
-    <link href="http://example.com/2020/12/29/steps/"/>
-    <id>http://example.com/2020/12/29/steps/</id>
-    <published>2020-12-28T16:35:40.063Z</published>
-    <updated>2020-12-28T16:56:26.140Z</updated>
+    <title>30分布式部署_上篇</title>
+    <link href="http://example.com/2021/02/14/30%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%8A%E7%AF%87a/"/>
+    <id>http://example.com/2021/02/14/30%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2_%E4%B8%8A%E7%AF%87a/</id>
+    <published>2021-02-14T06:32:38.054Z</published>
+    <updated>2021-02-14T06:30:10.242Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2 id=&quot;step1重命名文件&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#step1重命名文件&quot;&gt;#&lt;/a&gt; step1: 重命名文件&lt;/h2&gt;
-&lt;p&gt;文件目录如下：&lt;/p&gt;
-&lt;p&gt;&lt;img</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;经过前面的开发，KellerNotes 项目已经全部完成，作为个人及团队（500</summary>
         
       
     
     
     
-    <category term="python" scheme="http://example.com/categories/python/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="python" scheme="http://example.com/tags/python/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>java学习路线</title>
-    <link href="http://example.com/2020/12/28/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/"/>
-    <id>http://example.com/2020/12/28/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</id>
-    <published>2020-12-28T12:23:06.051Z</published>
-    <updated>2020-12-29T01:11:41.663Z</updated>
+    <title>29权限控制与异常处理</title>
+    <link href="http://example.com/2021/02/14/29%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86a/"/>
+    <id>http://example.com/2021/02/14/29%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86a/</id>
+    <published>2021-02-14T06:32:38.052Z</published>
+    <updated>2021-02-14T06:29:56.167Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h1 id=&quot;新职课java课程涉及知识点&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#新职课java课程涉及知识点&quot;&gt;#&lt;/a&gt; 新职课 Java</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
     
     
-    <category term="javaEE" scheme="http://example.com/categories/javaEE/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="java" scheme="http://example.com/tags/java/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>和你一样</title>
-    <link href="http://example.com/2020/12/23/%E5%92%8C%E4%BD%A0%E4%B8%80%E6%A0%B7/"/>
-    <id>http://example.com/2020/12/23/%E5%92%8C%E4%BD%A0%E4%B8%80%E6%A0%B7/</id>
-    <published>2020-12-23T14:59:55.665Z</published>
-    <updated>2020-12-23T15:24:02.226Z</updated>
+    <title>28生成图表</title>
+    <link href="http://example.com/2021/02/14/28%E7%94%9F%E6%88%90%E5%9B%BE%E8%A1%A8a/"/>
+    <id>http://example.com/2021/02/14/28%E7%94%9F%E6%88%90%E5%9B%BE%E8%A1%A8a/</id>
+    <published>2021-02-14T06:32:38.051Z</published>
+    <updated>2021-02-14T06:29:19.187Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;谁在最需要的时候轻轻拍着我的肩膀&lt;/p&gt;
-&lt;p&gt;谁在最快乐的时候愿意和我分享&lt;/p&gt;
-&lt;p&gt;日子那么长&lt;/p&gt;
-&lt;p&gt;我在你身旁&lt;/p&gt;
-&lt;p&gt;见证你成长让我感到充满力量&lt;/p&gt;
-&lt;p&gt;谁能忘记过去一路走来陪你受的伤&lt;/p&gt;
-&lt;p&gt;谁能预料未来茫茫</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
     
     
-    <category term="music" scheme="http://example.com/categories/music/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="music" scheme="http://example.com/tags/music/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>安装mysql</title>
-    <link href="http://example.com/2020/12/23/indatll_mysql_on_centos/"/>
-    <id>http://example.com/2020/12/23/indatll_mysql_on_centos/</id>
-    <published>2020-12-23T10:38:07.847Z</published>
-    <updated>2020-12-23T10:40:55.831Z</updated>
+    <title>27添加日志记录</title>
+    <link href="http://example.com/2021/02/14/27%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95a/"/>
+    <id>http://example.com/2021/02/14/27%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95a/</id>
+    <published>2021-02-14T06:32:38.049Z</published>
+    <updated>2021-02-14T06:28:09.577Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;pre class=&quot;line-numbers language-none&quot;&gt;&lt;code class=&quot;language-none&quot;&gt;wget</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;前面两篇我们实现了基础的用户管理功能，并实现了将用户信息导出为 Excel</summary>
         
       
     
     
     
-    <category term="mysql" scheme="http://example.com/categories/mysql/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="mysql" scheme="http://example.com/tags/mysql/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>MySQL</title>
-    <link href="http://example.com/2020/12/23/MySQL/"/>
-    <id>http://example.com/2020/12/23/MySQL/</id>
-    <published>2020-12-23T10:38:07.807Z</published>
-    <updated>2021-01-08T11:42:00.971Z</updated>
+    <title>26用户管理2_生成Excel文件</title>
+    <link href="http://example.com/2021/02/14/26%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%862_%E7%94%9F%E6%88%90Excel%E6%96%87%E4%BB%B6a/"/>
+    <id>http://example.com/2021/02/14/26%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%862_%E7%94%9F%E6%88%90Excel%E6%96%87%E4%BB%B6a/</id>
+    <published>2021-02-14T06:32:38.048Z</published>
+    <updated>2021-02-14T06:27:52.117Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h1 id=&quot;1数据库结构&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#1数据库结构&quot;&gt;#&lt;/a&gt; 1. 数据库结构&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;/images/1606098995693.png&quot;</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;用户管理的服务端功能准备完毕后，就可以实现 Web 端的效果了。本篇带领大家实现用户管理功能的页面展示及将用户数据导出成 Excel</summary>
         
       
     
     
     
-    <category term="mysql" scheme="http://example.com/categories/mysql/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="mysql" scheme="http://example.com/tags/mysql/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>4台电脑搭建Hadoop+Spark分布式集群</title>
-    <link href="http://example.com/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/"/>
-    <id>http://example.com/2020/12/23/hadoop-spark%E6%90%AD%E5%BB%BA%E7%9C%9F%E5%AE%9E%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83/</id>
-    <published>2020-12-23T03:38:35.859Z</published>
-    <updated>2020-12-23T03:40:03.641Z</updated>
+    <title>25用户管理1_模糊查询及分页查询</title>
+    <link href="http://example.com/2021/02/14/25%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%861_%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E5%8F%8A%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2a/"/>
+    <id>http://example.com/2021/02/14/25%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%861_%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E5%8F%8A%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2a/</id>
+    <published>2021-02-14T06:32:38.046Z</published>
+    <updated>2021-02-14T06:27:36.536Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h1&gt;&lt;center&gt;搭建Hadoop+Spark分布式集群&lt;/center&gt;&lt;/h1&gt;
-&lt;h2&gt;实验目的&lt;/h2&gt;
-搭建真实的分布式计算环境。
-&lt;h2&gt;实验内容&lt;/h2&gt;
-&lt;h3&gt;1.准备机器&lt;/h3&gt;
-![1608541654622](/images/16085416546</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;上一篇我们完成了对服务器存储空间的优化，本篇开始，进入后台管理功能开发阶段。本篇重点带领大家实现 MyBatis</summary>
         
       
     
     
     
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="分布式" scheme="http://example.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>学生系统管理-C实现</title>
-    <link href="http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-C%E5%AE%9E%E7%8E%B0/</id>
-    <published>2020-12-20T13:33:22.171Z</published>
-    <updated>2020-12-20T13:49:04.981Z</updated>
+    <title>24存储空间优化</title>
+    <link href="http://example.com/2021/02/14/24%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E4%BC%98%E5%8C%96a/"/>
+    <id>http://example.com/2021/02/14/24%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E4%BC%98%E5%8C%96a/</id>
+    <published>2021-02-14T06:32:38.045Z</published>
+    <updated>2021-02-14T06:27:23.423Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;C 语言链表实现学生管理系统&lt;/p&gt;
-&lt;p&gt;修改成绩并重新排序流程图&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/1608471473621.png&quot; alt=&quot;ss&quot;&gt;&lt;/p&gt;
-&lt;pre class=&quot;line-numbers</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
     
     
-    <category term="C语言" scheme="http://example.com/categories/C%E8%AF%AD%E8%A8%80/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="C语言" scheme="http://example.com/tags/C%E8%AF%AD%E8%A8%80/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>hadoop伪分布式</title>
-    <link href="http://example.com/2020/12/20/hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    <id>http://example.com/2020/12/20/hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F/</id>
-    <published>2020-12-20T13:22:32.862Z</published>
-    <updated>2020-12-20T13:27:45.556Z</updated>
+    <title>23项目部署</title>
+    <link href="http://example.com/2021/02/14/23%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2a/"/>
+    <id>http://example.com/2021/02/14/23%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2a/</id>
+    <published>2021-02-14T06:32:38.043Z</published>
+    <updated>2021-02-14T06:27:10.262Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;安装 git, vimplus ,openssh-server&lt;/p&gt;
-&lt;pre class=&quot;line-numbers language-none&quot;&gt;&lt;code</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
     
     
-    <category term="大数据" scheme="http://example.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="hadoop" scheme="http://example.com/tags/hadoop/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>学生系统管理-java实现</title>
-    <link href="http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-java%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://example.com/2020/12/20/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-java%E5%AE%9E%E7%8E%B0/</id>
-    <published>2020-12-20T13:18:56.757Z</published>
-    <updated>2020-12-20T13:20:56.487Z</updated>
+    <title>22MarkDown笔记_MavonEditor</title>
+    <link href="http://example.com/2021/02/14/22MarkDown%E7%AC%94%E8%AE%B0_MavonEditora/"/>
+    <id>http://example.com/2021/02/14/22MarkDown%E7%AC%94%E8%AE%B0_MavonEditora/</id>
+    <published>2021-02-14T06:32:38.042Z</published>
+    <updated>2021-02-14T06:26:55.342Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;利用 TreeMap 类完成一个简单的学生成绩管理系统，要求：&lt;/p&gt;
-&lt;p&gt;1. 有登录验证用户名和密码的功能。&lt;/p&gt;
-&lt;p&gt;2. 有成绩录入、显示、查找、修改、删除等功能。&lt;/p&gt;
-&lt;p&gt;3. 所有数据全部通过键盘输入（利用 Scanner 类）。&lt;/p&gt;
-&lt;pre</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Keller 云笔记&lt;/strong&gt;支持的笔记格式有两种：富文本笔记和 MarkDown</summary>
         
       
     
     
     
-    <category term="java练习" scheme="http://example.com/categories/java%E7%BB%83%E4%B9%A0/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="java" scheme="http://example.com/tags/java/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>稀疏矩阵压缩java实现</title>
-    <link href="http://example.com/2020/12/20/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E5%8E%8B%E7%BC%A9/"/>
-    <id>http://example.com/2020/12/20/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5%E5%8E%8B%E7%BC%A9/</id>
-    <published>2020-12-20T13:11:39.122Z</published>
-    <updated>2020-12-20T13:13:41.837Z</updated>
+    <title>21富文本笔记_WangEditor</title>
+    <link href="http://example.com/2021/02/14/21%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0_WangEditora/"/>
+    <id>http://example.com/2021/02/14/21%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0_WangEditora/</id>
+    <published>2021-02-14T06:32:38.040Z</published>
+    <updated>2021-02-14T06:26:41.427Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h3 id=&quot;效果展示&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#效果展示&quot;&gt;#&lt;/a&gt; 效果展示&lt;/h3&gt;
-&lt;p&gt;&lt;img</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
         
       
     
     
     
-    <category term="算法与数据结构" scheme="http://example.com/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="稀疏矩阵" scheme="http://example.com/tags/%E7%A8%80%E7%96%8F%E7%9F%A9%E9%98%B5/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>个人收支记录小软件</title>
-    <link href="http://example.com/2020/12/20/%E4%B8%AA%E4%BA%BA%E6%94%B6%E6%94%AF%E8%AE%B0%E5%BD%95%E5%B0%8F%E8%BD%AF%E4%BB%B6/"/>
-    <id>http://example.com/2020/12/20/%E4%B8%AA%E4%BA%BA%E6%94%B6%E6%94%AF%E8%AE%B0%E5%BD%95%E5%B0%8F%E8%BD%AF%E4%BB%B6/</id>
-    <published>2020-12-20T13:08:40.983Z</published>
-    <updated>2020-12-20T13:10:41.726Z</updated>
+    <title>20笔记列表_Draggable拖拽排序</title>
+    <link href="http://example.com/2021/02/14/20%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8_Draggable%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8Fa/"/>
+    <id>http://example.com/2021/02/14/20%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8_Draggable%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8Fa/</id>
+    <published>2021-02-14T06:32:38.039Z</published>
+    <updated>2021-02-14T06:26:27.223Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h3 id=&quot;效果展示&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#效果展示&quot;&gt;#&lt;/a&gt; 效果展示&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&quot;https://img-blog.csdnimg.cn/20200807191617404.png&quot;</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;通过上一篇的学习，大家对于 Vue</summary>
         
       
     
     
     
-    <category term="java练习" scheme="http://example.com/categories/java%E7%BB%83%E4%B9%A0/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="java" scheme="http://example.com/tags/java/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   
   <entry>
-    <title>疯狂java部分视频笔记</title>
-    <link href="http://example.com/2020/12/20/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/"/>
-    <id>http://example.com/2020/12/20/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/</id>
-    <published>2020-12-20T13:07:49.661Z</published>
-    <updated>2020-12-20T13:07:49.662Z</updated>
+    <title>19笔记本列表_Vue组件</title>
+    <link href="http://example.com/2021/02/14/19%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%88%97%E8%A1%A8_Vue%E7%BB%84%E4%BB%B6a/"/>
+    <id>http://example.com/2021/02/14/19%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%88%97%E8%A1%A8_Vue%E7%BB%84%E4%BB%B6a/</id>
+    <published>2021-02-14T06:32:38.038Z</published>
+    <updated>2021-02-14T06:26:11.381Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2 id=&quot;i&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#i&quot;&gt;#&lt;/a&gt; Ⅰ.&lt;/h2&gt;
-&lt;h3 id=&quot;编译java程序&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#编译java程序&quot;&gt;#&lt;/a&gt; 编译</summary>
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;经过第 3 部分（7 到 18</summary>
         
       
     
     
     
-    <category term="java基础" scheme="http://example.com/categories/java%E5%9F%BA%E7%A1%80/"/>
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
     
-    <category term="java" scheme="http://example.com/tags/java/"/>
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>18重置密码_两种场景三种方式</title>
+    <link href="http://example.com/2021/02/14/18%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81_%E4%B8%A4%E7%A7%8D%E5%9C%BA%E6%99%AF%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8Fa/"/>
+    <id>http://example.com/2021/02/14/18%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81_%E4%B8%A4%E7%A7%8D%E5%9C%BA%E6%99%AF%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8Fa/</id>
+    <published>2021-02-14T06:32:38.037Z</published>
+    <updated>2021-02-14T06:25:48.087Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>17用户名片3_页面实现</title>
+    <link href="http://example.com/2021/02/14/17%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873_%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0a/"/>
+    <id>http://example.com/2021/02/14/17%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873_%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0a/</id>
+    <published>2021-02-14T06:32:38.035Z</published>
+    <updated>2021-02-14T06:25:34.097Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;通过前两篇的学习，我们实现了用户名片的设置和读取功能，其中包括图片的上传、压缩及存储在 Nginx</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>16用户名片2_Nginx与图片深度解析</title>
+    <link href="http://example.com/2021/02/14/16%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872_Nginx%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90a/"/>
+    <id>http://example.com/2021/02/14/16%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872_Nginx%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90a/</id>
+    <published>2021-02-14T06:32:38.034Z</published>
+    <updated>2021-02-14T06:25:16.369Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;上一篇，我们实现了图片的上传及压缩功能，将上传好的图片存在在了指定目录中。本篇将带领大家搭建一个 Nginx</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>15用户名片1_图片上传与压缩</title>
+    <link href="http://example.com/2021/02/14/15%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%871_%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E%E5%8E%8B%E7%BC%A9a/"/>
+    <id>http://example.com/2021/02/14/15%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%871_%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E%E5%8E%8B%E7%BC%A9a/</id>
+    <published>2021-02-14T06:32:38.033Z</published>
+    <updated>2021-02-14T06:25:03.126Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;注册登录工作完成之后，就可以设置用户名片了，如昵称、头像、个人签名等信息。本篇带领大家实现用户名片的功能设计。&lt;/p&gt;
+&lt;h3</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>14登录2_HTTPS安全传输</title>
+    <link href="http://example.com/2021/02/14/14%E7%99%BB%E5%BD%952_HTTPS%E5%AE%89%E5%85%A8%E4%BC%A0%E8%BE%93a/"/>
+    <id>http://example.com/2021/02/14/14%E7%99%BB%E5%BD%952_HTTPS%E5%AE%89%E5%85%A8%E4%BC%A0%E8%BE%93a/</id>
+    <published>2021-02-14T06:32:38.032Z</published>
+    <updated>2021-02-14T06:24:47.868Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;上一篇我们完成了 JWT 的生成与解析功能，并在此基础上完成了两种不同的登录接口。服务端登录成功后将 JWT</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>13登录1_JWT身份验证</title>
+    <link href="http://example.com/2021/02/14/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/"/>
+    <id>http://example.com/2021/02/14/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/</id>
+    <published>2021-02-14T06:32:38.030Z</published>
+    <updated>2021-02-14T06:24:30.237Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;用户注册成功后，就可以登录了，在本项目中可以使用两种登录方式：账号密码登录和邮件验证码登录。登录之后会生成一个 JWT，也就是用户</summary>
+        
+      
+    
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
+    
+    
+    <category term="云笔记全栈" scheme="http://example.com/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/"/>
     
   </entry>
   

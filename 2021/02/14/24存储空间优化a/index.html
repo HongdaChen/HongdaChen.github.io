@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    24存储空间优化 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-24存储空间优化a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  24存储空间优化
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/24%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E4%BC%98%E5%8C%96a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.045Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">5.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">30 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>上一篇，我们实现了项目的部署，当部署完毕后，我们会发现云服务器的空间是有限的。本篇，我们将针对云服务器内存小、硬盘小的问题，对项目使用的存储空间进行优化，完成优化后，我们将继续开始管理员功能的开发。</p>
+<h3 id="内存优化"><a class="markdownIt-Anchor" href="#内存优化">#</a> 内存优化</h3>
+<p><strong>Keller 云笔记</strong>项目进行到现在，还没有到缓存和 Redis，Spring Boot、Vue.js 项目运行过程总占用的内存是比较固定的，暂时不用控制，需要注意的是 MySQL 使用的内存空间。</p>
+<h4 id="mysql-索引"><a class="markdownIt-Anchor" href="#mysql-索引">#</a> MySQL 索引</h4>
+<p>MySQL 占用内存的是表的索引：MySQL 在建表时如果不指定存储引擎，默认用的是 InnoDB，它的主键索引是聚集索引，其他索引是非聚集索引。</p>
+<p>索引的数据结构使用的是 B+ 树，所有的数据均在 B+ 树的叶子节点中存储，示意图如下：</p>
+<p><img src="https://images.gitbook.cn/fcf6b330-9024-11ea-b76a-879d8ad3cf81" alt="B+"></p>
+<ul>
+<li>聚集索引：所有的数据都在 B+ 树的叶子节点存储，索引的结构即表的结构</li>
+<li>非聚集索引：所有的叶子节点存储的是指向聚集索引的指针</li>
+</ul>
+<!-- -->
+<p>MySQL 设置的索引页大小为 16384，也就是 16KB，每当创建一个索引，都会将索引的根节点放入内存，也就是多了 16KB 的内存开销。</p>
+<p>查询索引页大小：</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">SHOW  GLOBAL STATUS where Variable_name like &#39;Innodb_page_size&#39;;</code></pre>
+<p>查询结果：</p>
+<p><img src="https://images.gitbook.cn/0d0ff240-9025-11ea-82e5-e9a7c87ac8f0" alt="1"></p>
+<p>查询数据表状态：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;show&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;table&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;status&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;from&lt;&#x2F;span&gt; kyle_notes;</code></pre>
+<p>查询结果：</p>
+<p><img src="https://images.gitbook.cn/16f3fd60-9025-11ea-af17-df0b2c439063" alt="2"></p>
+<p>查询结果中 Index_length 字段表示该表索引大小，也就是索引占用内存的大小，结合数据表建表语句来看，索引建立越多的表，占用的内存越多。因此，在使用索引时要注意：</p>
+<ul>
+<li>
+<p>仅在必要的字段上创建索引 - 不必要的字段上创建索引，会浪费内存空间</p>
+  <!-- -->
+</li>
+<li>
+<p>可以创建联合索引的情况下就不创建几个单独的索引 - 使用联合索引比使用多个单独索引能节省内存空间</p>
+  <!-- -->
+</li>
+<li>
+<p>不要在高重复字段上创建索引 - 高重复字段上创建索引会降低数据表的查询效率，并且占用内存空间</p>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>单独来说，一个索引会占用 16KB 的内存，可能觉得不太多，如果在云服务器上，内存总大小可能也就 1GB，这一个个 16KB 也就显得弥足珍贵了。大家可以结合这些注意事项，来审视当前已经创建的表中，在创建索引时存在哪些问题。</p>
+<h3 id="磁盘空间优化"><a class="markdownIt-Anchor" href="#磁盘空间优化">#</a> 磁盘空间优化</h3>
+<p>磁盘空间占用比较大的就是文件服务器，存储的是用户的头像和笔记中图片。拿笔者使用的阿里云服务器来说，磁盘空间共有 20GB，如果不断更换头像或者上传笔记中的图片，不出半天，也就将磁盘空间打爆了，因此需要对冗余的用户头像和笔记图片进行删除。</p>
+<h4 id="用户头像"><a class="markdownIt-Anchor" href="#用户头像">#</a> <strong>用户头像</strong></h4>
+<p>对用户头像的优化的目标是：每个用户只会在文件服务器上存储一个头像，当上传新头像时会覆盖掉原有的头像。</p>
+<p>为达到这个目标，对创建头像和更新头像的操作进行如优化：</p>
+<ul>
+<li>
+<p>创建头像 - 单独创建个文件夹存放所有用户的头像</p>
+<ul>
+<li>每个用户根据用户 ID 生成一个固定的头像文件名</li>
+<li>头像图片必须是固定格式的（如： PNG），如果用户上传的头像是其他格式，则将其转换为指定格式的图片</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>更新头像 - 先根据用户 ID 生成固定的文件名</p>
+<ul>
+<li>判断用户的头像文件是否已经存在</li>
+<li>如果存在，删除原头像，创建新头像</li>
+<li>如果不存在，创建头像</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>这些操作均在服务端做改动，不涉及到 Web 端的修改，修改如下。</p>
+<p>在 FileUtils.java 中添加方法 getPortraitName，用来生成固定的头像名称：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取头像文件名
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt; 文件名，不带后缀
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getPortraitName&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; Md5Utils.getMd5String(PublicConstant.PORTRAIT_PREFIX + userId) ;
+    &#125;</code></pre>
+<p>该方法会通过使用固定前缀加用户 ID 的方式生成统一的头像文件名，同时，使用 MD5 加密，隐藏文件名生成规则。</p>
+<p>在 FileUtils.java 中添加方法 getPortraitPath，用来获取头像的保存路径：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取头像保存路径
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; fileName 文件名，不带后缀
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;  完整的头像保存路径
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getPortraitPath&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String fileName)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        StringBuilder builder &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; StringBuilder();
+        builder.append(PublicConstant.nginxPath)
+                .append(PublicConstant.portraitPath)
+                .append(PublicConstant.originImgPath);
+
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(mkdirs(builder.toString()))&#123;
+            builder.append(fileName)
+                    .append(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&quot;&lt;&#x2F;span&gt;)
+                    .append(PublicConstant.PORTRAIT_TYPE);
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; builder.toString();
+        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &#125;
+    &#125;</code></pre>
+<p>该方法会构建一个图片保存的完整路径，同时指定头像使用固定的后缀名（PublicConstant.PORTRAIT_TYPE）。</p>
+<p>新建 ImageUtils.java 处理图片的存储，添加方法 savePortrait，用于保存用户头像：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 保存用户头像
+     * 用户头像保存为固定的文件名，设置新的头像时，会覆盖掉原来的头像
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; file
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@throws&lt;&#x2F;span&gt; IOException
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;savePortrait&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(MultipartFile file, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;throws&lt;&#x2F;span&gt; IOException&lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析文件后缀名&lt;&#x2F;span&gt;
+        String suffix &#x3D; FileUtils.getSuffix(file.getOriginalFilename());
+        String fileName &#x3D; FileUtils.getPortraitName(userId);
+
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;保存原图&lt;&#x2F;span&gt;
+        File img &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; File(FileUtils.getPortraitPath(fileName));
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(img.exists())&#123;
+            img.delete();
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;保存缩略图&lt;&#x2F;span&gt;
+        File thum &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; File(FileUtils.getPortraitThumPath(fileName));
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(thum.exists())&#123;
+            thum.delete();
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果图片是 PNG 格式的，直接存储&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(PublicConstant.PORTRAIT_TYPE.equals(suffix))&#123;
+            file.transferTo(img);
+        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt;&#123;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;*
+             将其他格式的图片转换成 PNG 格式
+              *&#x2F;&lt;&#x2F;span&gt;
+            Thumbnails.of(file.getInputStream()).scale(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;).outputFormat(PublicConstant.PORTRAIT_TYPE).toFile(img);
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;生成缩略图&lt;&#x2F;span&gt;
+        Thumbnails.of(img).size(PublicConstant.THUM_MAX_WIDTH,PublicConstant.THUM_MAX_HEIGHT).toFile(thum);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; fileName;
+    &#125;</code></pre>
+<p>该方法确保用户在文件服务器中只保存一个头像，并且使用固定的文件名称和后缀名。</p>
+<h4 id="笔记中的图片"><a class="markdownIt-Anchor" href="#笔记中的图片">#</a> <strong>笔记中的图片</strong></h4>
+<p>对笔记图片的优化目标是：用户删除笔记时，从文件服务器中删除笔记中的全部图片；用户在编辑器中删除图片时，同步删除文件服务器中的图片。</p>
+<p>为了达到这个目标，对相关操作做如下优化：</p>
+<ul>
+<li>
+<p>上传笔记中的图片 - 保存图片时，按照每个用户一个文件夹保存</p>
+<ul>
+<li>图片名称加上笔记 ID 作为前缀，以便于确定所属的笔记</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>删除笔记 - 删除笔记时，遍历用户的文件夹，删除属于该笔记的所有图片</p>
+  <!-- -->
+</li>
+<li>
+<p>删除笔记中的图片 - 删除笔记中的图片时，根据图片名称，直接从文件服务器中删除掉该图片</p>
+<ul>
+<li>
+<p>难点在于：如何知道用户在编辑器中删除了图片 - mavon-editor 提供了删除图片的回调方法 imgDel，但只能在菜单栏上传图片按钮中触发，在编辑器中删除图片无法触发任何操作</p>
+<ul>
+<li>WangEditor 没有提供删除图片相关的回调</li>
+<li>解决方法是在 Web 端出发保存笔记的操作时，通过比较修改前后的内容，判断出删除的图片</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>movan-editor 中可以出发 imgDel 回调的操作：</p>
+<p><img src="https://images.gitbook.cn/68319110-9025-11ea-8046-9d0fb7c95031" alt="3"></p>
+<p>主要方法有：</p>
+<p>在 FileUtils.java 中添加方法 getUserImgDirectory，用于获取用户文件目录。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取用户文件目录
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getUserImgDirectory&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        StringBuilder builder &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; StringBuilder();
+        builder.append(PublicConstant.nginxPath)
+                .append(PublicConstant.imgPath)
+                .append(userId)
+                .append(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;&quot;&lt;&#x2F;span&gt;);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(mkdirs(builder.toString()))&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; builder.toString();
+        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt;&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &#125;
+    &#125;</code></pre>
+<p>在 FileUtils.java 中添加方法 getImgPath，用于获取图片保存路径：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取图片保存路径
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; fileName 文件名
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt; 完整的保存路径
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getImgPath&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String fileName,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        String directory &#x3D; getUserImgDirectory(userId);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(directory.isEmpty())&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; directory + fileName;
+        &#125;
+    &#125;</code></pre>
+<p>在 ImgUtils.java 中添加方法 saveImg，用于保存图片：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 保存图片
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; file  文件
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; noteId    笔记ID
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId    用户ID
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@throws&lt;&#x2F;span&gt; IOException
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;saveImg&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-params&quot;&gt;(MultipartFile file,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; noteId,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;throws&lt;&#x2F;span&gt; IOException &lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析文件后缀名&lt;&#x2F;span&gt;
+        String suffix &#x3D; FileUtils.getSuffixWithSpilt(file.getOriginalFilename());
+
+        String timeMask &#x3D; DateUtils.getTimeMask();
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;构建图片名称&lt;&#x2F;span&gt;
+        String fileName &#x3D; noteId +  &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;-&quot;&lt;&#x2F;span&gt; + timeMask + suffix;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;保存图片&lt;&#x2F;span&gt;
+        File img &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; File(FileUtils.getImgPath(fileName,userId));
+        file.transferTo(img);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; fileName;
+    &#125;</code></pre>
+<p>在 FileUtils.java 中添加方法 getUserImgs，用于获取用户的所有图片名称：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取用户存储的所有图片名称
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String[] getUserImgs (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId)&#123;
+        File file &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; File(getUserImgDirectory(userId));
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(file.exists() &amp;&amp; file.isDirectory())&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; file.list();
+        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt;&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &#125;
+    &#125;</code></pre>
+<p>在 FileUtils.java 中添加方法 deleteImgByNoteId，用于删除笔记中的所有图片：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 删除笔记中的图片
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; userId
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; noteId
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;deleteImgByNoteId&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userId,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; noteId)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        String noteIdStr &#x3D; noteId + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&quot;&lt;&#x2F;span&gt;;
+        String[] imgs &#x3D; getUserImgs(userId);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(imgs &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt; || imgs.length &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;)&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt;;
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt;(String imgName :imgs)&#123;
+            String[] name &#x3D; imgName.split(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;-&quot;&lt;&#x2F;span&gt;);
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(name.length &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;2&lt;&#x2F;span&gt;)&#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;continue&lt;&#x2F;span&gt;;
+            &#125;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(noteIdStr.equals(name[&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;]))&#123;
+                deleteImg(imgName,userId);
+            &#125;
+        &#125;
+    &#125;</code></pre>
+<h4 id="判断在编辑器中删除了图片"><a class="markdownIt-Anchor" href="#判断在编辑器中删除了图片">#</a> <strong>判断在编辑器中删除了图片</strong></h4>
+<p>在 WangEditor 中和 mavon-editor 判断图片被删除的思路是一样的：</p>
+<ol>
+<li>使用正则表达式匹配编辑器内容中的图片</li>
+<li>分别取出修改前和修改后内容中包含的图片</li>
+<li>如果有些图片在修改前有，修改后没有，说明图片被删除了</li>
+</ol>
+<!-- -->
+<p>下面以判断在 mavon-editor 中删除图片的操作为例，说明实现过程。</p>
+<p>在 <strong>data.js</strong> 中添加方法 getMarkDownImg，用以取出内容中包含的图片名称：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 从 MarkDown 格式的内容中读取出图片名称（不带路径）
+     * @param &#123;Object&#125; content
+     *&#x2F;&lt;&#x2F;span&gt;
+    getMarkDownImg(content) &#123;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 匹配 MarkDown 中的图片 匹配格式：![图片描述](图片地址)&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;var&lt;&#x2F;span&gt; pattern &#x3D; &lt;span class&#x3D;&quot;hljs-regexp&quot;&gt;&#x2F;!\[?([^\)]*)\)?&#x2F;g&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 获取匹配到的图片数组&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;var&lt;&#x2F;span&gt; arr &#x3D; content.match(pattern);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; imgs &#x3D; []
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 遍历图片数组，解析出图片的文件名，如：abc.jpg&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; index &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;in&lt;&#x2F;span&gt; arr) &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; img &#x3D; arr[index];
+            img &#x3D; img.substring(img.lastIndexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;&quot;&lt;&#x2F;span&gt;) + &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;, img.length - &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;);
+            imgs.push(img);
+        &#125;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;返回纯图片名的数组&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; imgs;
+    &#125;</code></pre>
+<p><strong>说明：</strong></p>
+<p>因为 <strong>Keller 云笔记</strong>项目中每个用户存储图片的目录是固定的，在判断图片时，取出图片文件名即可。如果放的是网络图片，要在这里做相应的处理（如：判断图片命名格式、图片访问的域名等），以区分网络图片和项目文件服务器中存储的图片。</p>
+<p>在 <strong>data.js</strong> 中添加方法 getMarkDownDelImgs，用于判断出删除的图片：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 获取到 MarkDown 编辑器中删除的图片
+     * @param &#123;Object&#125; oldContent   修改前的内容
+     * @param &#123;Object&#125; newContent   修改后的内容
+     *&#x2F;&lt;&#x2F;span&gt;
+    getMarkDownDelImgs(oldContent, newContent) &#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; oldImgs &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.getMarkDownImg(oldContent);
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果修改前没有图片，不用判断&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (oldImgs.length &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;) &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; [];
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; newImgs &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.getMarkDownImg(newContent);
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果修改后没有图片，说明图片全被删除&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (newImgs.length &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;) &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; oldImgs;
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; del;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; delImgs &#x3D; [];
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; i &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;in&lt;&#x2F;span&gt; oldImgs) &#123;
+            del &#x3D; &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;false&lt;&#x2F;span&gt;;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; j &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;in&lt;&#x2F;span&gt; newImgs) &#123;
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果修改前的图片，修改后仍存在，说明未删除&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (oldImgs[i] &#x3D;&#x3D;&#x3D; newImgs[j]) &#123;
+                    del &#x3D; &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;false&lt;&#x2F;span&gt;;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;break&lt;&#x2F;span&gt;;
+                &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                    del &#x3D; &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;;
+                &#125;
+            &#125;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (del) &#123;
+                delImgs.push(oldImgs[i]);
+            &#125;
+        &#125;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 返回删除的图片&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; delImgs;
+    &#125;</code></pre>
+<p>在 <strong>Node.vue</strong> 的 handleSave 方法中添加删除图片的操作：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">handleSave() &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; newText;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; newHtml;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.note.type &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;) &#123;
+                    newText &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$refs.wangEditor.getText();
+                    newHtml &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$refs.wangEditor.getHtml();
+                &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.note.type &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;) &#123;
+                    newText &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$refs.markDown.getText();
+                    newHtml &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$refs.markDown.getHtml();
+
+                    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果 MarkDown 笔记内容有变化，检查是否删除了图片，如果删除了图片，则请求服务器删除图片&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.note.text !&#x3D;&#x3D; newText)&#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; delImgs &#x3D; editorImgCheck.getMarkDownDelImgs(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.note.text,newText);
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(delImgs.length &gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;)&#123;
+                            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; index &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;in&lt;&#x2F;span&gt; delImgs)&#123;
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 调用删除图片的接口，删除文件服务器中的图片&lt;&#x2F;span&gt;
+                                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.handleDelImg(delImgs[index]);
+                            &#125;
+                        &#125;
+                    &#125;
+                &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt;;
+                &#125;
+     ... ... 
+&#125;</code></pre>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes">https://github.com/tianlanlandelan/KellerNotes</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇根据项目部署的实际情况，带领大家在力所能及的范围内控制项目消耗的内存、磁盘空间资源，避免因为大量冗余的数据浪费服务器存储空间。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/24%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E4%BC%98%E5%8C%96a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/25%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%861_%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E5%8F%8A%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            25用户管理1_模糊查询及分页查询
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/23%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">23项目部署</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

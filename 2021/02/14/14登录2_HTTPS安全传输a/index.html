@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    14登录2_HTTPS安全传输 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-14登录2_HTTPS安全传输a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  14登录2_HTTPS安全传输
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/14%E7%99%BB%E5%BD%952_HTTPS%E5%AE%89%E5%85%A8%E4%BC%A0%E8%BE%93a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.032Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">16 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>上一篇我们完成了 JWT 的生成与解析功能，并在此基础上完成了两种不同的登录接口。服务端登录成功后将 JWT 发送给客户端，供其后续访问使用。那么发送给客户端的过程中有没有风险呢？客户端收到 JWT 后该如何存储它呢？本篇带你解决这些问题，使 JWT 在客户端和服务端之间安全高效地发挥作用。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<h4 id="html5-web-storage"><a class="markdownIt-Anchor" href="#html5-web-storage">#</a> <strong>HTML5 Web Storage</strong></h4>
+<p>HTML5 Web Storage 是 HTML5 的本地存储，客户端存储 JWT 可以使用传统的 Cookies 方式，也可以使用 Web Storage。本篇重点介绍如何通过后者进行存储。</p>
+<p>Web Storage 包含两种方式：</p>
+<ul>
+<li>localStorage：本地保存，只支持 String 类型，没有时间上的限制，会在关闭页面或者浏览器后仍然存在。</li>
+<li>sessionStorage：基于 Session 的本地保存，只支持 String 类型，只针对一个 Session 进行数据存储，当浏览器关闭后，数据会被删除。</li>
+</ul>
+<!-- -->
+<p>云笔记项目将采用 sessionStorage 的方式存储 JWT。</p>
+<h4 id="https"><a class="markdownIt-Anchor" href="#https">#</a> <strong>HTTPS</strong></h4>
+<p>项目使用 JWT 后，实现了无状态化，每次请求只需要携带一个 JWT 就可以证实用户身份，那么一旦 JWT 在 HTTP 传输过程中被恶意拦截，别人就可以盗用你的身份进行非法操作了，因此现在各大网站都采用了 HTTPS 的访问方式。</p>
+<blockquote>
+<p>HTTPS （全称：Hyper Text Transfer Protocol over SecureSocket Layer），是以安全为目标的 HTTP 通道，在 HTTP 的基础上通过传输加密和身份认证保证了传输过程的安全性。HTTPS 在 HTTP 的基础下加入 SSL 层，HTTPS 的安全基础是 SSL，因此加密的详细内容就需要 SSL。—— 来自百度百科</p>
+</blockquote>
+<h3 id="生成-https-证书及公私玥"><a class="markdownIt-Anchor" href="#生成-https-证书及公私玥">#</a> 生成 HTTPS 证书及公私玥</h3>
+<h4 id="生成证书"><a class="markdownIt-Anchor" href="#生成证书">#</a> <strong>生成证书</strong></h4>
+<p>各大云服务提供商（阿里云、腾讯云等）都提供 HTTPS 服务，只需要有一个备案的域名就可以申请到免费的 HTTPS 证书。在学习过程中我们通过 Java 自己生成一个就可以了，进入到 Java bin 目录下，执行  <code>keytool -genkey</code>  命令即可，格式如下：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">keytool -genkey -alias kellerNotes -keyalg RSA -keysize 2048 -keystore &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes.p12 -validity 365</code></pre>
+<p>参数说明：</p>
+<ul>
+<li>-alias：指定证书的别名</li>
+<li>-keyalg：指定证书的加密方式</li>
+<li>-keysize：指定密钥长度</li>
+<li>-keystore：指定证书保存的地址</li>
+<li>-validity：指定证书有效期，单位为天</li>
+</ul>
+<!-- -->
+<p>HTTPS 证书生成完毕后，会提示是否将其迁移到行业标准格式 PKCS12，按照提示的命令迁移一下就好了，如：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">keytool -importkeystore -srckeystore &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes.p12 -destkeystore &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes.p12 -deststoretype pkcs12</code></pre>
+<p>证书生成过程中需要设置密码，该密码在生成证书的公私钥时也要用到。证书生成过程中会有一些问题需要回答，自行填写就好，如图所示：</p>
+<p><img src="https://images.gitbook.cn/788e4d20-72aa-11ea-aa9c-4b75f9a497aa" alt="生成Https证书"></p>
+<h4 id="生成公私钥"><a class="markdownIt-Anchor" href="#生成公私钥">#</a> <strong>生成公私钥</strong></h4>
+<p>证书生成完毕后，还需要根据证书生成公钥和私钥，以备后续使用。同样在 Java bin 目录下执行命令，格式如下：</p>
+<p>生成公钥：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Openssl pkcs12 -in &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes.p12 -clcerts -out &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes_publicKey.pem</code></pre>
+<p>生成私钥：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">Openssl pkcs12 -in &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes.p12 -nodes -out &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;kellerNotes_privateKey.pem</code></pre>
+<p>这两个命令都要输入生成证书时设置的密码，如图所示：</p>
+<p><img src="https://images.gitbook.cn/82b3a700-72aa-11ea-ad55-4b5f9f0c99bb" alt="生成公私钥"></p>
+<h3 id="服务端升级-https"><a class="markdownIt-Anchor" href="#服务端升级-https">#</a> 服务端升级 HTTPS</h3>
+<h4 id="spring-boot-配置-https"><a class="markdownIt-Anchor" href="#spring-boot-配置-https">#</a> <strong>Spring Boot 配置 HTTPS</strong></h4>
+<p>在 Spring Boot 项目中配置 HTTPS 很简单，将生成的证书拷贝到 application.properties 同级目录下，然后在 application.properties 中添加如下配置即可：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties">## 更改端口为 443
+server.port&#x3D;443
+## 指定证书路径
+server.ssl.key-store&#x3D;classpath:kellerNotes.p12
+## 指定证书别名
+server.ssl.key-alias&#x3D;kellerNotes
+## 指定证书密码
+server.ssl.key-store-password&#x3D;2221167890</code></pre>
+<p>这样配置完毕后，从用浏览器直接访问接口 <strong>1001</strong>：</p>
+<pre class="line-numbers language-none"><code class="language-none">https:&lt;span class&#x3D;&quot;hljs-regexp&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;localhost&#x2F;base&#x2F;getCodeForRegister?email&#x3D;&lt;span class&#x3D;&quot;hljs-number&quot;&gt;2221167890&lt;&#x2F;span&gt;@qq.com</code></pre>
+<p>会提示不安全，这是因为我们的证书是自己生成的，没有经过浏览器的安全认证，点开” 高级 “按钮，选择仍然信任该网站即可，如图所示：</p>
+<p>使用浏览器第一次访问，提示证书不安全：</p>
+<p><img src="https://images.gitbook.cn/a416dcf0-72aa-11ea-9d30-373ba420c527" alt="浏览器提示错误"></p>
+<p>添加信任后，可正常访问接口，那么这样就是安全的访问传输方式了吗？能看出有什么区别吗？打开浏览器控制台（火狐为例：右上角菜单图标 -&gt; Web 开发者 -&gt; Web 控制台 -&gt; 网络选项卡 -&gt; 安全性选项卡）就看出不一样的了，如下图：</p>
+<p><img src="https://images.gitbook.cn/b2b00bb0-72aa-11ea-9c78-13c8e455a47a" alt="浏览器访问成功"></p>
+<p>在这个 GET 请求的” 安全性 “中可以看到该连接使用了 TLSv1.2 协议、RSA-PKCS1-SHA256 加密方式。同时能看到证书的相关信息，证书里面的内容就是我们上一步生成证书时指定的。</p>
+<h4 id="resttemplate-配置-https"><a class="markdownIt-Anchor" href="#resttemplate-配置-https">#</a> <strong>RestTemplate 配置 HTTPS</strong></h4>
+<p>由于云笔记项目使用了 RestTemplate 进行 HTTP 请求的转发，因此需要对 RestTemplate 进行设置，使其支持 HTTPS，设置方式如下。</p>
+<p>1. 创建一个工厂类 <strong>HttpsClientRequestFactory</strong> 继承  <code>org.springframework.http.client.SimpleClientHttpRequestFactory</code>  类以支持 SSL 连接，代码示例：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;HttpsClientRequestFactory&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;extends&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;SimpleClientHttpRequestFactory&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+       * 重写 prepareConnection 方法，对连接做预处理
+       *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Override&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;protected&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;prepareConnection&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(HttpURLConnection connection, String httpMethod)&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+              &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;校验要处理的连接是一个正确的 Https 连接&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (!(connection &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;instanceof&lt;&#x2F;span&gt; HttpsURLConnection)) &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;throw&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; RuntimeException(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;An instance of HttpsURLConnection is expected&quot;&lt;&#x2F;span&gt;);
+            &#125;
+                        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;声明一个 Https 连接&lt;&#x2F;span&gt;
+            HttpsURLConnection httpsConnection &#x3D; (HttpsURLConnection) connection;
+                        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;定义证书&lt;&#x2F;span&gt;
+            TrustManager[] trustAllCerts &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; TrustManager[]&#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; X509TrustManager() &#123;
+                        ... ...
+            &#125;;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;获取一个 SSLContext 实例，用于设置 SSL 连接参数&lt;&#x2F;span&gt;
+            SSLContext sslContext &#x3D; SSLContext.getInstance(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;TLS&quot;&lt;&#x2F;span&gt;);
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;初始化 SSLContext 实例&lt;&#x2F;span&gt;
+            sslContext.init(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;, trustAllCerts, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; java.security.SecureRandom());
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置 https 连接&lt;&#x2F;span&gt;
+            httpsConnection.setSSLSocketFactory(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; MyCustomSSLSocketFactory(sslContext.getSocketFactory()));
+            httpsConnection.setHostnameVerifier(
+                ... ...
+            &#125;);
+
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;super&lt;&#x2F;span&gt;.prepareConnection(httpsConnection, httpMethod);
+        &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e) &#123;
+            e.printStackTrace();
+        &#125;
+    &#125;</code></pre>
+<p>2. 使用 <strong>HttpsClientRequestFactory</strong> 实例化 RestTemplate。</p>
+<p>将启动类 <strong>KellerApplication</strong> 中  <code>RestTemplate restTemplate = new RestTemplate()</code>  改为  <code>RestTemplate restTemplate = new RestTemplate(new HttpsClientRequestFactory())</code> 。</p>
+<p>至此，Spring Boot 项目及项目中的 RestTemplate 均改为 HTTPS 协议了。</p>
+<h3 id="前端升级-https-及实现登录功能"><a class="markdownIt-Anchor" href="#前端升级-https-及实现登录功能">#</a> 前端升级 HTTPS 及实现登录功能</h3>
+<h4 id="修改项目配置"><a class="markdownIt-Anchor" href="#修改项目配置">#</a> <strong>修改项目配置</strong></h4>
+<p>在 vue.config.js 配置文件中，将项目代理配置  <code>target: 'http://127.0.0.1:8080'</code>  修改为  <code>target: 'https://127.0.0.1'</code>  即可，修改后的代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">proxy: &#123;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;api&#39;&lt;&#x2F;span&gt;: &#123;
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;target&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;https:&#x2F;&#x2F;127.0.0.1&#39;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;changeOrigin&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;secure&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;false&lt;&#x2F;span&gt;
+            &#125;,
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;base&#39;&lt;&#x2F;span&gt;: &#123;
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;target&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;https:&#x2F;&#x2F;127.0.0.1&#39;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;changeOrigin&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;secure&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;false&lt;&#x2F;span&gt;
+            &#125;
+        &#125;</code></pre>
+<h4 id="登录界面设计"><a class="markdownIt-Anchor" href="#登录界面设计">#</a> <strong>登录界面设计</strong></h4>
+<p>登录页面效果设计如下：</p>
+<p><img src="https://images.gitbook.cn/f2399c10-72aa-11ea-b3fa-5b760b39398d" alt="null"></p>
+<p>根据效果图，从上到下对页面进行分析：</p>
+<ul>
+<li>第一部分：页面标题 <strong>KellerNotes 登录</strong>，居中显示</li>
+<li>第二部分：表单，输入框、按钮</li>
+<li>第三部分：按钮或超链接，用于跳转到其他页面</li>
+</ul>
+<!-- -->
+<p>在页面设计上，没有新的功能点，按照设计图一步步实现就可以了。</p>
+<h4 id="登录功能实现"><a class="markdownIt-Anchor" href="#登录功能实现">#</a> <strong>登录功能实现</strong></h4>
+<p>以账号密码的登录为例，需要的数据格式如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;要登录的用户    &lt;&#x2F;span&gt;
+user: &#123;
+                  &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮箱&lt;&#x2F;span&gt;
+                    email:&lt;span class&#x3D;&quot;hljs-literal&quot;&gt;null&lt;&#x2F;span&gt;,
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;密码&lt;&#x2F;span&gt;
+                    password:&lt;span class&#x3D;&quot;hljs-literal&quot;&gt;null&lt;&#x2F;span&gt;,
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮箱格式是否验证通过，用于控制是否显示邮箱格式错误的提示&lt;&#x2F;span&gt;
+                    emailChecked:&lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;,
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;密码格式是否验证通过，用于控制是否显示密码格式错误的提示&lt;&#x2F;span&gt;
+                    passwordChecked:&lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;
+                &#125;</code></pre>
+<p>点击登录按钮后，需要做的工作是：</p>
+<p>验证邮箱和密码格式：</p>
+<ul>
+<li>如果验证不通过，显示相应的错误提示</li>
+<li>如果验证通过，使用 Axios 发起登录请求</li>
+</ul>
+<!-- -->
+<p>解析登录请求的应答，判断业务状态是否成功：</p>
+<ul>
+<li>如果业务状态失败，提示错误信息</li>
+<li>否则保存 JWT，跳转到用户主页</li>
+</ul>
+<!-- -->
+<p>登录操作的完整代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;登录操作&lt;&#x2F;span&gt;
+            handleLogon()&#123;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;验证邮箱&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.emailChecked &#x3D; format.isEmail(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.email);
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;验证密码&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.passwordChecked &#x3D; format.isPassword(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.password);
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮箱和密码都校验通过后发送登录请求&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.emailChecked &amp;&amp; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user.passwordChecked) &#123;
+                    req_logon(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.user).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;response&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt;&#123;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;获取到返回的结果&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt;&#123;
+                            data,
+                            message,
+                            success
+                        &#125; &#x3D; response;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;如果业务状态不是成功，提示错误信息&lt;&#x2F;span&gt;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(success !&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;)&#123;
+                            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message.error(message);
+                        &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt;&#123;
+              &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;业务状态成功，保存 JWT&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.localStorage.setItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;token&quot;&lt;&#x2F;span&gt;,data);
+              &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;跳转到用户主页&lt;&#x2F;span&gt;
+                            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$router.push(&#123; &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;Home&#39;&lt;&#x2F;span&gt; &#125;);
+                        &#125;
+                    &#125;);
+                &#125;
+            &#125;</code></pre>
+<p>至此，账号密码登录功能实现完毕。验证码登录功能和账号密码登录相似，在这里就不一一赘述了，希望大家参照已有的代码自己练习一下：</p>
+<ul>
+<li>参照注册功能中的<strong>获取注册验证码</strong>功能实现<strong>获取登录验证码</strong>功能。</li>
+<li>参照本篇的<strong>账号密码登录</strong>功能，实现<strong>验证码登录功能</strong>。</li>
+</ul>
+<!-- -->
+<h3 id="postman-升级-https"><a class="markdownIt-Anchor" href="#postman-升级-https">#</a> Postman 升级 HTTPS</h3>
+<p>当服务端升级到 HTTPS 协议后，测试工具如 Postman 就无法正常对接口访问了，如图：</p>
+<p><img src="https://images.gitbook.cn/19ae5150-72ab-11ea-9d30-373ba420c527" alt="Postman提示错误"></p>
+<p>访问 getCodeForRegister 接口时无法拿到应答，它提示我们要关闭 SSL 验证、配置证书。</p>
+<p>第一步，关闭 SSL 验证，在 SETTINGS -&gt; General 设置面板中关闭 SSL certificate verification 开关即可：</p>
+<p><img src="https://images.gitbook.cn/5f135ce0-72ab-11ea-9d30-373ba420c527" alt="Postman关闭SSL验证"></p>
+<p>第二步，配置 HTTPS 证书的公钥和私钥，这里个公钥和私钥就是我们在生成 HTTPS 证书时生成的公私钥：</p>
+<p><img src="https://images.gitbook.cn/68564600-72ab-11ea-b086-d1dd6d1a07b6" alt="添加客户端公私钥"></p>
+<p>然后，就可以正常访问了：</p>
+<p><img src="https://images.gitbook.cn/70902390-72ab-11ea-b3fa-5b760b39398d" alt="Postman访问成功"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/14.%E7%99%BB%E5%BD%952">https://github.com/tianlanlandelan/KellerNotes/tree/master/14. 登录 2</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家将服务端、前端代码都升级到 HTTPS 协议，以保证 JWT 在传输的安全性，同时完成前端账号密码登录功能，将服务端生成的 JWT 保存在前端，这样就形成了一个安全、完整的账号认证体系。在最后讲解了如何配置 Postman 使其支持 HTTPS 协议，以方便我们在后续的开发过程中对接口进行测试。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/14%E7%99%BB%E5%BD%952_HTTPS%E5%AE%89%E5%85%A8%E4%BC%A0%E8%BE%93a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/15%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%871_%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E%E5%8E%8B%E7%BC%A9a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            15用户名片1_图片上传与压缩
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">13登录1_JWT身份验证</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

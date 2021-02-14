@@ -9,11 +9,11 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    hadoop-develop |  Aikedaer
+    hadoop-develop |  伞
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
-  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/heart.png" />
   
   
 <link rel="stylesheet" href="/dist/main.css">
@@ -33,7 +33,7 @@
 
   
 
-<link rel="alternate" href="/atom.xml" title="Aikedaer" type="application/atom+xml">
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
 </head>
 
 </html>
@@ -41,6 +41,17 @@
 <body>
   <div id="app">
     
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
       
     <main class="content on">
       <section class="outer">
@@ -101,7 +112,7 @@
        
   <center><h1>Hadoop程序开发</h1></center>
 <h2>一、实验目的</h2>
-<p>Hadoop 程序开发</p>
+Hadoop 程序开发
 <h2>二、实验内容（实验过程、步骤及实验结果）</h2>
 <h4> 创建Rectangle.txt文件，输入如下数据</h4>
 <pre class="line-numbers language-none"><code class="language-none">9 9
@@ -335,8 +346,8 @@ public class WordCount &#123;
 	&#125;
 &#125;</code></pre>
 <h4>在自己家目录下创建~/project_jar目录用于保存导出的jar包</h4>
-<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1601815397125.png" alt="1601815397125"></p>
-<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1601815407046.png" alt="1601815407046"></p>
+![1601815397125](/images/1601815397125.png)
+<p><img src="/images/1601815407046.png" alt="1601815407046"></p>
 <h4>运行jar包中的java类</h4>
 <pre class="line-numbers language-none"><code class="language-none">hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.WordCount &#x2F;input&#x2F;wordcount&#x2F;testfile &#x2F;output&#x2F;wordcount 
 
@@ -470,8 +481,8 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
     <ul>
       <li>
         Copyrights &copy;
-        2015-2021
-        <i class="ri-heart-fill heart_icon"></i> Aikedaer
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
       </li>
     </ul>
     <ul>
@@ -529,7 +540,7 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="Aikedaer"></a>
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
   </div>
   
   <ul class="nav nav-main">
@@ -760,6 +771,11 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
 
 <!-- ClickBoom1 -->
 
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
 <!-- ClickBoom2 -->
 
 <!-- CodeCopy -->
@@ -824,6 +840,10 @@ hadoop jar ~&#x2F;project_jar&#x2F;mr_example.jar sds.mapreduce.RectangleSort
 
 
 <!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
 
 
     

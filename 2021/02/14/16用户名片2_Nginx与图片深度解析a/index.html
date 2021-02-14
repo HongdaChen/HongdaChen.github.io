@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    16用户名片2_Nginx与图片深度解析 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-16用户名片2_Nginx与图片深度解析a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  16用户名片2_Nginx与图片深度解析
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/16%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872_Nginx%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.034Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">5.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">29 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>上一篇，我们实现了图片的上传及压缩功能，将上传好的图片存在在了指定目录中。本篇将带领大家搭建一个 Nginx 文件服务器，用来访问上传的文件，同时会补充一些图片信息解析的知识。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>本篇内容主要涉及到 Nginx 搭建文件服务器、图片信息的解析，因此，在学习之前，我们先了解一下相关的知识。</p>
+<h4 id="nginx"><a class="markdownIt-Anchor" href="#nginx">#</a> <strong>Nginx</strong></h4>
+<p>Nginx 官网的介绍如下：</p>
+<blockquote>
+<p>NGINX is an open source web server used by more than 400 million websites and over 66% of the world’s top 10,000 websites. NGINX Plus, built on top of open source NGINX, adds enterprise‑grade capabilities such as load balancing with application‑aware health checks, content caching, security controls, and rich application monitoring and management capabilities.</p>
+</blockquote>
+<p>这段话是说：Nginx 是一个开放源代码的 Web 服务器，有超过 4 亿个网站使用，占世界前 10000 个网站的 66%。Nginx Plus 是在开源 Nginx 的基础上构建的，它增加了企业级功能，如通过应用程序感知的运行状况检查实现负载平衡、内容缓存、安全控制以及丰富的应用程序监视和管理功能。</p>
+<p>Nginx 官网地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.nginx.com">https://www.nginx.com</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/42e139f0-7951-11ea-b471-817fff5e2efb" alt="Nginx"></p>
+<p>Nginx 服务器稳定性好，功能强大，主要支持：</p>
+<ul>
+<li>
+<p>正向代理：- 用户向 Nginx 服务器发出请求，并指定目标服务器</p>
+<ul>
+<li>Nginx 将用户请求转交给目标服务器</li>
+<li>Nginx 将目标服务器返回的内容返回给客户端</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>Rewriter：请求地址重定向</p>
+</li>
+<li>
+<p>热部署：在不打断用户请求的情况下更新版本</p>
+</li>
+<li>
+<p>静态文件处理：作为文件服务器使用，用户可以从 Nginx 上获取到图片、视频等文件资源</p>
+</li>
+<li>
+<p>反向代理：- 用户发送请求到 Nginx</p>
+<ul>
+<li>Nginx 将请求转发到实际处理的服务器</li>
+<li>Nginx 将服务器返回的内容发送给客户端</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>负载均衡：将用户请求分流，减少服务端压力</p>
+</li>
+</ul>
+<!-- -->
+<p>本项目中使用到了 Nginx 的静态文件处理功能。</p>
+<h4 id="图片元数据"><a class="markdownIt-Anchor" href="#图片元数据">#</a> <strong>图片元数据</strong></h4>
+<p>图片元数据是在图片拍摄时生成的一些记录性信息，常见的是 EXIF 信息，百度百科对其做如下定义：</p>
+<blockquote>
+<p>EXIF 信息，是可交换图像文件的缩写，是专门为数码相机的照片设定的，可以记录数码照片的属性信息和拍摄数据。EXIF 可以附加于 JPEG、TIFF、RIFF 等文件之中，为其增加有关数码相机拍摄信息的内容和索引图或图像处理软件的版本信息。</p>
+</blockquote>
+<p>我们可以从图片 EXIF 信息中获取到如下信息：</p>
+<ul>
+<li>Image Description：图像描述、来源</li>
+<li>Artist：作者</li>
+<li>Make：生产者</li>
+<li>Model：设备型号</li>
+<li>Date Time：日期和时间</li>
+<li>Exif Offset Exif：信息位置</li>
+<li>Metering Mode：测光方式、平均式测光、中央重点测光、点测光等</li>
+<li>Flash：是否使用闪光灯</li>
+<li>Maker Note：作者标记、说明、记录</li>
+<li>Color Space：色域、色彩空间</li>
+<li>ExifImage Width：图像宽度</li>
+<li>ExifImage Length：图像高度</li>
+<li>……</li>
+</ul>
+<!-- -->
+<h4 id="metadata-extractor"><a class="markdownIt-Anchor" href="#metadata-extractor">#</a> <strong>metadata-extractor</strong></h4>
+<p>metadata-extractor 提供了简单的 API 用于访问图片和视频中的元数据，支持大多数格式的图片和视频：</p>
+<ul>
+<li>JPEG/PNG/GIF/BMP……</li>
+<li>MP4/3GP/M4V/MOV……</li>
+</ul>
+<!-- -->
+<p>官网地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://drewnoakes.com/code/exif/">https://drewnoakes.com/code/exif/</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/7f4c7350-7951-11ea-b471-817fff5e2efb" alt="metadata"></p>
+<p>云笔记项目使用 Maven 方式安装依赖包：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;com.drewnoakes&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;metadata-extractor&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;2.11.0&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<h3 id="nginx-文件服务器"><a class="markdownIt-Anchor" href="#nginx-文件服务器">#</a> Nginx 文件服务器</h3>
+<p>Nginx 在不同的平台上有不同的安装方式：</p>
+<ul>
+<li>Windows 平台下，下载压缩后后解压，运行 EXE 文件即可</li>
+<li>macOS 平台下，使用 brew 命令安装</li>
+<li>Linux 平台下，使用 yum 命令安装</li>
+</ul>
+<!-- -->
+<p>下面主要介绍一下大家常用的 Windows 平台和 macOS 平台的安装方式，Linux 平台参照 macOS 平台即可。</p>
+<h4 id="windows-安装-nginx"><a class="markdownIt-Anchor" href="#windows-安装-nginx">#</a> Windows 安装 Nginx</h4>
+<p>Windows 下安装 Nginx 只需要下载安装包解压后即可使用，具体步骤如下：</p>
+<p>进入 Nginx 下载页面，选择 Stable version（稳定版）下的 nginx/Windows-1.X.X 版本，点击下载。</p>
+<p>Nginx 下载地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://nginx.org/en/download.html">http://nginx.org/en/download.html</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/9c317420-7951-11ea-9092-0d4306e530bd" alt="Nginx下载"></p>
+<p>下载完成后解压，得到如下文件夹：</p>
+<p><img src="https://images.gitbook.cn/f65360c0-7952-11ea-bbcd-5f7ba70c85fa" alt="null"></p>
+<p>直接运行 nginx.exe 文件即可完成 Nginx 的启动，Nginx 的配置文件在 conf 目录下，稍后讲解如何修改配置文件，使其成为文件服务器。</p>
+<h4 id="macos-安装-nginx"><a class="markdownIt-Anchor" href="#macos-安装-nginx">#</a> <strong>macOS 安装 Nginx</strong></h4>
+<p>macOS 直接使用 brew 命令安装即可：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">brew install nginx</code></pre>
+<p>安装完毕后，可以使用  <code>nginx -v</code>  命令查看 Nginx 版本，使用  <code>nginx</code>  命令启动。</p>
+<p><img src="https://images.gitbook.cn/05af4340-7953-11ea-8a3f-55ca77157595" alt="NginxMac"></p>
+<p>Mac 上常用的 Nginx 命令：</p>
+<ul>
+<li><code>nginx</code> ：启动</li>
+<li><code>nginx -s reload</code> ：重启</li>
+<li><code>nginx -s stop</code> ：停止</li>
+</ul>
+<!-- -->
+<p>启动完成后，访问 <a target="_blank" rel="noopener" href="http://localhost:80">http://localhost:80</a> 可看到 Nginx 欢迎页：</p>
+<p><img src="https://images.gitbook.cn/1986e9e0-7953-11ea-a9bb-7bb763c3770e" alt="null"></p>
+<h4 id="nginx-配置"><a class="markdownIt-Anchor" href="#nginx-配置">#</a> <strong>Nginx 配置</strong></h4>
+<p>修改 nginx.conf，就可以修改 Nginx 配置，该文件的位置如下：</p>
+<ul>
+<li>Windows：nginx.exe 同级目录下 conf 文件夹中</li>
+<li>macOS：/usr/local/etc/nginx/nginx.conf</li>
+</ul>
+<!-- -->
+<p>不同平台上该文件的配置是一样的，找到 server 配置项，按照如下格式修改：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">server &#123;
+        listen   8081;
+        server_name  localhost;
+
+        location &#x2F;keller&#123;
+           alias &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;nginx&#x2F;keller;
+           index index.html;
+        &#125;
+
+        error_page   &lt;span class&#x3D;&quot;hljs-number&quot;&gt;500&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-number&quot;&gt;502&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;503&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;504&lt;&#x2F;span&gt;  &#x2F;&lt;span class&#x3D;&quot;hljs-number&quot;&gt;50&lt;&#x2F;span&gt;x.html;
+        location &#x3D; &#x2F;&lt;span class&#x3D;&quot;hljs-number&quot;&gt;50&lt;&#x2F;span&gt;x.html &#123;
+            root   html;
+        &#125;
+    &#125;</code></pre>
+<p>配置项说明如下：</p>
+<ul>
+<li>
+<p>listen：Nginx 启动端口，和上一篇服务器配置的 nginx.url 保持一致</p>
+</li>
+<li>
+<p>server_name：Nginx 服务名</p>
+</li>
+<li>
+<p>location /keller：要代理的地址，这样写的意思是：访问 <a target="_blank" rel="noopener" href="http://location/keller">http://location/keller</a> 的请求都会被处理，和上一篇服务器配置的 nginx.url 保持一致 - alias：文件夹地址，本地文件夹地址，要和上一篇服务器配置的 nginx.path 保持一致</p>
+<ul>
+<li>index：欢迎页</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>配置完成后，重启 Nginx 即可。</p>
+<h4 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> <strong>效果测试</strong></h4>
+<p>修改用户头像，修改完成后，调用获取用户名片的接口，根据获取到的 protraitUrl 地址，直接在浏览器访问，如果能获取到刚才上传的图片，说明 Web 服务器和 Nginx 配置正确，如图：</p>
+<p><img src="https://images.gitbook.cn/4a224db0-7953-11ea-a9bb-7bb763c3770e" alt="上传头像"></p>
+<p><img src="https://images.gitbook.cn/50402910-7953-11ea-9df1-7f4788873a0f" alt="访问图片"></p>
+<h3 id="图片深度解析"><a class="markdownIt-Anchor" href="#图片深度解析">#</a> 图片深度解析</h3>
+<p>在云笔记项目中使用到了图片的上传和访问，而这些功能在照片墙、社交网站中是最常用的。往往用到这些功能的同时还需要对图片信息进行解析，以实现图片分类保存、地点标注等。接下来就向大家简单介绍一下怎么读取到图片中的其他信息。</p>
+<h4 id="图片元数据读取"><a class="markdownIt-Anchor" href="#图片元数据读取">#</a> <strong>图片元数据读取</strong></h4>
+<p>图片的 EXIF 信息主要在照片中有大量的保存，一般的截图、压缩图等不会保留，因此最好拿手机、相机拍摄的原图进行测试。下面以 jpg/jepg 格式的照片信息读取为例，讲解 metadata-extractor 的使用。</p>
+<p>新建工具类 MetadataUtils.java，使用 JpegMetadataReader.readMetadata (File file) 方法即可获取到照片的元数据信息：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 读取 jpg、jepg 格式的照片元数据，由于元数据信息庞大，只获取其中需要关注的信息&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; Map&lt;String,String&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;readJpeg&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(File file)&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+        Metadata metadata;
+        Map&lt;String,String&gt; result &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; HashMap&lt;&gt;(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;16&lt;&#x2F;span&gt;);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+            metadata &#x3D; JpegMetadataReader.readMetadata(file);
+            Iterator&lt;Directory&gt; it &#x3D; metadata.getDirectories().iterator();
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;while&lt;&#x2F;span&gt; (it.hasNext()) &#123;
+                Directory exif &#x3D; it.next();
+                Iterator&lt;Tag&gt; tags &#x3D; exif.getTags().iterator();
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;遍历图片 Exif 信息的，取出需要的信息放入 Map 中&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;while&lt;&#x2F;span&gt; (tags.hasNext()) &#123;
+                    Tag tag &#x3D; tags.next();
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 打印出每一个 tag，可以在控制台了解一下每个 tag 存放的数据&lt;&#x2F;span&gt;
+                      System.out.println(tag);
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 照片高度 [Exif IFD0] Image Width - 3968 pixels 只取数值部分&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(IMAGE_HEIGHT.equals(tag.getTagName()))&#123;
+                        result.put(IMAGE_HEIGHT,tag.getDescription().substring(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;,tag.getDescription().indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot; &quot;&lt;&#x2F;span&gt;)));
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 照片宽度，只取数值部分&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(IMAGE_WIDTH.equals(tag.getTagName()))&#123;
+                        result.put(IMAGE_WIDTH,tag.getDescription().substring(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;,tag.getDescription().indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot; &quot;&lt;&#x2F;span&gt;)));
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 拍摄时间&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(CREATE_TIME.equals(tag.getTagName()))&#123;
+                        result.put(CREATE_TIME,tag.getDescription());
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 纬度&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(LATITUDE.equals(tag.getTagName()))&#123;
+                        result.put(LATITUDE,tag.getDescription());
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 经度&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(LONGITUDE.equals(tag.getTagName()))&#123;
+                        result.put(LONGITUDE,tag.getDescription());
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 设备类型&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(MAKE.equals(tag.getTagName()))&#123;
+                        result.put(MAKE,tag.getDescription());
+                    &#125;
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;  设备型号&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(MODEL.equals(tag.getTagName()))&#123;
+                        result.put(MODEL,tag.getDescription());
+                    &#125;
+                &#125;
+            &#125;
+        &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (JpegProcessingException e) &#123;
+            e.printStackTrace();
+        &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (IOException e) &#123;
+            e.printStackTrace();
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; result;
+    &#125;</code></pre>
+<h4 id="效果测试-2"><a class="markdownIt-Anchor" href="#效果测试-2">#</a> <strong>效果测试</strong></h4>
+<p>新建测试方法，指定一张本地的照片：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Test&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;readJpeg&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    File jpegFile &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; File(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#x2F;Users&#x2F;yangkaile&#x2F;Pictures&#x2F;IMG_20190127_163451.JPG&quot;&lt;&#x2F;span&gt;);
+        Map&lt;String,String&gt; map &#x3D; MetadataUtils.readJpeg(jpegFile);
+
+        Console.println(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;readJpeg&quot;&lt;&#x2F;span&gt;);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;for&lt;&#x2F;span&gt;(String key:map.keySet())&#123;
+            System.out.println(key+ &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;:&quot;&lt;&#x2F;span&gt; + map.get(key));
+        &#125;
+&#125;</code></pre>
+<p>运行后得到如下结果：</p>
+<p><img src="https://images.gitbook.cn/71df5690-7953-11ea-a9bb-7bb763c3770e" alt="readJpeg"></p>
+<p><code>=======readJpeg=======</code>  上面是照片中所有的元数据信息，林林总总有几十条，它的下面是我们挑出来需要的信息：</p>
+<ul>
+<li>纬度：39° 59’ 20.71&quot;，需要在拍摄时手机打开位置信息</li>
+<li>设备型号：MHA-AL00，配合设备名能知道是使用华为 Mate 9 拍摄的</li>
+<li>经度：116° 16’ 20.36&quot;，需要在拍摄时手机打开位置信息</li>
+<li>设备名：HUAWEI，华为</li>
+<li>图片高度：2976，单位是像素</li>
+<li>图片宽度：3968，单位是像素</li>
+<li>拍摄时间：2019:01:27 16:34:52</li>
+</ul>
+<!-- -->
+<p>有了这些，我们就可以按照拍摄时间、大小、设备型号等进行分类或排序了，当然，如果想按照拍摄地点分类整理的话，我们还需要将经纬度转换成具体的地址。</p>
+<h3 id="位置信息获取"><a class="markdownIt-Anchor" href="#位置信息获取">#</a> 位置信息获取</h3>
+<p>把经纬度转换成具体的地址，被称为逆地理编码，百度、腾讯、阿里云都提供的有免费的接口可以实现。下面介绍一下如何用阿里云的接口实现。</p>
+<h4 id="阿里云-api"><a class="markdownIt-Anchor" href="#阿里云-api">#</a> <strong>阿里云 API</strong></h4>
+<p>打开阿里云市场，搜索 “逆地理编码”：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://market.aliyun.com">https://market.aliyun.com</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/91060a00-7953-11ea-9df1-7f4788873a0f" alt="阿里云市场"></p>
+<p>打开逆地理编码，里面有接口说明：</p>
+<p><img src="https://images.gitbook.cn/9e7bee70-7953-11ea-a1b9-972133577f73" alt="接口"></p>
+<p>按照接口说明，我们只需要完成注册、获取令牌，就可以使用了。</p>
+<p>我们可以按照页面上的调试工具进行调试，获取到的数据格式如下：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">&#123;
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;infocode&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;10000&quot;&lt;&#x2F;span&gt;,
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;regeocode&quot;&lt;&#x2F;span&gt;:&#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;formatted_address&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;北京市海淀区青龙桥街道颐和园&quot;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;addressComponent&quot;&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;businessAreas&quot;&lt;&#x2F;span&gt;:[[]],
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;country&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;中国&quot;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;province&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;北京市&quot;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;citycode&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;010&quot;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;city&quot;&lt;&#x2F;span&gt;:[],
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;adcode&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;110108&quot;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;streetNumber&quot;&lt;&#x2F;span&gt;:&#123;
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;number&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;甲1号&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;distance&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;675.586&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;street&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;六郎庄路&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;location&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;116.278221,39.9850281&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;direction&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;东南&quot;&lt;&#x2F;span&gt;&#125;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;towncode&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;110108013000&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;district&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;海淀区&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;neighborhood&quot;&lt;&#x2F;span&gt;:&#123;
+                    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;name&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;颐和园&quot;&lt;&#x2F;span&gt;,
+                    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;type&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;风景名胜;风景名胜;世界遗产&quot;&lt;&#x2F;span&gt;
+                &#125;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;township&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;青龙桥街道&quot;&lt;&#x2F;span&gt;,
+                &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;building&quot;&lt;&#x2F;span&gt;:&#123;
+                    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;name&quot;&lt;&#x2F;span&gt;:[],
+                    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;type&quot;&lt;&#x2F;span&gt;:[]
+                &#125;
+        &#125;
+    &#125;,
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;status&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;1&quot;&lt;&#x2F;span&gt;,
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;&quot;info&quot;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;OK&quot;&lt;&#x2F;span&gt;
+&#125;</code></pre>
+<h4 id="经纬度格式转换"><a class="markdownIt-Anchor" href="#经纬度格式转换">#</a> <strong>经纬度格式转换</strong></h4>
+<p>由于从照片中获取到的经纬度是这样格式的： <code>40° 5' 5.49&quot;</code> ，而 API 中要求上传的是浮点数，我们就需要对其进行格式转换：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 经纬度格式转换，从时分秒转换成 float 格式，保留小数点后 6 位
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; point 坐标点 格式：40° 5&#39; 5.49&quot;
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt; 转换后的格式：40.084858
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;float&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;pointToFloat&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String point )&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;读取度数&lt;&#x2F;span&gt;
+    Double du &#x3D; Double.parseDouble(point.substring(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;, point.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;°&quot;&lt;&#x2F;span&gt;)).trim());
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;读取分&lt;&#x2F;span&gt;
+    Double fen &#x3D; Double.parseDouble(point.substring(point.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;°&quot;&lt;&#x2F;span&gt;)+&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;, point.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#39;&quot;&lt;&#x2F;span&gt;)).trim());
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;读取秒&lt;&#x2F;span&gt;
+    Double miao &#x3D; Double.parseDouble(point.substring(point.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&#39;&quot;&lt;&#x2F;span&gt;)+&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;, point.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;\&quot;&quot;&lt;&#x2F;span&gt;)).trim());
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;按照 60 进制换算为浮点数&lt;&#x2F;span&gt;
+    Double duStr &#x3D; du + fen &#x2F; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60&lt;&#x2F;span&gt; + miao &#x2F; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60&lt;&#x2F;span&gt; &#x2F; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60&lt;&#x2F;span&gt; ;
+    String str &#x3D; duStr.toString();
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(str.substring(str.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&quot;&lt;&#x2F;span&gt;) + &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;).length() &gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;6&lt;&#x2F;span&gt;)&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; Float.parseFloat(str.substring(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;,str.indexOf(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&quot;&lt;&#x2F;span&gt;) + &lt;span class&#x3D;&quot;hljs-number&quot;&gt;6&lt;&#x2F;span&gt; + &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;));
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; Float.parseFloat(str);
+&#125;</code></pre>
+<h4 id="读取地址"><a class="markdownIt-Anchor" href="#读取地址">#</a> <strong>读取地址</strong></h4>
+<p>使用免费申请到的 appCode 即可调用 API：</p>
+<p>- 构建一个 GET 请求</p>
+<ul>
+<li>请求参数中添加 appCode 和要查询的经纬度</li>
+<li>发送请求</li>
+<li>按照 JSON 格式解析出需要的地址信息</li>
+</ul>
+<!-- -->
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 阿里云地图 API 身份认证信息
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String APP_CODE &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;c8b7ef0a794a4e7e96e6a309d150dd8c&quot;&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 阿里云地图 API 访问地址
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String URL &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;https:&#x2F;&#x2F;regeo.market.alicloudapi.com&#x2F;v3&#x2F;geocode&#x2F;regeo&quot;&lt;&#x2F;span&gt;;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+     * 根据经纬度获取地址
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; longitude 经度，小数点后不超过 6 位，如 116.36486
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@param&lt;&#x2F;span&gt; latitude  纬度，小数点后不超过 6 位，如 40.084858
+     * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt; 地址，如：北京市海淀区青龙桥街道颐和园
+     *&#x2F;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getAddress&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;float&lt;&#x2F;span&gt; longitude, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;float&lt;&#x2F;span&gt; latitude)&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+        String url &#x3D; URL + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;?location&#x3D;&quot;&lt;&#x2F;span&gt; + longitude + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;,&quot;&lt;&#x2F;span&gt; + latitude;
+        String result &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;Header 中放入 Authorization 信息：AppCode&lt;&#x2F;span&gt;
+            HttpHeaders httpHeaders &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; HttpHeaders();
+            httpHeaders.add(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;Authorization&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;APPCODE &quot;&lt;&#x2F;span&gt; + APP_CODE);
+            RestTemplate restTemplate &#x3D; RestTemplateUtils.getTemplate();
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;发送 Get 请求&lt;&#x2F;span&gt;
+            HttpEntity&lt;String&gt; requestEntity &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; HttpEntity(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;, httpHeaders);
+            ResponseEntity&lt;String&gt; response &#x3D; restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+            Console.println(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;response&quot;&lt;&#x2F;span&gt;,response);
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(response.getStatusCode() &#x3D;&#x3D; HttpStatus.OK)&#123;
+                result &#x3D; getAddrByBody(response.getBody());
+            &#125;
+
+        &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e) &#123;
+            e.printStackTrace();
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; result;
+    &#125;</code></pre>
+<p>至此，就完成了地址的解析，在需要的时候，就可以解析照片的拍摄地点了。</p>
+<h4 id="百度-web-服务-api"><a class="markdownIt-Anchor" href="#百度-web-服务-api">#</a> <strong>百度 Web 服务 API</strong></h4>
+<p>阿里云地图 API 使用的是高德地图数据，如果想用百度地图，可以调用百度逆地理编码接口，地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://lbsyun.baidu.com/index.php?title=webapi">http://lbsyun.baidu.com/index.php?title=webapi</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/d3a67750-7953-11ea-8a3f-55ca77157595" alt="百度地图"></p>
+<p>接口调用方式和阿里云地图 API 一样，感兴趣的同学可以自己实现一下，同时，你会发现里面有很多好玩的 API，拿来用在自己的项目中简直不要太爽哦。</p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/16.%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872/server">https://github.com/tianlanlandelan/KellerNotes/tree/master/16. 用户名片 2/server</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家实现了通过 Nginx 文件服务器访问图片的功能，这样做极大减轻了系统的访问压力和存储压力。在实际使用中，我们可以在服务器上分别部署 Web 服务器、Nginx 文件服务器，也可以使用七千牛、腾讯云、阿里云等提供的文件存储功能，不建议大家使用 Web 服务器承担静态资源文件的访问工作。</p>
+<p>同时，本篇对于图片的处理做了一些延伸的知识：读取图片 EXIF 信息，并使用地图 API 根据照片的元数据获取拍摄地点。这些延伸知识可用于搭建照片墙、图片管理、社交网站等应用，希望大家在课后实际体验一下。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/16%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%872_Nginx%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/17%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%873_%E9%A1%B5%E9%9D%A2%E5%AE%9E%E7%8E%B0a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            17用户名片3_页面实现
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/15%E7%94%A8%E6%88%B7%E5%90%8D%E7%89%871_%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E%E5%8E%8B%E7%BC%A9a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">15用户名片1_图片上传与压缩</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

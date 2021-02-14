@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    26用户管理2_生成Excel文件 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-26用户管理2_生成Excel文件a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  26用户管理2_生成Excel文件
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/26%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%862_%E7%94%9F%E6%88%90Excel%E6%96%87%E4%BB%B6a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.048Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">5.2k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">27 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>用户管理的服务端功能准备完毕后，就可以实现 Web 端的效果了。本篇带领大家实现用户管理功能的页面展示及将用户数据导出成 Excel 文件。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>本篇涉及到的新知识点为在页面上导出 Excel，这里用到了 vue-json-excel 组件。</p>
+<h4 id="vue-json-excel"><a class="markdownIt-Anchor" href="#vue-json-excel">#</a> <strong>vue-json-excel</strong></h4>
+<p>vue-json-excel 文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/vue-json-excel">https://www.npmjs.com/package/vue-json-excel</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/4f649210-951e-11ea-a9dc-ef5cf20ceba2" alt="xlsx"></p>
+<p>在该网站上是这样介绍的：</p>
+<blockquote>
+<p>Download your JSON data as an excel file directly from the browser. This component it’s based on the solution proposed on this thread <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/17142427/javascript-to-export-html-table-to-excel">https://stackoverflow.com/questions/17142427/javascript-to-export-html-table-to-excel</a></p>
+</blockquote>
+<p>也就是说，它是可以实现将数据转换成 Ecxel 文件并从浏览器中下载到本地的功能，使用比较简单，仅需安装一个依赖包即可：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm install vue-json-excel</code></pre>
+<p>vue-json-excel 的特点有：</p>
+<ul>
+<li>支持 JSON 的数据格式</li>
+<li>支持直接绑定数据源及下载前获取数据源</li>
+<li>支持自定义表头及列数据</li>
+<li>支持列数据的自定义处理</li>
+<li>支持自定义工作表</li>
+</ul>
+<!-- -->
+<h3 id="搭建后台管理页面结构"><a class="markdownIt-Anchor" href="#搭建后台管理页面结构">#</a> 搭建后台管理页面结构</h3>
+<h4 id="功能分析"><a class="markdownIt-Anchor" href="#功能分析">#</a> <strong>功能分析</strong></h4>
+<p>和用户主页相同，后台管理页面也要先进行登录操作，和用户登录页面不同的是，后台管理页面无法注册。首个系统管理员数据需要在数据库中手动添加，如果需要其他系统管理员，可以在管理员页面功能中设计<strong>添加管理员</strong>的功能。</p>
+<p>后台管理系统的登录页面效果如下：</p>
+<p><img src="https://images.gitbook.cn/90a2b040-951e-11ea-82b3-6111407489cd" alt="登录"></p>
+<p>登录成功后进入后台管理页面，该页面使用经典的后台管理页面布局方式，左侧为导航栏，右侧为页面内容，效果如下：</p>
+<p><img src="https://images.gitbook.cn/a7f0e000-951e-11ea-b359-c776f1823b74" alt="概览"></p>
+<h4 id="流程设计"><a class="markdownIt-Anchor" href="#流程设计">#</a> <strong>流程设计</strong></h4>
+<ul>
+<li>
+<p>登录 - 在后台管理系统登录页面中输入账号密码后，请求登录 - 使用和用户登录同样的接口，区别在于 type 参数固定传值 100</p>
+<pre><code>  &lt;!-- --&gt;
+</code></pre>
+<ul>
+<li>
+<p>登录成功后，保存服务端返回的 JWT，进入后台管理页面 - 由于管理员操作具有风险性，将 JWT 保存在 sessionStorage 中，而不是 localStorage</p>
+<ul>
+<li>后续管理员相关操作也是从 sessionStorage 中取出 JWT</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>进入后台管理页面 - 管理页面左侧的导航栏要根据 <strong>Router</strong> 动态生成</p>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h4 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> <strong>代码实现</strong></h4>
+<p>后台管理系统的登录页面布局方式和用户登录页面相同，这里就不再啰嗦了，主要讲解如何动态生成管理页面中的导航栏。</p>
+<p><strong>1. 添加页面</strong></p>
+<p>首先新建几个空的 Vue 文件，Admin.vue、AdminCount.vue、AdminIndex.vue、AdminUser.vue 等。其中：Admin.vue 页面作为父页面，定义后台管理功能的页面布局；其他页面作为具体的功能页面。如下图：</p>
+<p><img src="https://images.gitbook.cn/ddfe9cf0-951e-11ea-89e8-d3e59c640cba" alt="空文件"></p>
+<p><strong>2. 定义路由</strong></p>
+<p>在 router.js 中为新添加的页面设置路由，如：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;后台管理登录页面&lt;&#x2F;span&gt;
+    &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;AdminLogin&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;component&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&#x3D;&gt;&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;import&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&#x2F;views&#x2F;admin&#x2F;AdminLogin.vue&quot;&lt;&#x2F;span&gt;),
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;name&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;管理员登录&#39;&lt;&#x2F;span&gt;
+    &#125;,
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;后台管理页面&lt;&#x2F;span&gt;
+    &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;Admin0&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;component&lt;&#x2F;span&gt;: Admin,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;name&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;概览&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;iconCls&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;el-icon-menu&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;children&lt;&#x2F;span&gt;: [&#123;
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;AdminIndex&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;component&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;import&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&#x2F;views&#x2F;admin&#x2F;AdminIndex.vue&quot;&lt;&#x2F;span&gt;),
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;name&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;系统概览&#39;&lt;&#x2F;span&gt;
+        &#125;],
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;show&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;
+    &#125;,
+    &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;Admin1&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;component&lt;&#x2F;span&gt;: Admin,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;name&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;用户管理&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;iconCls&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;el-icon-user-solid&#39;&lt;&#x2F;span&gt;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;children&lt;&#x2F;span&gt;: [&#123;
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;path&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;AdminUser&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;component&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;import&lt;&#x2F;span&gt;(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;.&#x2F;views&#x2F;admin&#x2F;AdminUser.vue&quot;&lt;&#x2F;span&gt;),
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;name&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;用户列表&#39;&lt;&#x2F;span&gt;
+        &#125;],
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;show&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;
+    &#125;</code></pre>
+<p>路由参数说明：</p>
+<ul>
+<li>compnent：页面模板，在拥有 <strong>children</strong> 的路由上，会将 <strong>children</strong> 的 compnent 指定的页面挂载在该参数指定的父页面中  <code>&amp;lt;router-view&amp;gt;</code>  标签的位置</li>
+<li>iconCls：导航菜单中要显示的图标，该值的设置参照 element UI 中的图标库 <a target="_blank" rel="noopener" href="https://element.eleme.cn/#/zh-CN/component/icon">https://element.eleme.cn/#/zh-CN/component/icon</a></li>
+<li>show：是否显示在导航菜单中</li>
+<li>children：子页面，也就是实际的功能页面</li>
+</ul>
+<!-- -->
+<p><strong>3. 构建导航菜单</strong></p>
+<p>在 Admin.vue 中读取路由表，过滤出要在导航菜单中显示的页面：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;!--导航菜单--&gt;
+                    &lt;el-menu :default-active&#x3D;&quot;$route.path&quot; class&#x3D;&quot;el-menu-vertical-demo&quot; @open&#x3D;&quot;handleopen($route.path)&quot; @close&#x3D;&quot;handleclose($route)&quot;
+                        @select&#x3D;&quot;handleselect&quot; unique-opened router &gt;
+                        &lt;template v-for&#x3D;&quot;(item,index) in $router.options.routes&quot;&gt;
+                            &lt;div :key&#x3D;&quot;item.path&quot; v-if&#x3D;&quot;item.show&quot;&gt;
+                                &lt;el-submenu :index&#x3D;&quot;index+&#39;&#39;&quot; v-if&#x3D;&quot;!item.leaf&quot; :key&#x3D;&quot;index&quot;&gt;
+                                    &lt;template slot&#x3D;&quot;title&quot;&gt;
+                                        &lt;i :class&#x3D;&quot;item.iconCls&quot;&gt;&lt;&#x2F;i&gt;
+                                        &#123;&#123;item.name&#125;&#125;
+                                    &lt;&#x2F;template&gt;
+                                    &lt;el-menu-item v-for&#x3D;&quot;child in item.children&quot; :index&#x3D;&quot;child.path&quot; :key&#x3D;&quot;child.path&quot;&gt;&#123;&#123;child.name&#125;&#125;&lt;&#x2F;el-menu-item&gt;
+                                &lt;&#x2F;el-submenu&gt;
+                                &lt;el-menu-item v-if&#x3D;&quot;item.leaf&amp;&amp;item.children.length&gt;0&quot; :index&#x3D;&quot;item.children[0].path&quot; :key&#x3D;&quot;index&quot;&gt;
+                                    &lt;i :class&#x3D;&quot;item.iconCls&quot;&gt;&lt;&#x2F;i&gt;
+                                    &#123;&#123;item.children[0].name&#125;&#125;
+                                &lt;&#x2F;el-menu-item&gt;
+                            &lt;&#x2F;div&gt;
+                        &lt;&#x2F;template&gt;
+                    &lt;&#x2F;el-menu&gt;</code></pre>
+<h3 id="实现用户列表功能"><a class="markdownIt-Anchor" href="#实现用户列表功能">#</a> 实现用户列表功能</h3>
+<h4 id="功能分析-2"><a class="markdownIt-Anchor" href="#功能分析-2">#</a> <strong>功能分析</strong></h4>
+<p>点击导航菜单中的<strong>用户列表</strong>菜单项后，进入用户列表页面，该页面主要提供用户列表的展示操作，效果如下：</p>
+<p><img src="https://images.gitbook.cn/ff0cfc20-951e-11ea-b103-15b42d8d0dac" alt="用户列表"></p>
+<h4 id="流程设计-2"><a class="markdownIt-Anchor" href="#流程设计-2">#</a> <strong>流程设计</strong></h4>
+<ul>
+<li>使用  <code>&amp;lt;el-form&amp;gt;</code>  布局查询模块</li>
+<li>使用  <code>&amp;lt;el-pagination&amp;gt;</code>  布局分页模块</li>
+<li>使用  <code>&amp;lt;el-table&amp;gt;</code>  展示用户列表</li>
+</ul>
+<!-- -->
+<h4 id="代码实现-2"><a class="markdownIt-Anchor" href="#代码实现-2">#</a> <strong>代码实现</strong></h4>
+<p><strong>1. 定义接口</strong></p>
+<p>展示用户列表，需要调用后台接口获取数据，在 api.js 中按照后台接口的格式要求定义好请求方法，如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 获取用户列表 5002
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; req_getUserList &#x3D; &lt;span class&#x3D;&quot;hljs-function&quot;&gt;(&lt;span class&#x3D;&quot;hljs-params&quot;&gt;page,size,email&lt;&#x2F;span&gt;) &#x3D;&gt;&lt;&#x2F;span&gt; &#123; 
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; axios.get(api, &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;params&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;page&lt;&#x2F;span&gt;:page,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;size&lt;&#x2F;span&gt;:size,
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;email&lt;&#x2F;span&gt;:email
+        &#125;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;headers&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;method&#39;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;admin&#x2F;userList&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;token&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.sessionStorage.getItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;adminToken&quot;&lt;&#x2F;span&gt;)
+        &#125;
+    &#125;).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;res&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; res.data).catch(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;err&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; err);  
+&#125;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 获取用户总数 5007
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;const&lt;&#x2F;span&gt; req_getUserCounter &#x3D; &lt;span class&#x3D;&quot;hljs-function&quot;&gt;(&lt;span class&#x3D;&quot;hljs-params&quot;&gt;email&lt;&#x2F;span&gt;) &#x3D;&gt;&lt;&#x2F;span&gt; &#123; 
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; axios.get(api, &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;params&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;email&lt;&#x2F;span&gt;:email
+        &#125;,
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;headers&lt;&#x2F;span&gt;:&#123;
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;method&#39;&lt;&#x2F;span&gt;:&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;admin&#x2F;userCounter&#39;&lt;&#x2F;span&gt;,
+            &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;token&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;window&lt;&#x2F;span&gt;.sessionStorage.getItem(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;adminToken&quot;&lt;&#x2F;span&gt;)
+        &#125;
+    &#125;).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;res&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; res.data).catch(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;err&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; err);  
+&#125;;</code></pre>
+<p><strong>2. 分页展示</strong></p>
+<p>使用 Element UI 的分页控件实现分页效果，在 AdminUser.vue 中引用  <code>&amp;lt;el-pagination&amp;gt;</code>  控件，如下：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;el-pagination layout&#x3D;&quot;prev, pager, next&quot; @current-change&#x3D;&quot;handleCurrentChange&quot; :page-size&#x3D;&quot;pagination.size&quot; :total&#x3D;&quot;pagination.total&quot;
+                    style&#x3D;&quot;float:right;&quot;&gt;
+                &lt;&#x2F;el-pagination&gt;</code></pre>
+<p>设置 layout，表示需要显示的内容，用逗号分隔，布局元素会依次显示。prev 表示上一页，next 为下一页，pager 表示页码列表，除此以外还提供了 jumper 和 total、size 和特殊的布局符号 <code>-&amp;gt;</code> 。 <code>-&amp;gt;</code>  后的元素会靠右显示，jumper 表示跳页元素，total 表示总条目数，size 用于设置每页显示的页码数量。需要指定的参数如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;分页参数&lt;&#x2F;span&gt;
+                pagination: &#123;
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 总记录数&lt;&#x2F;span&gt;
+                    total: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;,
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 当前页码&lt;&#x2F;span&gt;
+                    page: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;,
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 每页显示的记录数&lt;&#x2F;span&gt;
+                    size: &lt;span class&#x3D;&quot;hljs-number&quot;&gt;10&lt;&#x2F;span&gt;
+                &#125;,</code></pre>
+<p>将查询到的用户列表展示，注意将状态值、日期等字段进行格式转换：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;!--列表--&gt;
+        &lt;el-table :data&#x3D;&quot;list&quot; highlight-current-row stripe style&#x3D;&quot;width: 100%;&quot;&gt;
+            &lt;el-table-column prop&#x3D;&quot;id&quot; label&#x3D;&quot;ID&quot;&gt;
+            &lt;&#x2F;el-table-column&gt;
+            &lt;el-table-column prop&#x3D;&quot;email&quot; label&#x3D;&quot;用户名&quot; sortable&gt;
+            &lt;&#x2F;el-table-column&gt;
+      &lt;!--通过 formatter 属性绑定自定义的格式转换方法--&gt;
+            &lt;el-table-column prop&#x3D;&quot;type&quot; label&#x3D;&quot;用户类型&quot; :formatter&#x3D;&quot;formatType&quot; sortable&gt;
+            &lt;&#x2F;el-table-column&gt;
+            &lt;el-table-column prop&#x3D;&quot;createTime&quot; label&#x3D;&quot;注册时间&quot; sortable&gt;
+                &lt;template slot-scope&#x3D;&quot;scope&quot;&gt;
+                    &lt;i class&#x3D;&quot;el-icon-time&quot;&gt;&lt;&#x2F;i&gt;
+                    &lt;!--通过直接调用自定义函数实现格式转换--&gt;
+                    &lt;span style&#x3D;&quot;margin-left: 10px&quot;&gt;&#123;&#123; format.formatDate(scope.row.createTime) &#125;&#125;&lt;&#x2F;span&gt;
+                &lt;&#x2F;template&gt;
+            &lt;&#x2F;el-table-column&gt;
+        &lt;&#x2F;el-table&gt;</code></pre>
+<p>自定义的格式转换方法如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">formatType(row) &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; row.type &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt; ? &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;普通用户&#39;&lt;&#x2F;span&gt; : row.type &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;100&lt;&#x2F;span&gt; ? &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;管理员&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;未知&#39;&lt;&#x2F;span&gt;;
+            &#125;</code></pre>
+<p><strong>3. 模糊查询</strong></p>
+<p>设置值查询条件为按用户名（当前项目中将注册邮箱作为用户名）查询：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;el-form :inline&#x3D;&quot;true&quot; :model&#x3D;&quot;filters&quot;&gt;
+                    &lt;el-form-item&gt;
+                        &lt;el-input v-model&#x3D;&quot;filters.name&quot; placeholder&#x3D;&quot;用户名&quot;&gt;&lt;&#x2F;el-input&gt;
+                    &lt;&#x2F;el-form-item&gt;
+                    &lt;el-form-item&gt;
+                        &lt;el-button type&#x3D;&quot;primary&quot; v-on:click&#x3D;&quot;handleGetUserList&quot;&gt;查询&lt;&#x2F;el-button&gt;
+                    &lt;&#x2F;el-form-item&gt;
+                &lt;&#x2F;el-form&gt;</code></pre>
+<p>查询数据时，传递查询条件：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">getUserList() &#123;
+                req_getUserList(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.pagination.page, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.pagination.size, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.filters.name).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;response&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; &#123;
+                        success,
+                        data,
+                        message
+                    &#125; &#x3D; response;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (success !&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;) &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message.error(message);
+                    &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.list &#x3D; data;
+                    &#125;
+                &#125;);
+            &#125;</code></pre>
+<h3 id="导出用户列表"><a class="markdownIt-Anchor" href="#导出用户列表">#</a> 导出用户列表</h3>
+<h4 id="功能分析-3"><a class="markdownIt-Anchor" href="#功能分析-3">#</a> <strong>功能分析</strong></h4>
+<p>用户管理页面的功能主要是显示用户列表，支持以不同条件查询用户列表，并将其导出为 Excel 表格。其中的关键点就是导出 Excel。目前导出 Excel 常用的有两种解决方案：Export2Excel.js 和 vue-json-excel，两种方案的特点如下：</p>
+<p><strong>方案一</strong>：file-saver + xlsx + script-loader + Blob.js + Export2Excel.js</p>
+<p>优点：</p>
+<ul>
+<li>
+<p>支持多种 Excel 格式的读写 - xls</p>
+<ul>
+<li>xlsx</li>
+<li>cvs</li>
+<li>xlsm</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>支持超大文件的读写 - FireFox 浏览器下最大可支持 800MB</p>
+<ul>
+<li>Chrome 浏览器下最大可支持 2GB</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>file-saver 作为单独的文件保存组件，可支持多种文件格式的保存 - 从 URL 中保存文件</p>
+<ul>
+<li>将 canvas 保存为图片</li>
+<li>将 js 对象保存为文本文件</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>缺点：</p>
+<ul>
+<li>依赖多，安装繁琐（需要安装 5 个依赖包）</li>
+</ul>
+<!-- -->
+<p><strong>方案二</strong>：vue-json-excel</p>
+<p>优点：</p>
+<ul>
+<li>依赖少，仅需一个依赖包即可</li>
+<li>可满足基本的 Excel 导出需要，支持多种自定义操作</li>
+</ul>
+<!-- -->
+<p>缺点：</p>
+<ul>
+<li>仅支持 JSON 导出为 Excel 功能，不支持读取 Excel 的功能</li>
+</ul>
+<!-- -->
+<p>根据 KellerNotes 项目的特点，选择使用方案二实现，并详细讲解。同时，会在本篇源码中附上第一种方案的例子，但不做详细讲解，下一篇源码中将删除该例子。</p>
+<h4 id="代码实现-3"><a class="markdownIt-Anchor" href="#代码实现-3">#</a> 代码实现</h4>
+<p><strong>1. 导出本页数据</strong></p>
+<p>引入 vue-json-excel 组件：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;import&lt;&#x2F;span&gt; JsonExcel &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;from&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;vue-json-excel&#39;&lt;&#x2F;span&gt;;
+
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;default&lt;&#x2F;span&gt; &#123;
+        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;components&lt;&#x2F;span&gt;: &#123;
+            JsonExcel
+        &#125;
+&#125;</code></pre>
+<p>导出本页数据时，定义 data 属性即可完成数据源的绑定，使用 name 属性定义要导出的文件名，如下：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;!-- 导出本页数据时，数据已经存在，直接取 list 即可 --&gt;
+                &lt;JsonExcel :data&#x3D;&quot;list&quot; :fields&#x3D;&quot;json_fields&quot; name&#x3D;&quot;用户信息.xls&quot;&gt;
+                    &lt;el-button type&#x3D;&quot;primary&quot;&gt; 导出本页数据&lt;&#x2F;el-button&gt;
+                &lt;&#x2F;JsonExcel&gt;</code></pre>
+<p>fields 属性定义要导出的列，格式如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 定义要导出的字段与数据格式，通过回调函数的方式对数据格式进行处理&lt;&#x2F;span&gt;
+                json_fields: &#123;
+                    &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;用户ID&quot;&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;id&quot;&lt;&#x2F;span&gt;,
+                    &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;注册邮箱&quot;&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;email&quot;&lt;&#x2F;span&gt;,
+                    &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;用户类型&quot;&lt;&#x2F;span&gt;: &#123;
+                        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;field&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;type&quot;&lt;&#x2F;span&gt;,
+                        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;callback&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-function&quot;&gt;(&lt;span class&#x3D;&quot;hljs-params&quot;&gt;value&lt;&#x2F;span&gt;) &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; value &#x3D;&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt; ? &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;普通用户&quot;&lt;&#x2F;span&gt; : value &#x3D;&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;100&lt;&#x2F;span&gt; ? &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;管理员&quot;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;未知&quot;&lt;&#x2F;span&gt;;
+                        &#125;
+                    &#125;,
+                    &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;注册时间&quot;&lt;&#x2F;span&gt;: &#123;
+                        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;field&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;createTime&quot;&lt;&#x2F;span&gt;,
+                        &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;callback&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-function&quot;&gt;(&lt;span class&#x3D;&quot;hljs-params&quot;&gt;value&lt;&#x2F;span&gt;) &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.format.formatDate(value);
+                        &#125;
+                    &#125;
+                &#125;</code></pre>
+<p><strong>2. 导出所有数据</strong></p>
+<p>导出全部数据时，需要从服务端获取数据，使用 fetch 回调方法指定获取数据的方法，并等待异步请求结束后返回获取到的数据：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;JsonExcel :fetch&#x3D;&quot;getUserListForDownLoad&quot; :fields&#x3D;&quot;json_fields&quot; name&#x3D;&quot;用户信息.xls&quot; type&#x3D;&quot;xls&quot;&gt;
+        &lt;el-button type&#x3D;&quot;primary&quot;&gt; 导出全部数据&lt;&#x2F;el-button&gt;
+&lt;&#x2F;JsonExcel&gt;</code></pre>
+<p>在 getUserListForDownLoad () 方法中读取数据：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 获取用户列表，获取到数据后返回给 JsonExcel 组件，用于导出成 excel，在这里将最大行数限制为 1000&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;async&lt;&#x2F;span&gt; getUserListForDownLoad() &#123;
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; userList &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;await&lt;&#x2F;span&gt; req_getUserList(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1000&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.filters.name).then(&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;response&lt;&#x2F;span&gt; &#x3D;&gt;&lt;&#x2F;span&gt; &#123;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; &#123;
+                        success,
+                        data,
+                        message
+                    &#125; &#x3D; response;
+                    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt; (success !&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;) &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;this&lt;&#x2F;span&gt;.$message.error(message);
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; [];
+                    &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+                        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; data;
+                    &#125;
+                &#125;);
+                &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; userList;
+            &#125;</code></pre>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>分页查询：</p>
+<p><img src="https://images.gitbook.cn/9418e3e0-9521-11ea-89e8-d3e59c640cba" alt="分页查询"></p>
+<p>用户名模糊查询：</p>
+<p><img src="https://images.gitbook.cn/a9c21630-9521-11ea-b103-15b42d8d0dac" alt="用户名模糊查询"></p>
+<p>导出的数据：</p>
+<p><img src="https://images.gitbook.cn/bf1e39f0-9521-11ea-ba95-3ddc66291c5d" alt="导出的数据"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes">https://github.com/tianlanlandelan/KellerNotes</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家实现了基本的用户管理功能，包括分页展示用户数据、按用户名模糊查询、导出为 Excel 表格等功能。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/26%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%862_%E7%94%9F%E6%88%90Excel%E6%96%87%E4%BB%B6a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/27%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            27添加日志记录
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/25%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%861_%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E5%8F%8A%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">25用户管理1_模糊查询及分页查询</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

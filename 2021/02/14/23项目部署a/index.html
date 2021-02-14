@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    23项目部署 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-23项目部署a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  23项目部署
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/23%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.043Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.9k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">23 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>经过前面内容的学习，云笔记项目用户界面基本搭建完毕，实现了注册、登录、设置名片、笔记本操作、笔记操作等功能。本篇，我们学习项目的部署，先将已完成的部分部署到服务器上，并解决部署过程中的各种问题。</p>
+<h3 id="服务器准备"><a class="markdownIt-Anchor" href="#服务器准备">#</a> 服务器准备</h3>
+<p>把项目部署在服务器上，需要做一些准备工作：</p>
+<ul>
+<li>首先，要在服务器上搭建起项目运行所需的环境，运行环境和开发环境保持一致就行；</li>
+<li>其次，要保证项目运行的端口能正常访问。</li>
+</ul>
+<!-- -->
+<h4 id="运行环境"><a class="markdownIt-Anchor" href="#运行环境">#</a> <strong>运行环境</strong></h4>
+<p>“Keller 云笔记” 项目运行的环境要与开发环境基本保持一致，如：</p>
+<ul>
+<li>安装 MySQL：1.5.7+</li>
+<li>安装 Nginx</li>
+<li>安装 JDK：1.8+</li>
+</ul>
+<!-- -->
+<h4 id="防火墙规则"><a class="markdownIt-Anchor" href="#防火墙规则">#</a> <strong>防火墙规则</strong></h4>
+<p>如果要将项目部署在本地电脑，在确定运行环境安装完毕的情况下，直接按照文档说明部署即可。若将项目部署在远程服务器，除了要保证运行环境外，往往还需要做以下工作：</p>
+<ul>
+<li>
+<p>开启防火墙：新搭建的服务器防火墙一般是没有开启的，需要开启防火墙</p>
+</li>
+<li>
+<p>设置防火墙规则：- 允许访问 80：该端口对应项目前端页面访问地址</p>
+<ul>
+<li>允许访问 8081：该端口对应 Nginx 文件服务器访问地址</li>
+<li>允许访问 443：该端口对应服务端访问接口访问地址</li>
+<li>允许访问 3306：该端口对应 MySQL 服务器访问地址</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<p>下面以 CentOS 7 为例，介绍开发端口所用到的相关防火墙操作指令。</p>
+<p>1. 查看防火墙状态： <code>systemctl status firewalld</code></p>
+<ul>
+<li>要开放端口，首先要看防火墙已开启</li>
+<li>使用该命令可以查看防火墙的状态</li>
+<li>running 表示防火墙已开启，直接查询端口开放状态即可</li>
+<li>dead 表示防火墙未开启，需要先开启放火墙，然后才能进行下一步操作</li>
+</ul>
+<!-- -->
+<p>2. 开启防火墙： <code>systemctl start firewalld</code></p>
+<ul>
+<li>开启防火墙，运行完毕后没有任何提示，即表示防火墙开启完成</li>
+<li>如果不放心，可以再执行一次查看防火墙状态的命令查看</li>
+</ul>
+<!-- -->
+<p>3. 查看端口开放状态： <code>firewall-cmd --query-port=80/tcp</code></p>
+<ul>
+<li>查看要开启的端口（80）是否已开启</li>
+<li>yes 表示端口已开放</li>
+<li>no 表示端口未开放，需要使用开启端口的命令</li>
+<li>FirewallD id not running 表示防火墙未启动，需要查看防火墙状态，并开启防火墙</li>
+</ul>
+<!-- -->
+<p>4. 开放端口： <code>firewall-cmd --add-port=80/tcp --permanent</code></p>
+<ul>
+<li>永久开放一个端口（80）</li>
+<li>success 表示开放成功</li>
+</ul>
+<!-- -->
+<p>5. 重新载入配置： <code>firewall-cmd --reload</code></p>
+<ul>
+<li>重新载入防火墙配置</li>
+<li>每次修改防火墙规则，都要运行此命令，使规则生效</li>
+</ul>
+<!-- -->
+<p>其他可能用到的防火墙操作指令：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#1.查看已打开的端口
+ netstat -anp  
+ #2.关闭防火墙 
+ systemctl stop firewalld  
+ #3. 移除端口 
+ firewall-cmd --permanent --remove-port&#x3D;80&#x2F;tcp</code></pre>
+<h3 id="spring-boot-项目部署"><a class="markdownIt-Anchor" href="#spring-boot-项目部署">#</a> Spring Boot 项目部署</h3>
+<h4 id="多环境配置"><a class="markdownIt-Anchor" href="#多环境配置">#</a> <strong>多环境配置</strong></h4>
+<p>Spring Boot 项目部署到服务器之前，要将相关参数修改成服务器配置，如：MySQL 连接地址、文件存储地址等，而在本地开发过程中又是另外一套配置。为了在不同环境下使用不同的配置，我们需要将其配置为多环境支持的，操作如下：</p>
+<ul>
+<li>** 添加开发环境配置文件：** 在主配置文件 application.properties 同级目录下，新建 application-dev.properties 文件，将主配置文件中的内容复制过来，作为开发环境的配置文件</li>
+<li>** 添加生产环境配置文件：** 在主配置文件同级目录下，新建 application-prod.properties 文件，作为生产环境的配置文件，格式与 application-dev.properties 相同，根据服务器的相关参数，修改相应配置</li>
+<li>** 在主配置文件中切换不同的环境：** 主配置文件中仅保留一行配置项  <code>spring.profiles.active=dev</code> ，其值为 dev 表示使用开发环境配置，即加载 application-dev.properties 中的配置；其值为 prod 表示使用生产环境配置，即加载 application-prod.properties 中的配置</li>
+</ul>
+<!-- -->
+<p>application.properties 配置：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties">#spring.profiles.active&#x3D;prod
+spring.profiles.active&#x3D;dev</code></pre>
+<p>application-dev.properties 和 application-prod.properties 中需要修改的配置项如下：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties">## 端口
+server.port&#x3D;443
+
+... ...
+
+#mysql 驱动类
+spring.datasource.driverClassName &#x3D; com.mysql.cj.jdbc.Driver
+#mysql 连接地址
+spring.datasource.url &#x3D; jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;kyle_notes?useUnicode&#x3D;true&amp;characterEncoding&#x3D;utf-8&amp;useSSL&#x3D;false&amp;allowMultiQueries&#x3D;true
+#mysql 用户名
+spring.datasource.username &#x3D; root
+#mysql 密码
+spring.datasource.password &#x3D; 123456
+
+... ...
+
+# nginx 文件目录
+nginx.path &#x3D; &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;nginx&#x2F;keller&#x2F;
+# nginx 服务器访问地址
+nginx.url &#x3D; http:&#x2F;&#x2F;localhost:8081&#x2F;keller&#x2F;
+# 原图存放的相对目录
+img.path &#x3D; image&#x2F;img&#x2F;
+# 缩略图存放的相对目录
+thum.path &#x3D; image&#x2F;thum&#x2F;
+
+# 前端访问地址
+web.url &#x3D; http:&#x2F;&#x2F;127.0.0.1:8088</code></pre>
+<h4 id="maven-打包"><a class="markdownIt-Anchor" href="#maven-打包">#</a> <strong>Maven 打包</strong></h4>
+<p>Keller Notes 项目使用 Maven 打包的方式，打包之前，在 Maven 配置文件 pom.xml 中添加如下配置：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">¨NBSP;&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;build&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;plugins&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;plugin&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;org.springframework.boot&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+                &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;spring-boot-maven-plugin&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+            &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;plugin&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;plugins&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;finalName&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;kellerNotes&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;finalName&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;build&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<p><code>&amp;lt;plugins&amp;gt;</code>  标签中指定打包时将 Spring Boot 打包进去， <code>&amp;lt;finalName&amp;gt;</code>  标签指定最终打包出的文件名为 KellerNotes.jar。</p>
+<p>指定完毕后，运行  <code>mvn package</code>  命令即完成打包，打包完毕后可以在 target 目录下看到打成的 jar 包。</p>
+<p><code>mvn package</code>  成功执行效果图：</p>
+<p><img src="https://images.gitbook.cn/1d763a40-895e-11ea-9d91-3db9fc446bb9" alt="打包"></p>
+<h4 id="启动-spring-boot"><a class="markdownIt-Anchor" href="#启动-spring-boot">#</a> <strong>启动 Spring Boot</strong></h4>
+<p>将打成的 jar 包上传到服务器后即可运行，运行命令为：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nohup java -jar kellerNotes.jar &amp;</code></pre>
+<p>注意：</p>
+<ol>
+<li><code>java -jar</code>  命令前添加 nohup 的意思是在后台运行</li>
+<li>一定不要忘记最后的  <code>&amp;amp;</code>  符号</li>
+<li>使用 nohup 命令启动后，会在当前目录下生成一个 nohup.out 文件，该文件为程序运行日志，可以在 application-prod.properties 中配置其日志级别</li>
+</ol>
+<!-- -->
+<p>另外，根据服务器的不同情况，可以在  <code>java -jar</code>  命令后面添加不同的参数。</p>
+<p><code>--spring.profiles.active</code> ：运行时指定实际配置的环境。</p>
+<p>如果打包时忘记切换环境，打成了开发环境的包，上传到服务器后，可以使用该参数指定其实际运行时加载的配置文件：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nohup java -jar kellerNotes.jar --spring.profiles.active&#x3D;prod &amp;</code></pre>
+<p><code>--spring.config.location</code> ：运行时指定外部的配置文件。</p>
+<p>使用  <code>maven package</code>  命令打包后，配置文件与代码都在一个 jar 包中，如果需要修改配置文件，就要重新打包，比较麻烦。可以使用该参数，指定外部配置文件地址，实现代码和配置文件的分离。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#设置启动时读取 jar 包外的配置文件，这样能做到配置文件和代码分离
+java -jar kellerNotes.jar --spring.config.location&#x3D;file:.&#x2F;application-prod.properties &amp;</code></pre>
+<h3 id="vue-项目打包"><a class="markdownIt-Anchor" href="#vue-项目打包">#</a> Vue 项目打包</h3>
+<p>完成服务端代码的部署后，建议先使用 Postman 或其他 HTTP 测试工具对接口进行测试，如果可以正常访问，再开始部署 Vue 项目。</p>
+<p>Vue 项目打包之前需要做的事情有：修改请求地址、修改配置文件等。</p>
+<h4 id="修改请求地址"><a class="markdownIt-Anchor" href="#修改请求地址">#</a> <strong>修改请求地址</strong></h4>
+<p>首先在 api.js 文件中做如下修改：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;import&lt;&#x2F;span&gt; axios &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;from&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;axios&#39;&lt;&#x2F;span&gt;;
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 如果是部署在服务器上，这个地址要改成服务器 IP 地址&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; url &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;https:&#x2F;&#x2F;127.0.0.1&#x2F;&quot;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;** 需要先登录再访问的路由 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; api &#x3D; url + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;api&#39;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;** 不需要登录就能访问的路由 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; base &#x3D; url + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;base&#39;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;** 上传头像需要访问的接口地址 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; upload &#x3D; url + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;upload&#39;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;** 在编辑器中上传文件需要访问的接口地址 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;let&lt;&#x2F;span&gt; editorImgUploadUrl &#x3D; url + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;upload&#x2F;img&quot;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;** 导出上传地址，供页面使用 *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;export&lt;&#x2F;span&gt;&#123;
+    editorImgUploadUrl,
+    upload
+&#125;</code></pre>
+<p>经过这样的修改，可以将所有用到 URL 的地方都统一管理，服务器的域名或 IP 地址有变化，只用修改 url 变量就可以了。</p>
+<p>这样修改完毕后，依次检查页面中用到请求地址的地方，统一使用 api.js 中的变量来代替，涉及到的页面有：</p>
+<ul>
+<li>Register.vue：注册页面上传头像的请求</li>
+<li>Home.vue：用户主页修改头像的请求</li>
+<li>MarkDown.vue：MarkDown 编辑器中上传文件的请求</li>
+<li>WangEditor.vue：富文本编辑器中上传文件的请求</li>
+</ul>
+<!-- -->
+<h4 id="修改配置文件"><a class="markdownIt-Anchor" href="#修改配置文件">#</a> <strong>修改配置文件</strong></h4>
+<p>打包之前还要修改配置文件 vue.config.js，做如下修改：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&lt;span class&#x3D;&quot;hljs-built_in&quot;&gt;module&lt;&#x2F;span&gt;.exports &#x3D; &#123;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 部署应用时的基本 URL&lt;&#x2F;span&gt;
+    publicPath: process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;production&#39;&lt;&#x2F;span&gt; ? &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;.&#x2F;&#39;&lt;&#x2F;span&gt; : &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;&#x2F;&#39;&lt;&#x2F;span&gt;,
+    &lt;span class&#x3D;&quot;hljs-attr&quot;&gt;outputDir&lt;&#x2F;span&gt;: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;dist&#39;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;build 输出目录&lt;&#x2F;span&gt;
+    assetsDir: &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;assets&#39;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;静态资源目录（js, css, img）&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 默认在生成的静态资源文件名中包含 hash 以控制缓存&lt;&#x2F;span&gt;
+    filenameHashing: &lt;span class&#x3D;&quot;hljs-literal&quot;&gt;true&lt;&#x2F;span&gt;,
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 是否在开发环境下通过 eslint-loader 在每次保存时 lint 代码 (在生产构建时禁用 eslint-loader)&lt;&#x2F;span&gt;
+    lintOnSave: process.env.NODE_ENV !&#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&#39;production&#39;&lt;&#x2F;span&gt;,
+  ... ...
+&#125;</code></pre>
+<h4 id="npm-打包"><a class="markdownIt-Anchor" href="#npm-打包">#</a> <strong>npm 打包</strong></h4>
+<p>最后，使用 npm 命令打包即可，打包完成后的文件在项目的 dist 文件夹下：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm run build</code></pre>
+<p>打包完成后，将文件夹上传到服务器上，然后配置 Nginx。</p>
+<h3 id="nginx-http-代理"><a class="markdownIt-Anchor" href="#nginx-http-代理">#</a> Nginx HTTP 代理</h3>
+<p>Nginx 服务器的配置方法前面我们已经学过了，在服务器上的配置和本地电脑配置方法相同，首先配置静态文件服务，以支持访问用户头像、笔记中的图片等静态文件的功能。</p>
+<h4 id="静态文件服务"><a class="markdownIt-Anchor" href="#静态文件服务">#</a> <strong>静态文件服务</strong></h4>
+<p>和本地电脑配置不同的地方在文件存放目录 alias，按照服务器上要存放的目录设置即可：</p>
+<pre class="line-numbers language-nginx" data-language="nginx"><code class="language-nginx">&lt;span class&#x3D;&quot;hljs-section&quot;&gt;server&lt;&#x2F;span&gt; &#123;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;listen&lt;&#x2F;span&gt;       &lt;span class&#x3D;&quot;hljs-number&quot;&gt;8081&lt;&#x2F;span&gt;;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;server_name&lt;&#x2F;span&gt;  localhost;
+
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;location&lt;&#x2F;span&gt; &#x2F;&#123;
+            &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;alias&lt;&#x2F;span&gt;   &#x2F;data&#x2F;nginx&#x2F;kellerNotes;
+            &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;index&lt;&#x2F;span&gt;  index.html;
+          &#125;
+
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;error_page&lt;&#x2F;span&gt;   &lt;span class&#x3D;&quot;hljs-number&quot;&gt;500&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;502&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;503&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;504&lt;&#x2F;span&gt;  &#x2F;50x.html;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;location&lt;&#x2F;span&gt; &#x3D; &#x2F;50x.html &#123;
+            &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;root&lt;&#x2F;span&gt;   html;
+        &#125; 
+    &#125;</code></pre>
+<h4 id="vue-项目入口"><a class="markdownIt-Anchor" href="#vue-项目入口">#</a> <strong>Vue 项目入口</strong></h4>
+<p>在 Nginx 上配置 Vue 项目的代理地址时，只需要将 root 路径指向 Vue 打包文件上传的路径即可：</p>
+<pre class="line-numbers language-nginx" data-language="nginx"><code class="language-nginx">&lt;span class&#x3D;&quot;hljs-section&quot;&gt;server&lt;&#x2F;span&gt; &#123;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;listen&lt;&#x2F;span&gt;       &lt;span class&#x3D;&quot;hljs-number&quot;&gt;80&lt;&#x2F;span&gt;;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;server_name&lt;&#x2F;span&gt;  &lt;span class&#x3D;&quot;hljs-number&quot;&gt;127.0.0.1&lt;&#x2F;span&gt;;  
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;root&lt;&#x2F;span&gt;  &#x2F;Users&#x2F;yangkaile&#x2F;Projects&#x2F;nginx&#x2F;vue&#x2F;dist;
+        &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;location&lt;&#x2F;span&gt; &#x2F; &#123;
+            &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;try_files&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-variable&quot;&gt;$uri&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-variable&quot;&gt;$uri&lt;&#x2F;span&gt;&#x2F; &#x2F;index.html;
+        &#125;
+    &#125;</code></pre>
+<p><code>try_files $uri $uri/ /index.html;</code>  这行配置的意思是，请求不同的路由，都使其路由到 index.html 页面，这样写是为了解决访问页面正常，但页面刷新会报 404 错误的问题，具体会在下面问题总结中讲解。Nginx 配置完成后，启动 Nginx 服务即可。</p>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<h4 id="注册"><a class="markdownIt-Anchor" href="#注册">#</a> <strong>注册</strong></h4>
+<p><img src="https://images.gitbook.cn/a41b86e0-895e-11ea-9db6-d98fa851b4fc" alt="注册"></p>
+<p><img src="https://images.gitbook.cn/aae70760-895e-11ea-a501-156f424bd17b" alt="注册1"></p>
+<h4 id="登录"><a class="markdownIt-Anchor" href="#登录">#</a> <strong>登录</strong></h4>
+<p><img src="https://images.gitbook.cn/c8285900-895e-11ea-938b-a30bc987bf7f" alt="登录"></p>
+<h4 id="用户主页"><a class="markdownIt-Anchor" href="#用户主页">#</a> <strong>用户主页</strong></h4>
+<p><img src="https://images.gitbook.cn/d0d1c140-895e-11ea-9db6-d98fa851b4fc" alt="用户主页"></p>
+<h4 id="访问地址"><a class="markdownIt-Anchor" href="#访问地址">#</a> <strong>访问地址</strong></h4>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://47.93.84.8">http://47.93.84.8</a></p>
+</blockquote>
+<h3 id="问题总结"><a class="markdownIt-Anchor" href="#问题总结">#</a> 问题总结</h3>
+<h4 id="开启防火墙仍无法访问"><a class="markdownIt-Anchor" href="#开启防火墙仍无法访问">#</a> <strong>开启防火墙仍无法访问</strong></h4>
+<p>如果已经开启了相应服务的端口，却仍无法访问服务，是因为不同的服务器有不同的安全策略，以阿里云服务器为例说明：</p>
+<ul>
+<li>阿里云服务器有安全组策略，默认只开启 22 端口和 3389 端口，如果需要开启其他端口，需要在防火墙中开放端口后，在安全组策略中做相应配置。</li>
+<li>配置方法为：进入控制台 -&gt; 选中要操作的实例 -&gt; 选择安全组端口 -&gt; 添加安全组规则。</li>
+</ul>
+<!-- -->
+<p>如图所示：</p>
+<p><img src="https://images.gitbook.cn/e7007740-895e-11ea-938b-a30bc987bf7f" alt="安全组规则"></p>
+<h4 id="发送邮件失败"><a class="markdownIt-Anchor" href="#发送邮件失败">#</a> <strong>发送邮件失败</strong></h4>
+<p>在项目部署后访问，可能出现本地运行时可以正常发送邮件，但是在服务器上无法发送邮件。</p>
+<p>是因为 SMTP 默认端口 25 被阿里云封禁了，无法通过该端口向外发送请求，只能使用 SMTPS 端口 465 发送邮件。</p>
+<p><img src="https://images.gitbook.cn/f803a120-895e-11ea-b610-d9d63cf53c0b" alt="阿里云25端口"></p>
+<p>修改 SendEmailUtil.java 中的 initSession () 方法，改用 465 端口发送邮件：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt;  Session &lt;span class&#x3D;&quot;hljs-title&quot;&gt;initSession&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(session &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;) &#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+                Properties prop &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; Properties();
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件服务器地址&lt;&#x2F;span&gt;
+                prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.host&quot;&lt;&#x2F;span&gt;, PublicConstant.mailServerHost);
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;邮件发送协议&lt;&#x2F;span&gt;
+                prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.transport.protocol&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;smtp&quot;&lt;&#x2F;span&gt;);
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;是否需要身份验证&lt;&#x2F;span&gt;
+                prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.smtp.auth&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;true&quot;&lt;&#x2F;span&gt;);
+
+                                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 启用 SSL 安全传输 &lt;&#x2F;span&gt;
+prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.smtp.socketFactory.class&quot;&lt;&#x2F;span&gt;,&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;javax.net.ssl.SSLSocketFactory&quot;&lt;&#x2F;span&gt;);
+                                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F; 使用 465 端口&lt;&#x2F;span&gt;
+                prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.smtp.socketFactory.port&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;465&quot;&lt;&#x2F;span&gt;);
+                prop.setProperty(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;mail.smtp.port&quot;&lt;&#x2F;span&gt;, &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;465&quot;&lt;&#x2F;span&gt;);
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;创建 session&lt;&#x2F;span&gt;
+                session &#x3D; Session.getInstance(prop);
+                &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;开启 Session 的 debug 模式，这样就可以查看到程序发送 Email 的运行状态&lt;&#x2F;span&gt;
+                session.setDebug(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;);
+            &#125; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e) &#123;
+                e.printStackTrace();
+            &#125;
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; session;
+    &#125;</code></pre>
+<h4 id="maven-打包自动执行测试方法"><a class="markdownIt-Anchor" href="#maven-打包自动执行测试方法">#</a> <strong>Maven 打包自动执行测试方法</strong></h4>
+<p>使用 Maven 命令打包时，默认会执行 test 方法，如果不想让其执行，可以使用如下命令：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mvn package -Dmaven.test.skip&#x3D;true</code></pre>
+<h4 id="vue-页面刷新-404"><a class="markdownIt-Anchor" href="#vue-页面刷新-404">#</a> <strong>Vue 页面刷新 404</strong></h4>
+<p>Vue 部署后页面刷新会报 404 错误是因为：</p>
+<ul>
+<li>Vue 路由默认是 hash 模式，该模式的问题在于每次都会在浏览器地址中多一个符号  <code>#</code> 。</li>
+<li>为了去除该符号，将路由指定为 history 模式，而这种模式下，使用的路径不是真实的路径，在刷新页面时访问的资源在服务端找不到，就报 404 了。</li>
+</ul>
+<!-- -->
+<p>解决方法，就是让所有请求都路由到 index.html：</p>
+<pre class="line-numbers language-nginx" data-language="nginx"><code class="language-nginx">&lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;location&lt;&#x2F;span&gt; &#x2F; &#123;
+            &lt;span class&#x3D;&quot;hljs-attribute&quot;&gt;try_files&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-variable&quot;&gt;$uri&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-variable&quot;&gt;$uri&lt;&#x2F;span&gt;&#x2F; &#x2F;index.html;
+        &#125;</code></pre>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes">https://github.com/tianlanlandelan/KellerNotes</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家完成 Spring Boot 项目与 Vue 项目的部署工作，希望大家能按照说明自己完成项目的部署，如果在实际操作中有难以解决的问题，欢迎在微信群中交流。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/23%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/24%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E4%BC%98%E5%8C%96a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            24存储空间优化
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/22MarkDown%E7%AC%94%E8%AE%B0_MavonEditora/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">22MarkDown笔记_MavonEditor</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

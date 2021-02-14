@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    13登录1_JWT身份验证 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-13登录1_JWT身份验证a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  13登录1_JWT身份验证
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.030Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4.5k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">23 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>用户注册成功后，就可以登录了，在本项目中可以使用两种登录方式：账号密码登录和邮件验证码登录。登录之后会生成一个 JWT，也就是用户 Token，后续所有的访问操作都是由 Token 进行控制的。本篇带领大家实现邮件验证码登录的流程，掌握 JWT 的生成与解析方法。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<h4 id="jwt"><a class="markdownIt-Anchor" href="#jwt">#</a> <strong>JWT</strong></h4>
+<p>JWT 全称是：Json Web Token，是一种基于 JSON 的开发标准，为了再网络应用环境间相互传递，广泛应用于身份验证。JWT 设计紧凑而安全，特别适合网站的单点登录场景。</p>
+<p>JWT 由三部分组成，每部分间通过  <code>.</code>  连接在一起，格式如：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3Iiwic3ViIjoiS2VsbGVyTm90ZXMiLCJpYXQiOjE1ODM0NjgzOTksImV4cCI6MTU4MzQ2OTU5OSwidXNlck5hbWUiOiIyMjIxMTY3ODkwQHFxLmNvbSIsInVzZXJUeXBlIjowfQ.L8Jiq5OkHAcAXc3XJxWoCFsHP6owTt90B5yEAFpvNYI</code></pre>
+<p>这三部分从前到后分别是：</p>
+<ul>
+<li>Header：头部信息，声明类型、加密方式</li>
+<li>Payload：存放有效的信息</li>
+<li>Signature：数字签名</li>
+</ul>
+<!-- -->
+<p>在云笔记项目使用 jjwt 来完成 JWT 的生成和解析，通过 Maven 方式引入 jjwt 的依赖包即可：</p>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&lt;!--JWT--&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;io.jsonwebtoken&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;groupId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;jjwt&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;artifactId&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;0.9.1&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;version&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-tag&quot;&gt;&lt;&#x2F;&lt;span class&#x3D;&quot;hljs-name&quot;&gt;dependency&lt;&#x2F;span&gt;&gt;&lt;&#x2F;span&gt;</code></pre>
+<h3 id="功能分析"><a class="markdownIt-Anchor" href="#功能分析">#</a> 功能分析</h3>
+<h4 id="流程设计"><a class="markdownIt-Anchor" href="#流程设计">#</a> <strong>流程设计</strong></h4>
+<p>账号密码登录流程：</p>
+<p><img src="https://images.gitbook.cn/3db5de30-72a9-11ea-b666-439ce9a69332" alt="账号密码登录流程"></p>
+<p>邮件验证码登录流程：</p>
+<p><img src="https://images.gitbook.cn/47490a30-72a9-11ea-9d30-373ba420c527" alt="验证码登录流程"></p>
+<h4 id="总体方案"><a class="markdownIt-Anchor" href="#总体方案">#</a> <strong>总体方案</strong></h4>
+<p><strong>1. 账号密码登录</strong></p>
+<ul>
+<li>收到账号密码登录请求（接口 1003）根据账号和用户类型，查询用户信息：能查询到，进入下一步；否则，返回账号不存在。</li>
+<li>校验密码：校验成功，则根据用户信息生成 token 并返回；否则，返回密码不正确。</li>
+</ul>
+<!-- -->
+<p><strong>2. 邮件验证码登录</strong></p>
+<ul>
+<li>收到发送登录验证码的请求（接口 1004），根据账号和用户类型，查询用户信息：能查询到，发送邮件验证码；否则，返回账号不存在。</li>
+<li>收到验证码登录的请求（接口 1005），校验验证码：校验成功，进入下一步；否则，返回验证码错误。</li>
+<li>根据账号和用户类型查询用户信息：能查询到，根据用户信息生成 token 并返回；否则，返回用户不存在。</li>
+</ul>
+<!-- -->
+<h3 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h3>
+<h4 id="生成-jwt"><a class="markdownIt-Anchor" href="#生成-jwt">#</a> <strong>生成 JWT</strong></h4>
+<p>JWT 生成过程中，比较重要的两个参数是有效期和签名。</p>
+<p>** 有效期：** 有效期决定了 JWT 生成之后能使用多久，对于不同的使用场景设置不同的时间。在云笔记项目中，可以允许 12 个小时或者更长的有效时间。</p>
+<p>** 签名：** 签名包含加密方式和密钥。</p>
+<ul>
+<li>加密方式可选择 MAC、RSA、ECDSA 等不同的方式</li>
+<li>密钥是自己指定的一个字符串，建议周期性的更换，以加强 JWT 的安全系数</li>
+</ul>
+<!-- -->
+<p>新建一个工具类 JwtUtils.java 专门用于处理 JWT 的生成和解析，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * JWT 有效时间 12 小时
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt;¨NBSP;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;long&lt;&#x2F;span&gt; JWT_EXP_TIME &#x3D; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;12&lt;&#x2F;span&gt; * &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60&lt;&#x2F;span&gt; * &lt;span class&#x3D;&quot;hljs-number&quot;&gt;60&lt;&#x2F;span&gt; * &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1000&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * JWT 签名密钥
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;final&lt;&#x2F;span&gt; String JWT_SIGN_KEY &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;kellerNotes20241002&quot;&lt;&#x2F;span&gt;;</code></pre>
+<p>这两行代码指定了 JWT 的有效时间和签名密钥，接下来需要考虑生成的 JWT 中需要携带什么数据。在云笔记项目中，比较重要的用户数据是用户 ID、注册邮箱、以及用户类型（普通用户或者管理员），因此，将这三个数据放在 Payload 中。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;定义用户名称（即：注册邮箱）的键名&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String userNameKey &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userName&quot;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;定义用户类型的键名&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;private&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String userTypeKey &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;userType&quot;&lt;&#x2F;span&gt;;
+
+&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 生成 JWT
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; String &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getJwtString&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(UserInfo userInfo)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;获取当前的毫秒数&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;long&lt;&#x2F;span&gt; now&#x3D;System.currentTimeMillis();
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;构建 JWT&lt;&#x2F;span&gt;
+    JwtBuilder jwtBuilder &#x3D; Jwts.builder()
+                  &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置 JWT 的 ID，在这里使用用户 ID 作为 JWT 的 ID&lt;&#x2F;span&gt;
+            .setId(userInfo.getId() + &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;&quot;&lt;&#x2F;span&gt;)
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置应用名,作为其中一个校验条件&lt;&#x2F;span&gt;
+            .setSubject(PublicConstant.appName)
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;签发时间&lt;&#x2F;span&gt;
+            .setIssuedAt( &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; Date() )
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;过期时间&lt;&#x2F;span&gt;
+            .setExpiration( &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; Date( now + PublicConstant.JWT_EXP_TIME ) )
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;自定义内容：注册邮箱&lt;&#x2F;span&gt;
+            .claim(userNameKey,userInfo.getEmail())
+                  &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;自定义内容：用户类型&lt;&#x2F;span&gt;
+            .claim(userTypeKey,userInfo.getType())
+            &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定使用 HS256 方式进行加密，同时指定加密密钥&lt;&#x2F;span&gt;
+            .signWith( SignatureAlgorithm.HS256, PublicConstant.JWT_SIGN_KEY);
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;生成 JWT&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; jwtBuilder.compact();
+&#125;</code></pre>
+<h4 id="解析-jwt"><a class="markdownIt-Anchor" href="#解析-jwt">#</a> <strong>解析 JWT</strong></h4>
+<p>JWT 在生成以后，将交由客户端保存，客户端在每次请求时携带 JWT 以验证身份。在云笔记项目中，会从 JWT 中解析出用户 ID、注册邮箱、用户类型等有用信息。使用 jjwt 时，通过以下方式即可验证 JWT 并解析出其中携带的信息：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;**
+ * 解析 JWT
+ * &lt;span class&#x3D;&quot;hljs-doctag&quot;&gt;@return&lt;&#x2F;span&gt;
+ *&#x2F;&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;static&lt;&#x2F;span&gt; UserInfo &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getUser&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String jwtString)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;try&lt;&#x2F;span&gt; &#123;
+        Claims claims &#x3D; Jwts.parser()
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定解密时的密钥&lt;&#x2F;span&gt;
+                .setSigningKey(PublicConstant.JWT_SIGN_KEY)
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;尝试解析 JWT&lt;&#x2F;span&gt;
+                .parseClaimsJws(jwtString)
+                      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;获取到 JWT 中的信息&lt;&#x2F;span&gt;
+                .getBody();
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析出 JWT ID，即用户 ID&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; id &#x3D; Integer.parseInt(claims.getId());
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;解析出应用名&lt;&#x2F;span&gt;
+        String subject &#x3D; claims.getSubject();
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;校验应用名&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(!subject.equals(PublicConstant.appName))&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+        &#125;
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;创建一个 UserInfo 对象，以接收从 JWT 中解析出的信息&lt;&#x2F;span&gt;
+        UserInfo userInfo &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; UserInfo();
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置用户 ID&lt;&#x2F;span&gt;
+        userInfo.setId(id);
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置邮箱&lt;&#x2F;span&gt;
+        userInfo.setEmail(claims.get(userNameKey,String.class));
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;设置用户类型&lt;&#x2F;span&gt;
+        userInfo.setType(claims.get(userTypeKey,Integer.class));
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; userInfo;
+    &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;catch&lt;&#x2F;span&gt; (Exception e)&#123;
+        Console.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;checkJwt&quot;&lt;&#x2F;span&gt;,&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;JWT 解析失败&quot;&lt;&#x2F;span&gt;,jwtString,e.getMessage());
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;;
+    &#125;
+&#125;</code></pre>
+<p>解析过程中可能抛出的异常信息：</p>
+<ul>
+<li>io.jsonwebtoken.ExpiredJwtException：JWT 失效，超过了设置的超时时间</li>
+<li>io.jsonwebtoken.MalformedJwtException：无法识别的 JWT，JWT 格式错误，往往是 <strong>Header</strong> 部分的格式出了问题</li>
+<li>io.jsonwebtoken.SignatureException：数字签名验证失败，通过指定的密钥无法解析出加密后的信息，可能是 <strong>Payload</strong> 部分也可能是 <strong>Signature</strong> 不正确</li>
+</ul>
+<!-- -->
+<h4 id="测试-jwt"><a class="markdownIt-Anchor" href="#测试-jwt">#</a> <strong>测试 JWT</strong></h4>
+<p>JwtUtils 工具类写好后，需要验证一下它的可用性。新建测试类 JwtTest.java，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@SpringBootTest&lt;&#x2F;span&gt;
+&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-class&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;class&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;JwtTest&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Test&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;getJwt&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        UserInfo userInfo &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; UserInfo();
+        userInfo.setId(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1001&lt;&#x2F;span&gt;);
+        userInfo.setEmail(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;abc@de.fg&quot;&lt;&#x2F;span&gt;);
+        userInfo.setType(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;);
+        Console.info(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;getJwt&quot;&lt;&#x2F;span&gt;,JwtUtils.getJwtString(userInfo));
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-meta&quot;&gt;@Test&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;void&lt;&#x2F;span&gt; &lt;span class&#x3D;&quot;hljs-title&quot;&gt;checkUser&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;()&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+        String jwt &#x3D; &lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMDAxIiwic3ViIjoiS2VsbGVyTm90ZXMiLCJpYXQiOjE1ODM0NjgxOTUsImV4cCI6MTU4MzQ2OTM5NSwidXNlck5hbWUiOiJhYmNAZGUuZmciLCJ1c2VyVHlwZSI6MX0.GUv05KjGRV8gRA0OMsmAIbwzYioHX90LJnWh6av1ao&quot;&lt;&#x2F;span&gt;;
+        Console.info(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;checkUser&quot;&lt;&#x2F;span&gt;,JwtUtils.getUser(jwt));
+    &#125;
+&#125;</code></pre>
+<p>先使用 getJwt () 方法生成 JWT，然后将生成的 JWT 字符串在 checkUser () 方法中验证解析出的信息。</p>
+<h4 id="账号密码登录"><a class="markdownIt-Anchor" href="#账号密码登录">#</a> <strong>账号密码登录</strong></h4>
+<p>掌握了操作 JWT 的方法后，登录操作就很容易了。账号密码登录的环节没有新的知识点，只需要按照流程图的步骤一步步实现就好了，Server 层代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResultData &lt;span class&#x3D;&quot;hljs-title&quot;&gt;login&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(UserInfo userInfo)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;指定查询条件&lt;&#x2F;span&gt;
+    UserInfo user &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; UserInfo();
+    user.setEmail(userInfo.getEmail());
+    user.setType(userInfo.getType());
+    user.setBaseKyleUseAnd(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;true&lt;&#x2F;span&gt;);
+
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;查询用户&lt;&#x2F;span&gt;
+    List&lt;UserInfo&gt; list &#x3D; userMapper.baseSelectByCondition(user);
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(list &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt; || list.size() &lt; &lt;span class&#x3D;&quot;hljs-number&quot;&gt;1&lt;&#x2F;span&gt;)&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;该用户尚未注册&quot;&lt;&#x2F;span&gt;);
+    &#125;
+    user &#x3D; list.get(&lt;span class&#x3D;&quot;hljs-number&quot;&gt;0&lt;&#x2F;span&gt;);
+
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;校验密码&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(user.getPassword().equals(userInfo.getPassword()))&#123;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;返回 JWT&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.success(JwtUtils.getJwtString(user));
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;账号密码错误&quot;&lt;&#x2F;span&gt;);
+&#125;</code></pre>
+<h4 id="验证码登录"><a class="markdownIt-Anchor" href="#验证码登录">#</a> <strong>验证码登录</strong></h4>
+<p>使用验证码登录，需要先获取登录验证码（接口 <strong>1003</strong>），可以和接口 <strong>1001</strong> 的 Server 层代码合并，将 <strong>UserServce</strong> 类中的  <code>sendRegisterCode(int type,String email)</code>  方法改为下面的方法，就可以支持发送不同类型的验证码了：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResultData &lt;span class&#x3D;&quot;hljs-title&quot;&gt;sendEmailCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; userType,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; sendType,String email)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+    UserInfo userInfo &#x3D; getByEmailAndType(userType,email);
+    &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;发送注册验证码时，要求邮箱尚未注册&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(sendType &#x3D;&#x3D; PublicConstant.REGISTER_TYPE)&#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(userInfo !&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;)&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;该邮箱已被注册&quot;&lt;&#x2F;span&gt;);
+        &#125;
+        &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;发送登录验证码或重置密码验证码时，要求邮箱已经注册&lt;&#x2F;span&gt;
+    &#125;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;else&lt;&#x2F;span&gt; &#123;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(userInfo &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;)&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;账号不存在&quot;&lt;&#x2F;span&gt;);
+        &#125;
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; emailService.sendCode(sendType,email);
+&#125;</code></pre>
+<p>验证码登录 Server 层代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;span class&#x3D;&quot;hljs-function&quot;&gt;&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;public&lt;&#x2F;span&gt; ResultData &lt;span class&#x3D;&quot;hljs-title&quot;&gt;loginWithCode&lt;&#x2F;span&gt;&lt;span class&#x3D;&quot;hljs-params&quot;&gt;(String email,&lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;int&lt;&#x2F;span&gt; type,String code)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#123;
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;构建查询条件&lt;&#x2F;span&gt;
+    EmailLog emailLog &#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;new&lt;&#x2F;span&gt; EmailLog();
+    emailLog.setEmail(email);
+    emailLog.setType(PublicConstant.LOGIN_TYPE);
+    emailLog.setCode(code);
+      &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;校验验证码&lt;&#x2F;span&gt;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(emailService.checkCode(emailLog))&#123;
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;查询用户信息&lt;&#x2F;span&gt;
+        UserInfo userInfo &#x3D; getByEmailAndType(type,email);
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;if&lt;&#x2F;span&gt;(userInfo &#x3D;&#x3D; &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;null&lt;&#x2F;span&gt;)&#123;
+            &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;用户不存在&quot;&lt;&#x2F;span&gt;);
+        &#125;
+          &lt;span class&#x3D;&quot;hljs-comment&quot;&gt;&#x2F;&#x2F;生成 token 并返回&lt;&#x2F;span&gt;
+        &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.success(JwtUtils.getJwtString(userInfo));
+    &#125;
+    &lt;span class&#x3D;&quot;hljs-keyword&quot;&gt;return&lt;&#x2F;span&gt; ResultData.error(&lt;span class&#x3D;&quot;hljs-string&quot;&gt;&quot;验证码错误或已过期,请重新获取&quot;&lt;&#x2F;span&gt;);
+&#125;</code></pre>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>使用 <strong>Postman</strong> 进行测试，首先测试接口 <strong>1003</strong>，注意在 Body 中选择使用  <code>JSON(application/json)</code>  格式发送数据：</p>
+<p><img src="https://images.gitbook.cn/b159e700-72a9-11ea-b086-d1dd6d1a07b6" alt="账号密码登录"></p>
+<p>接口 <strong>1004</strong> 的测试：</p>
+<p><img src="https://images.gitbook.cn/b94c3440-72a9-11ea-9e02-c110b4a4e660" alt="获取登录验证码"></p>
+<p>接口 <strong>1005</strong> 的测试：</p>
+<p><img src="https://images.gitbook.cn/c04a0f60-72a9-11ea-9d12-3d2bd05cf9bc" alt="验证码登录"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/13.%E7%99%BB%E5%BD%95/server">https://github.com/tianlanlandelan/KellerNotes/tree/master/13. 登录 /server</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家分析账号密码登录、验证码登录的具体流程，并对其逐一实现。通过本篇的学习，可以使大家掌握 JWT 的生成与解析方法、不同登录方式的业务逻辑实现，希望大家自己在业务逻辑代码的基础上自己实现接口的 Controller 层代码，然后再参照项目源码进行对比，看哪些是自己不足的地方，哪些是自己实现得更好的地方，如果有更好的实现方式，欢迎沟通交流。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/14%E7%99%BB%E5%BD%952_HTTPS%E5%AE%89%E5%85%A8%E4%BC%A0%E8%BE%93a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            14登录2_HTTPS安全传输
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/12%E6%B3%A8%E5%86%8C2_Axios%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">12注册2_Axios发送HTTP请求</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

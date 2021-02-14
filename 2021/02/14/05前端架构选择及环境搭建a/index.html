@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    05前端架构选择及环境搭建 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-05前端架构选择及环境搭建a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  05前端架构选择及环境搭建
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/14/05%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E9%80%89%E6%8B%A9%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAa/" class="article-date">
+  <time datetime="2021-02-14T06:32:38.019Z" itemprop="datePublished">2021-02-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">6 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>有了接口文档以后，我们就可以开始选择合适的前后端架构来准备正式开发项目。本篇带着大家选择合适的前端架构并搭建起前端开发环境。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>在搭建前端架构前，我们先来了解一下这几个概念：Vue.js、Node.js（Vue.js 运行的环境）、Vue CLI（Vue.js 开发的标准工具）。</p>
+<h4 id="vuejs"><a class="markdownIt-Anchor" href="#vuejs">#</a> <strong>Vue.js</strong></h4>
+<p>Vue.js 官网上是这么描述的：</p>
+<blockquote>
+<p>Vue（读音 /vjuː/，类似于 <strong>view</strong>）是一套用于构建用户界面的<strong>渐进式框架</strong>。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与<a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/single-file-components.html">现代化的工具链</a>以及各种<a target="_blank" rel="noopener" href="https://github.com/vuejs/awesome-vue#libraries--plugins">支持类库</a>结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。</p>
+</blockquote>
+<p>Vue 是一种渐进式的前端框架，易用、灵活、速度快，支持的工具和插件非常多，现在已经形成了一个完整的生态链。Vue 出现地比较晚，吸取了 React、Angular、Polymer 等框架的精华，是当前前端开发的主流框架。</p>
+<p>Vue.js 官网：<a target="_blank" rel="noopener" href="https://cn.vuejs.org/">https://cn.vuejs.org/</a></p>
+<p><img src="https://images.gitbook.cn/af398530-723f-11ea-833b-93fabc8068c9" alt="vue"></p>
+<h4 id="nodejs"><a class="markdownIt-Anchor" href="#nodejs">#</a> <strong>Node.js</strong></h4>
+<p>Vue.js 运行在 Node.js 环境下，Node.js 官网上是这么描述的：</p>
+<blockquote>
+<p>Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境。Node.js 使用了一个事件驱动、非阻塞式 I/O 的模型，使其轻量又高效。Node.js 的包管理器 npm，是全球最大的开源库生态系统。</p>
+</blockquote>
+<p>官网地址：<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">https://nodejs.org/zh-cn/</a></p>
+<p><img src="https://images.gitbook.cn/259fbb40-7240-11ea-af73-378397689c85" alt="node"></p>
+<h4 id="vue-cli"><a class="markdownIt-Anchor" href="#vue-cli">#</a> <strong>Vue CLI</strong></h4>
+<p>Vue CLI 是一个基于 Vue.js 进行快速开发的完整系统，提供：</p>
+<ul>
+<li>通过  <code>@vue/cli</code>  搭建交互式的项目脚手架。</li>
+<li>通过  <code>@vue/cli</code>  +  <code>@vue/cli-service-global</code>  快速开始零配置原型开发。</li>
+<li>一个运行时依赖</li>
+<li>一个丰富的官方插件集合，集成了前端生态中最好的工具。</li>
+<li>一套完全图形化的创建和管理 Vue.js 项目的用户界面。</li>
+</ul>
+<!-- -->
+<p>Vue CLI 官方描述如下：</p>
+<blockquote>
+<p>Vue CLI 致力于将 Vue 生态中的工具基础标准化。它确保了各种构建工具能够基于智能的默认配置即可平稳衔接，这样你可以专注在撰写应用上，而不必花好几天去纠结配置的问题。与此同时，它也为每个工具提供了调整配置的灵活性，无需 eject。</p>
+</blockquote>
+<p>Vue CLI 官网：<a target="_blank" rel="noopener" href="https://cli.vuejs.org/zh/">https://cli.vuejs.org/zh/</a></p>
+<p><img src="https://images.gitbook.cn/628777a0-7240-11ea-88af-f7ef8761fe69" alt="vuecli"></p>
+<h3 id="开发环境"><a class="markdownIt-Anchor" href="#开发环境">#</a> 开发环境</h3>
+<p>云笔记项目对于前端开发环境要求不高，开发工具可以选用 HBuilderX、VS Code，我本机的开发环境如下：</p>
+<ul>
+<li>HBuilderX 2.5.1</li>
+<li>Node.js 8.11.3</li>
+<li>Vue CLI 4.1.0</li>
+</ul>
+<!-- -->
+<p>浏览器兼容性：Vue <strong>不支持</strong> IE8 及以下版本，因为 Vue 使用了 IE8 无法模拟的 ECMAScript 5 特性。但它支持所有<a target="_blank" rel="noopener" href="https://caniuse.com/#feat=es5">兼容 ECMAScript 5 的浏览器</a>。</p>
+<p>Vue 浏览器兼容性一览：</p>
+<p><img src="https://images.gitbook.cn/abf7f950-7240-11ea-b39b-4d2cde13353b" alt="caniuse"></p>
+<p>说明：这是 <a target="_blank" rel="noopener" href="https://caniuse.com/#feat=es5">caniuse</a> 对 ECMAScript 5 浏览器兼容性的的检测报告。</p>
+<p>caniuse：一个针对前端开发人员定制的一个查询 CSS、JS 在个中流行浏览器钟的特性和兼容性的网站，可以很好地保证网页的浏览器兼容性。</p>
+<h3 id="项目搭建"><a class="markdownIt-Anchor" href="#项目搭建">#</a> 项目搭建</h3>
+<h4 id="安装-nodejs"><a class="markdownIt-Anchor" href="#安装-nodejs">#</a> <strong>安装 Node.js</strong></h4>
+<p>Node.js 下载地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://nodejs.cn/download/">http://nodejs.cn/download/</a></p>
+</blockquote>
+<p>根据你的电脑配置选择不同的安装包即可，傻瓜式安装，下一步下一步就行了。</p>
+<p><img src="https://images.gitbook.cn/b83de940-7240-11ea-88af-f7ef8761fe69" alt="node安装"></p>
+<p>安装完毕后打开命令行窗口（Windows 的 cmd 命令行，macOS 的终端），输入  <code>npm -V</code> ，如果出现以下提示信息，Node.js 已正确安装了。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm -v
+6.13.4</code></pre>
+<h4 id="安装-vue-cli"><a class="markdownIt-Anchor" href="#安装-vue-cli">#</a> <strong>安装 Vue CLI</strong></h4>
+<p><strong>Node 版本要求</strong></p>
+<p>Vue CLI 需要 Node.js 8.9 或更高版本（推荐 8.11.0+），使用如下命令安装即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;# Vue CLI 安装&lt;&#x2F;span&gt;
+npm install -g @vue&#x2F;cli</code></pre>
+<p>安装之后，使用  <code>vue --version</code>  查看版本号，出现下面的结果，表示安装完成：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;# 查看 vue 版本号&lt;&#x2F;span&gt;
+vue --version
+@vue&#x2F;cli 4.1.2</code></pre>
+<p><strong>注意事项</strong></p>
+<p>在 Mac 上安装、升级 Node.js 和 Vue CLI 时，如果报 <strong>errno 13</strong> 的错误时，都是因为用户权限问题，需要切换到管理员权限，命令前加 sudo 即可，如：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 执行 npm 命令安装 vue cli  报错
+npm install -g @vue&#x2F;cli
+npm ERR! code EACCES
+npm ERR! syscall mkdir
+npm ERR! path &#x2F;Users&#x2F;yangkaile&#x2F;.npm&#x2F;_cacache&#x2F;content-v2&#x2F;sha1&#x2F;a7&#x2F;d0
+npm ERR! errno -13
+npm ERR!
+npm ERR! Your cache folder contains root-owned files, due to a bug in
+npm ERR! previous versions of npm which has since been addressed.
+
+# 切换到管理员用户即可，提示输入密码，输入开机密码即可
+sudo npm install -g @vue&#x2F;cli</code></pre>
+<h4 id="创建项目"><a class="markdownIt-Anchor" href="#创建项目">#</a> <strong>创建项目</strong></h4>
+<p>至此，我们的前端开发环境已经安装完毕，接下来就是创建项目、书写代码了。选择一个文件夹，使用命令  <code>vue create 项目名</code>  即可创建一个 Vue 项目：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">&lt;span class&#x3D;&quot;hljs-comment&quot;&gt;# 在当前目录下使用 Vue CLI 创建一个名称为 web 的 Vue.js 项目&lt;&#x2F;span&gt;
+vue create web</code></pre>
+<h3 id="项目文件说明"><a class="markdownIt-Anchor" href="#项目文件说明">#</a> 项目文件说明</h3>
+<p>项目创建完毕后，使用编辑器打开，项目文件结构如下：</p>
+<p><img src="https://images.gitbook.cn/f548be00-7240-11ea-88af-f7ef8761fe69" alt="null"></p>
+<p>这就是使用 Vue CLI 创建的项目，相当与一个 HelloWorld 模板，主要目录有：</p>
+<ul>
+<li>dist：编译后的项目文件</li>
+<li>node_modules：引用的第三方资源</li>
+<li>public：静态资源文件夹</li>
+<li>src：项目代码存放的文件夹</li>
+</ul>
+<!-- -->
+<p>文件说明：</p>
+<ul>
+<li>index.html：主页，里面有一个 id 为 app 的 div，用于挂载 vue.js</li>
+<li>main.js：启动类，相当与 Java 中的主类</li>
+<li>App.vue：项目根组件</li>
+</ul>
+<!-- -->
+<p>项目运行时，main.js 启动，将 App.vue 组件挂载到 index.html 上的 div 里。</p>
+<h3 id="编译运行"><a class="markdownIt-Anchor" href="#编译运行">#</a> 编译运行</h3>
+<p>打开终端，进入项目目录，运行  <code>npm run serve</code>  即可：</p>
+<p><img src="https://images.gitbook.cn/03ae3290-7241-11ea-b8cb-b108c7f0b146" alt="运行"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:8080">http://localhost:8080</a>：</p>
+<p><img src="https://images.gitbook.cn/0b989090-7241-11ea-af73-378397689c85" alt="预览"></p>
+<p>至此，前端项目搭建起来了，我们接下来就可以在这里正式书写代码了。</p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/3.%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E9%80%89%E5%9E%8B/web">https://github.com/tianlanlandelan/KellerNotes/tree/master/3. 前端架构选型 /web</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家使用  <code>@vue/cli</code>  搭建起前端开发环境，并讲解项目目录结构、重要文件，最后对项目进行编译并运行。目前来说，选择使用  <code>@vue/cli</code>  脚手架快速搭建 Vue 项目，是 Vue.js 开发的首选方式。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/14/05%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E9%80%89%E6%8B%A9%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAa/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/14/06%E5%90%8E%E7%AB%AF%E6%9E%B6%E6%9E%84%E9%80%89%E6%8B%A9%E5%8F%8A%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAa/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            06后端架构选择及环境搭建
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/14/04%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3%E8%AE%BE%E8%AE%A1_%E4%BB%8E%E4%B8%8D%E5%90%8C%E8%A7%92%E5%BA%A6%E8%BF%9B%E8%A1%8C%E5%8A%9F%E8%83%BD%E5%88%86%E6%9E%90a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">04接口文档设计_从不同角度进行功能分析</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -112,6 +112,7 @@
        
   <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
 <p>上一篇我们完成了对服务器存储空间的优化，本篇开始，进入后台管理功能开发阶段。本篇重点带领大家实现 MyBatis 的分页查询和自定义查询功能，同时对 <strong>MyBatis 通用 Mapper</strong> 中现存的一些问题给予修正。</p>
+<a id="more"></a>
 <h3 id="功能分析"><a class="markdownIt-Anchor" href="#功能分析">#</a> 功能分析</h3>
 <p>通常，后台管理系统中常用到分页查询及模糊查询。要求有接口权限限制，避免非管理员用户访问到仅管理员可以访问的接口。本专栏前面花费了 6 篇内容带领大家搭建起 <strong>Keller Notes</strong> 项目的服务端架构，现在，我们结合项目中现有的服务端架构思考以下几个问题：</p>
 <ol>
@@ -404,18 +405,6 @@ List&lt;UserInfo&gt; list &#x3D; userMapper.baseSelectList(userInfo);</code></pr
 
     <!-- copyright -->
     
-    <div class="declare">
-      <ul class="post-copyright">
-        <li>
-          <i class="ri-copyright-line"></i>
-          <strong>版权声明： </strong>
-          
-          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
-          
-        </li>
-      </ul>
-    </div>
-    
     <footer class="article-footer">
        
 <div class="share-btn">
@@ -560,7 +549,7 @@ List&lt;UserInfo&gt; list &#x3D; userMapper.baseSelectList(userInfo);</code></pr
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+    <a href="/"><img src="/heart.png" alt="伞"></a>
   </div>
   
   <ul class="nav nav-main">

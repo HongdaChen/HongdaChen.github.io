@@ -75,6 +75,12 @@
       </div>
       <div>
         
+        <img
+          src="/heart.png"
+          class="cover-logo"
+          alt="伞"
+        />
+        
       </div>
     </div>
   </div>
@@ -95,9 +101,9 @@
       var typed = new Typed("#subtitle", {
         strings: ['想要的都拥有，得不到的都释怀', '愿你一生努力，一生被爱', '面朝大海，春暖花开'],
         startDelay: 0,
-        typeSpeed: 200,
+        typeSpeed: 300,
         loop: true,
-        backSpeed: 100,
+        backSpeed: 200,
         showCursor: true
       });
     } catch (err) {
@@ -183,7 +189,128 @@
   </div>
    
     </div>
+      
+    <div class="article-entry" itemprop="articleBody">
        
+  <h2 id="spark-streaming"><a class="markdownIt-Anchor" href="#spark-streaming">#</a> Spark Streaming</h2>
+<h4 id="设置环境变量"><a class="markdownIt-Anchor" href="#设置环境变量">#</a> 设置环境变量</h4>
+<p>修改～/.bashrc     注释掉 jupyter，notebook。再指定 PYSPARK_DRIVER_PYTHON 和 PYTHONPATH</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># pyspark
+# export PYSPARK_DRIVER_PYTHON&#x3D;jupyter
+export PYSPARK_DRIVER_PYTHON&#x3D;&#x2F;usr&#x2F;bin&#x2F;python3
+# export PYSPARK_DRIVER_PYTHON_OPTS&#x3D;&#39;notebook&#39;
+export PYSPARK_PYTHON&#x3D;python3
+# spark streaming
+export PYTHONPATH&#x3D;$SPARK_HOME&#x2F;python:$SPARK_HOME&#x2F;python&#x2F;lib&#x2F;py4j-0.10.7-src.zip:$PYTHONPATH    </code></pre>
+<p>使环境变量生效</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<p>测试</p>
+<p><img src="/images/1606886117852.png" alt="1606886117852"></p>
+<h4 id="文件流"><a class="markdownIt-Anchor" href="#文件流">#</a> 文件流</h4>
+<p>监控一个目录，若有新文件，Spark 就会处理这个文件。但是如果修改文件内容，Spark 是不会发现的。</p>
+<p>设置监控目录为</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;home&#x2F;chen&#x2F;pyspark-workspace&#x2F;streaming&#x2F;logfile</code></pre>
+<p><a target="_blank" rel="noopener" href="http://xn--logfileFileStreaming-h545am1j8wxns2aj44bs6bu74e429g.py">在 logfile 目录中创建文件 FileStreaming.py</a></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext, SparkConf
+from pyspark.streaming import StreamingContext
+conf &#x3D; SparkConf()
+conf.setAppName(&#39;TestDStream&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc &#x3D; SparkContext(conf &#x3D; conf)
+ssc &#x3D; StreamingContext(sc, 10)
+lines &#x3D; ssc.textFileStream(&#39;file:&#x2F;&#x2F;&#x2F;home&#x2F;chen&#x2F;pyspark-workspace&#x2F;streaming&#x2F;logfile&#39;) # 目录提前存在
+words &#x3D; lines.flatMap(lambda line: line.split(&#39; &#39;))
+wordCounts &#x3D; words.map(lambda x : (x,1)).reduceByKey(lambda a,b:a+b)
+wordCounts.pprint()
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<p>提交任务</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit FileStreaming.py</code></pre>
+<p>在监控目录下创建文件 test2.txt，写入一些内容。</p>
+<p><img src="/images/1606886467840.png" alt="1606886467840"></p>
+<p>保存退出后，就会在另一个终端显示</p>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881529753.png" alt=" "></p>
+<h4 id="套接字流"><a class="markdownIt-Anchor" href="#套接字流">#</a> 套接字流</h4>
+<p>监听一个端口，如果端口收到数据，spark 就会处理。</p>
+<ol>
+<li>首先打开 9999 端口等待传输数据</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nc -lk 9999</code></pre>
+<ol start="2">
+<li>在监控目录下新建 <a target="_blank" rel="noopener" href="http://xn--NetworkWordCount-c02z9480a.py">文件 NetworkWordCount.py</a></li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+sc &#x3D; SparkContext(&quot;local[2]&quot;, appName&#x3D;&quot;NetworkWordCount&quot;)
+ssc &#x3D; StreamingContext(sc, 1)
+lines &#x3D; ssc.socketTextStream(&quot;localhost&quot;, 9999)
+words &#x3D; lines.flatMap(lambda line: line.split(&quot; &quot;))
+wordCounts &#x3D; words.map(lambda x:(x, 1)).reduceByKey(lambda a,b:a+b)
+wordCounts.pprint()
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<ol start="3">
+<li>提交</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit NetworkWordCount.py</code></pre>
+<ol start="4">
+<li>写入一些数据</li>
+</ol>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881716732.png" alt="1606881716732"></p>
+<ol start="5">
+<li>另一个端口显示一次的处理结果</li>
+</ol>
+<p><img src="C:%5CUsers%5Cchenhongda%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1606881701721.png" alt="1606881701721"></p>
+<h4 id="全局聚合"><a class="markdownIt-Anchor" href="#全局聚合">#</a> 全局聚合</h4>
+<p>为了使实时处理得到累加的效果，做以下处理：</p>
+<ol>
+<li>首先打开 9999 端口等待传输数据</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nc -lk 9999</code></pre>
+<ol start="2">
+<li>在监控目录下新建 文件 <a target="_blank" rel="noopener" href="http://StatefulStreamingWordCount.py">StatefulStreamingWordCount.py</a></li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+sc &#x3D; SparkContext(&quot;local[2]&quot;, &quot;StatefulNetworkWordCount&quot;)
+ssc &#x3D; StreamingContext(sc, 1)
+# Create checkpoint for local StreamingContext
+ssc.checkpoint(&quot;checkpoint&quot;)
+# Define updateFunc: sum of the (key, value) pairs
+def updateFunc(new_values, last_sum):
+    return sum(new_values) + (last_sum or 0)
+lines &#x3D; ssc.socketTextStream(&quot;localhost&quot;, 9999)
+# Calculate running counts
+# Line 1: Split lines in to words
+# Line 2: count each word in each batch
+# Line 3: Run &#96;updateStateByKey&#96; to running count
+running_counts &#x3D; lines.flatMap(lambda line: line.split(&quot; &quot;)).map(lambda word: (word, 1)).up
+running_counts.pprint()
+ssc.start()
+ssc.awaitTermination()                                                                     </code></pre>
+<ol start="3">
+<li>提交</li>
+</ol>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit StatefulStreamingWordCount.py</code></pre>
+<ol start="4">
+<li>写入一些数据</li>
+</ol>
+<p><img src="/images/1606885674441.png" alt="1606885674441"></p>
+<ol start="5">
+<li>在另一个终端可以看到累加的效果</li>
+</ol>
+<p><img src="/images/1606885650879.png" alt="1606885650879"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
 
     <!-- copyright -->
     
@@ -227,7 +354,463 @@
   </div>
    
     </div>
+      
+    <div class="article-entry" itemprop="articleBody">
        
+  <h1><center>kafka</center></h1>
+<h2>实验目的</h2>
+安装kafka,并整合flume和kafka,整合sparkStreaming和kafka
+<h2>实验内容</h2>
+<h2>
+ 一、安装kafka,并整合flume和kafka,
+</h2>
+<h3>1.安装kafka</h3>
+[下载](http://kafka.apache.org/downloads)
+<p>复制 kafka 到 /apps 下，进行解压，并删除压缩包</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cp ~&#x2F;big_data_tools&#x2F;kafka_2.12-2.6.0.tgz &#x2F;apps&#x2F;
+tar -xzvf &#x2F;apps&#x2F;kafka_2.12-2.6.0.tgz -C &#x2F;apps&#x2F;
+mv &#x2F;apps&#x2F;kafka_2.12-2.6.0 kafka
+rm -rf &#x2F;apps&#x2F;kafka_2.12-2.6.0.tgz </code></pre>
+<h3>2.使用Kafka</h3>
+<h4>启动zookeeper服务</h4>
+ Kafka 自带了 ZooKeeper，直接使用脚本启动单节点的 ZooKeeper 即可。 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;zookeeper-server-start.sh -daemon &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;zookeeper.properties </code></pre>
+<p>加 - daemon 参数，在后台启动 Zookeeper，输出的信息保存在执行目录的 logs/zookeeper.out 文件中</p>
+<h4>启动kafka服务</h4>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;server.properties </code></pre>
+![1607320483462](/images/1607320483462.png)
+<h5>创建一个主题</h5>
+ 另外打开一个终端，创建一个名为“first_topic”的主题，只包含一个分区，只有一个副本， 命令如下：  
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 1 \
+--topic first_topic</code></pre>
+<p><img src="/images/1607320660205.png" alt="1607320660205"></p>
+<h5>查看创建的主题</h5>
+ 查看 Kafka 中有哪些已创建的主题，可以用以下命令  
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --list \
+--bootstrap-server localhost:9092</code></pre>
+<p><img src="/images/1607320761286.png" alt="1607320761286"></p>
+<h5>删除主题(需要时执行)</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --delete \
+--bootstrap-server localhost:9092 \
+--topic first_topic</code></pre>
+<h5>发送消息到服务中</h5>
+运行producer，然后输入一些消息发送到broker。默认情况下，每行将作为单独的消息发送。 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh \
+--broker-list localhost:9092 \
+--topic first_topic</code></pre>
+<p><img src="/images/1607321140459.png" alt="1607321140459"></p>
+<h5>从服务中获取消息</h5>
+再打开一个终端运行consumer，从broker中获取已有的消息 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic first_topic \
+--from-beginning</code></pre>
+<p><img src="/images/1607321157476.png" alt="1607321157476"></p>
+<h5>查看运行信息</h5>
+另外再打开一个终端，运行以下命令查看运行信息 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --describe \
+--bootstrap-server localhost:9092 \
+--topic first_topic</code></pre>
+<p><img src="/images/1607321260885.png" alt="1607321260885"></p>
+<p>第一个行显示所有 Partition 的一个总结，以下每一行给出一个 Partition 中的信息，我们 只有一个 Partition，所以只显示一行。</p>
+<p><strong>Leader</strong>：是在给出的所有 Partitons 中负责读写的节点，每个节点都有可能成为 Leader</p>
+<p><strong>Replicas</strong>：显示给定 Partiton 所有副本所存储节点的节点列表，不管该节点是否是 Leader 或者是否存活。</p>
+<p><strong>Isr</strong>：副本都已同步的节点集合，这个集合中的所有节点都是存活状态，并且跟 Leader 同步</p>
+<h5>关闭zookeeper</h5>
+需要时再关闭，这里可以先不关闭。 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;zookeeper-server-stop.sh -daemon config&#x2F;zookeeper.properties</code></pre>
+<h3>3.flume传输数据给kafka</h3>
+<p> 新建 Flume 的配置文件/apps/flume/conf/syslog_mem_hdfskafka.conf，使用 Flume 抓 取 syslog 端口的日志数据，使用 mem 作为 Channel，一个输出是将数据存储到 HDFS 中 的/myflume/目录下，作为持久存储；另一个输出是将数据传递给 Kafka 进行使用，Kafka 端启用 console-consumer 来消费数据，并输出到屏幕上。 </p>
+![1607321592802](/images/1607321592802.png)
+<h5> 创建 Flume 的配置文件/apps/flume/conf/syslog_mem_hdfsandkafka.conf </h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#定义各个组件
+agent1.sources &#x3D; src
+agent1.channels &#x3D; ch_hdfs ch_kafka
+agent1.sinks &#x3D; des_hdfs des_kafka
+#把组件关联起来
+agent1.sources.src.channels &#x3D; ch_hdfs ch_kafka
+agent1.sinks.des_hdfs.channel &#x3D; ch_hdfs
+agent1.sinks.des_kafka.channel &#x3D; ch_kafka
+#配置 source
+agent1.sources.src.type &#x3D; syslogtcp
+agent1.sources.src.bind &#x3D; localhost
+agent1.sources.src.port &#x3D; 6666
+#配置 channel
+agent1.channels.ch_hdfs.type &#x3D; memory
+agent1.channels.ch_kafka.type &#x3D; memory
+#配置 hdfs sink 
+agent1.sinks.des_hdfs.type &#x3D; hdfs
+agent1.sinks.des_hdfs.hdfs.path &#x3D; hdfs:&#x2F;&#x2F;localhost:9000&#x2F;myflume&#x2F;
+agent1.sinks.des_hdfs.hdfs.useLocalTimeStamp &#x3D; true
+#设置 flume 临时文件的前缀为_
+agent1.sinks.des_hdfs.hdfs.inUsePrefix&#x3D;_
+#设置 flume 写入文件的前缀
+agent1.sinks.des_hdfs.hdfs.filePrefix &#x3D; q7
+agent1.sinks.des_hdfs.hdfs.fileType &#x3D; DataStream
+agent1.sinks.des_hdfs.hdfs.writeFormat &#x3D; Text
+#配置 kafka sink
+agent1.sinks.des_kafka.type &#x3D; org.apache.flume.sink.kafka.KafkaSink
+agent1.sinks.des_kafka.brokerList &#x3D; localhost:9092
+agent1.sinks.des_kafka.topic &#x3D; flumekafka
+agent1.sinks.des_kafka.batchSize&#x3D;100
+agent1.sinks.des_kafka.requiredAcks&#x3D;1 </code></pre>
+<h5>启动hadoop</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
+![1607322053528](/images/1607322053528.png)
+<h5>启动zookeeper(如果还没有开启)</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;zookeeper-server-start.sh \
+-daemon &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;zookeeper.properties</code></pre>
+<h5>启动kafka-server(如果还没有开启)</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;server.properties</code></pre>
+<h5>创建topic</h5>
+再打开一个终端，在 Kafka 中创建名为 flumekafka 的 topic 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 1 \
+--topic flumekafka</code></pre>
+<p><img src="/images/1607322085816.png" alt="1607322085816"></p>
+<h5>启动flume</h5>
+<pre class="line-numbers language-shelll" data-language="shelll"><code class="language-shelll">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;syslog_mem_hdfsandkafka.conf \
+--name agent1 \
+-Dflume.root.logger&#x3D;DEBUG,console</code></pre>
+![1607322336326](/images/1607322336326.png)
+<h5>启动consumer</h5>
+另外打开一个终端，启动 Kafka 的 console consumer 来消费数据 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic flumekafka \
+--from-beginning</code></pre>
+<h5>发送数据</h5>
+再打开一个终端使用 nc 命令向 6666 端口发送数据 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &quot;hello can you hear me?&quot; | nc localhost 6666</code></pre>
+<h5>查看consumer输出</h5>
+ 查看 Kafka 的 console consumer 是否有内容输出 
+<p><img src="/images/1607322456594.png" alt="1607322456594"></p>
+<h5>查看flume-ng输出</h5>
+![1607322586492](/images/1607322586492.png)
+<h5>查看hdfs结果</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -cat &#x2F;myflume&#x2F;*</code></pre>
+![1607322655069](/images/1607322655069.png)
+<h2>
+ 二、整合sparkStreaming和kafka
+</h2>
+<h3>1.准备工作</h3>
+1.将 spark-streaming-kafka-0-8-assembly_2.11-2.4.3.jar 复制到/apps/spark/jars 
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cp ~&#x2F;big_data_tools&#x2F;spark-streaming-kafka-0-8-assembly_2.11-2.4.3.jar &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;</code></pre>
+<p> 注：spark-streaming-kafka-0-8-assembly_2.11-2.4.3.jar 为 Kafka 作为 Spark Streaming 的数据源依赖的库。下载地址为： https://search.maven.org/artifact/org.apache.spark/spark-streaming-kafka-0-8- assembly_2.11/2.4.3/jar  </p>
+<p> 2. 在目录/apps/spark/jars 中创建文件夹 kafka，并将 Kafka 安装目录 libs 下的所有 jar 文件复制其中 </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mkdir &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;kafka
+cp &#x2F;apps&#x2F;kafka&#x2F;libs&#x2F;*.jar &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;kafka</code></pre>
+<p> 3. 安装 Python 的 Kafka 库 </p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo pip3 install kafka -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</code></pre>
+4. 安装 Python 连接 MySQL 的模块 PyMySQL  
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo pip3 install PyMySQL -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</code></pre>
+<p><img src="/images/1607483393178.png" alt="1607483393178"></p>
+<h3>2.Kafka 作为 Streaming 数据源</h3>
+1.启动hadoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
+<p>2. 启动 ZooKeeper 服务</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;kafka 
+bin&#x2F;zookeeper-server-start.sh -daemon config&#x2F;zookeeper.properties</code></pre>
+<p>3. 启动 kafka</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">bin&#x2F;kafka-server-start.sh config&#x2F;server.properties</code></pre>
+<p>4. 创建主题</p>
+<p>另外打开一个终端，创建一个名为 “sparkapp” 的主题，只包含一个分区，只有一个副本</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">bin&#x2F;kafka-topics.sh --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 1 \
+--topic sparkapp</code></pre>
+<p><img src="/images/1607483712994.png" alt="1607483712994"></p>
+<p>5. 确认一下主题是否创建成功 （基于内存，下次开机就没有了）</p>
+<p><img src="/images/1607483759013.png" alt="1607483759013"></p>
+<p>6. 编写代码</p>
+<p>在～/pyspark-workspace/streaming/ 中新建目录 kafka</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd ~&#x2F;pyspark-workspace&#x2F;streaming&#x2F;
+mkdir kafka</code></pre>
+<p>在其中创建文件 <a target="_blank" rel="noopener" href="http://StreamingKafka.py">StreamingKafka.py</a></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd kafka
+vim StreamingKafka.py</code></pre>
+<p>写入下面的代码</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python                        
+# coding&#x3D;utf-8
+from pyspark import SparkContext,SparkConf
+from pyspark.streaming import StreamingContext
+from pyspark.streaming.kafka import KafkaUtils
+conf &#x3D; SparkConf()
+conf.setAppName(&#39;StreamingKafka&#39;).set(&#39;spark.io.compression.codec&#39;,&#39;snappy&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc &#x3D; SparkContext(conf &#x3D; conf)
+ssc &#x3D; StreamingContext(sc, 5)
+brokers &#x3D; &#39;localhost:9092&#39;
+topic &#x3D; &#39;sparkapp&#39;
+
+kafka_streaming_rdd &#x3D; KafkaUtils.createDirectStream(ssc,[topic],&#123;&quot;metadata.broker.list&quot;:brokers&#125;) 
+lines_rdd &#x3D; kafka_streaming_rdd.map(lambda x: x[1])
+counts &#x3D; lines_rdd.flatMap(lambda line: line.strip().split(&quot; &quot;)) \
+          .map(lambda word: (word,1)) \
+          .reduceByKey(lambda a,b:a+b)
+counts.pprint()
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<p>7. 提交任务</p>
+<p>注意提交任务时要指定依赖的库</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">nohup spark-submit --jars &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;spark-streaming-kafka-0-8-
+assembly_2.11-2.4.3.jar StreamingKafka.py&gt;file 2&gt;&amp;1</code></pre>
+<p>启动成功后，Streaming 进入循环监听状态</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">tail -F file # 实时显示文件的更新</code></pre>
+<p><img src="/images/1607501621917.png" alt="1607501621917"></p>
+<p>8. 生成数据</p>
+<p>再打开一个终端，运行 Kafka producer，然后输入一些消息发送到服务器</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-console-producer.sh \
+--broker-list localhost:9092 \
+--topic sparkapp</code></pre>
+<p><img src="/images/1607501936570.png" alt="1607501936570"></p>
+<p>9. 查看结果</p>
+<p><img src="/images/1607501970414.png" alt="1607501970414"></p>
+<ol start="10">
+<li>编写 python 程序创建 producer</li>
+</ol>
+<p>接下来，使用 Python 的 kafka 包编写 Python 程序创建 Producer。在～/pysparkworkspace/streaming/kafka 中创建文件 kafka_producer.py 写入以下内容</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">from kafka import KafkaProducer
+import time
+producer &#x3D; KafkaProducer()
+with open(&quot;&#x2F;data&#x2F;testfile&quot;) as f:
+	for line in f.readlines():
+        time.sleep(1)
+        producer.send(&quot;sparkapp&quot;,line.encode(&#39;utf-8&#39;))
+        print(line)
+        producer.flush()</code></pre>
+<p>11. 运行 kafka_producer.py</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">python3 kafka_producer.py</code></pre>
+<p><img src="/images/1607502148138.png" alt="1607502148138"></p>
+<p>12. 再次查看结果</p>
+<p>由于 kafka_producer.py 把文件里的内容读入到 kafka 的 producer 中，所以可以被 streaming 监测到。</p>
+<p>在 <a target="_blank" rel="noopener" href="http://StreamingKafka.py">StreamingKafka.py</a> 运行窗口就可以看到词频统计结果 ，看到文件前两行处理一次。</p>
+<p><img src="/images/1607502319272.png" alt="1607502319272"></p>
+<p>使用 Ctrl-c，终止 <a target="_blank" rel="noopener" href="http://StreamingKafka.py">StreamingKafka.py</a> 程序，其它终端窗口和进程不要关闭，下面还要使 用。</p>
+<h3>3.将Streaming结果存储到mysql</h3>
+1.进入数据库
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -u root –p</code></pre>
+<p>2. 创建数据库 spark</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database spark;
+use spark;</code></pre>
+<p>3. 新建表 wordcount 用于存储词频统计结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table wordcount (word char(20), count int(4));</code></pre>
+<p>4. 查看表结构，</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">desc wordcount;</code></pre>
+<p><img src="/images/1607499264228.png" alt="1607499264228"></p>
+<p>5. 编写程序</p>
+<p>在～/pyspark-workspace/streaming/kafka 中创建文件 <a target="_blank" rel="noopener" href="http://StreamingKafkaToMysql.py">StreamingKafkaToMysql.py</a>，写入以下内容</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext,SparkConf
+from pyspark.streaming import StreamingContext
+from pyspark.streaming.kafka import KafkaUtils
+import pymysql
+
+############################################################################################
+def dbfunc(records):
+    db&#x3D;pymysql.connect(&quot;localhost&quot;,&quot;root&quot;,&quot;123456&quot;,&quot;spark&quot;)
+    cursor&#x3D;db.cursor()
+
+    def doinsert(p):
+        sql&#x3D;&quot;insert into wordcount(word,count) values (&#39;%s&#39;,&#39;%s&#39;)&quot; % (str(p[0]),str(p[1]))
+
+        try:
+            cursor.execute(sql)
+            db.commit()
+        except:
+            db.rollback()
+    
+    for item in records:
+        doinsert(item)
+
+def func(rdd):
+    repartitionedRDD&#x3D;rdd.repartition(3)
+    repartitionedRDD.foreachPartition(dbfunc)
+##############################################################################################
+conf&#x3D;SparkConf()
+conf.setAppName(&#39;StreamingKafka&#39;).set(&#39;spark.io.compression.codec&#39;,&#39;snappy&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc&#x3D;SparkContext(conf&#x3D;conf)
+ssc&#x3D;StreamingContext(sc,5)
+brokers&#x3D;&#39;localhost:9092&#39;
+topic&#x3D;&#39;sparkapp&#39;
+# 使用streaming直接模式消费kafka
+kafka_streaming_rdd&#x3D;KafkaUtils.createDirectStream(ssc,[topic],&#123;&quot;metadata.broker.list&quot;:brokers&#125;)
+lines_rdd&#x3D;kafka_streaming_rdd.map(lambda x:x[1])
+
+counts&#x3D;lines_rdd.flatMap(lambda line:line.strip().split(&quot; &quot;)).map(lambda word:(word,1)).reduceByKey(lambda a,b:a+b)
+
+counts.pprint()
+# 与StreamingKafka.py不同的地方
+# 写入mysql数据库
+counts.foreachRDD(func)
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<p>6. 启动 spark streaming</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit --jars &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;spark-streaming-kafka-0-8-
+assembly_2.11-2.4.3.jar StreamingKafkaToMysql.py</code></pre>
+<p>7. 运行 kafka_producer.py</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">python3 kafka_producer.py</code></pre>
+<p>8. 查看结果</p>
+<p>在 <a target="_blank" rel="noopener" href="http://StreamingKafka.py">StreamingKafka.py</a> 运行窗口就可以看到词频统计结果</p>
+<p><img src="/images/1607500556852.png" alt="1607500556852"></p>
+<p>9. 查看 Mysql 中的结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from wordcount;</code></pre>
+<p><img src="/images/1607500614614.png" alt="1607500614614"></p>
+<h1><center>综合实验</center></h1>
+<p> 使用 Flume，Kafka 和 Spark streaming 构建一个完整的流数据处理系统，要求 </p>
+    1. Flume 的源类型为 Spooling Directory Source， 
+    2. Flume 将数据存入 HDFS 和传给 Kafka， 
+    3. Kafka 将数据传给 Spark Streaming 进行流式处理， 
+    4. Spark Streaming 处理完以后将数据存入 Mysql。 
+    5. 画出系统流程图。
+<hr>
+<h3>流程图</h3>
+<img src="/images/1607526183874.png" alt="1607526183874" style="zoom:50%;" />
+<hr>
+<p>在 /apps/flume/conf/case_spool_com.conf 文件写入如下内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#定义各个组件
+agent1.sources &#x3D; src
+agent1.channels &#x3D; ch_hdfs ch_kafka
+agent1.sinks &#x3D; des_hdfs des_kafka
+#把组件关联起来
+agent1.sources.src.channels &#x3D; ch_hdfs ch_kafka
+agent1.sinks.des_hdfs.channel &#x3D; ch_hdfs
+agent1.sinks.des_kafka.channel &#x3D; ch_kafka
+#配置 source
+agent1.sources.src.type &#x3D; spooldir
+agent1.sources.src.spoolDir &#x3D; &#x2F;home&#x2F;chen&#x2F;flume&#x2F;spool&#x2F;logs #下面放待测试的文件wordcount.txt
+agent1.sources.src.fileHeader &#x3D; true
+
+#配置 channel
+agent1.channels.ch_hdfs.type &#x3D; memory
+agent1.channels.ch_kafka.type &#x3D; memory
+#配置 hdfs sink 
+agent1.sinks.des_hdfs.type &#x3D; hdfs
+agent1.sinks.des_hdfs.hdfs.path &#x3D; hdfs:&#x2F;&#x2F;localhost:9000&#x2F;myflume_com&#x2F;
+agent1.sinks.des_hdfs.hdfs.useLocalTimeStamp &#x3D; true
+#设置 flume 临时文件的前缀为_
+agent1.sinks.des_hdfs.hdfs.inUsePrefix&#x3D;_
+#设置 flume 写入文件的前缀
+agent1.sinks.des_hdfs.hdfs.filePrefix &#x3D; q7
+agent1.sinks.des_hdfs.hdfs.fileType &#x3D; DataStream
+agent1.sinks.des_hdfs.hdfs.writeFormat &#x3D; Text
+#配置 kafka sink
+agent1.sinks.des_kafka.type &#x3D; org.apache.flume.sink.kafka.KafkaSink
+agent1.sinks.des_kafka.brokerList &#x3D; localhost:9092
+agent1.sinks.des_kafka.topic &#x3D; flume_kafka_streaming_mysql
+agent1.sinks.des_kafka.batchSize&#x3D;100
+agent1.sinks.des_kafka.requiredAcks&#x3D;1 </code></pre>
+<h5>启动hadoop</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;hadoop&#x2F;sbin&#x2F;start-all.sh</code></pre>
+![1607322053528](/images/1607322053528.png)
+<h5>启动zookeeper(如果还没有开启)</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;zookeeper-server-start.sh -daemon &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;zookeeper.properties</code></pre>
+<h5>启动kafka-server(如果还没有开启)</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-server-start.sh &#x2F;apps&#x2F;kafka&#x2F;config&#x2F;server.properties</code></pre>
+<h5>创建topic</h5>
+再打开一个终端，在 Kafka 中创建名为 flume_kafka_streaming_mysql 的 topic 
+<h2 id="-code47-"><a class="markdownIt-Anchor" href="#-code47-">#</a> <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">&#x2F;apps&#x2F;kafka&#x2F;bin&#x2F;kafka-topics.sh --create \
+--bootstrap-server localhost:9092 \
+--replication-factor 1 \
+--partitions 1 \
+--topic flume_kafka_streaming_mysql</code></pre></h2>
+<h3>Spark Streaming 处理完以后将数据存入 Mysql</h3>
+1.进入数据库
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -u root –p</code></pre>
+<p>2. 创建数据库 spark (存在不用创建)</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database spark;
+use spark;</code></pre>
+<p>3. 新建表 wordcount 用于存储词频统计结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table wordcount2 (word char(20), count int(4));</code></pre>
+<p>4. 查看表结构，</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">desc wordcount2;</code></pre>
+<p><img src="%E6%9C%AA%E5%91%BD%E5%90%8D.assets/1607521471797.png" alt="1607521471797"></p>
+<p>5. 编写程序</p>
+<p>在～/pyspark-workspace/streaming/kafka 中创建文件 <a target="_blank" rel="noopener" href="http://StreamingKafkaToMysql.py">StreamingKafkaToMysql.py</a>，写入以下内容</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">#!&#x2F;usr&#x2F;bin&#x2F;env python
+# coding&#x3D;utf-8
+from pyspark import SparkContext,SparkConf
+from pyspark.streaming import StreamingContext
+from pyspark.streaming.kafka import KafkaUtils
+import pymysql
+
+############################################################################################
+def dbfunc(records):
+    db&#x3D;pymysql.connect(&quot;localhost&quot;,&quot;root&quot;,&quot;123456&quot;,&quot;spark&quot;)
+    cursor&#x3D;db.cursor()
+
+    def doinsert(p):
+        sql&#x3D;&quot;insert into wordcount2(word,count) values (&#39;%s&#39;,&#39;%s&#39;)&quot; % (str(p[0]),str(p[1]))
+
+        try:
+            cursor.execute(sql)
+            db.commit()
+        except:
+            db.rollback()
+    
+    for item in records:
+        doinsert(item)
+
+def func(rdd):
+    repartitionedRDD&#x3D;rdd.repartition(3)
+    repartitionedRDD.foreachPartition(dbfunc)
+##############################################################################################
+conf&#x3D;SparkConf()
+conf.setAppName(&#39;StreamingKafka&#39;).set(&#39;spark.io.compression.codec&#39;,&#39;snappy&#39;)
+conf.setMaster(&#39;local[2]&#39;)
+sc&#x3D;SparkContext(conf&#x3D;conf)
+ssc&#x3D;StreamingContext(sc,5)
+brokers&#x3D;&#39;localhost:9092&#39;
+topic&#x3D;&#39;flume_kafka_streaming_mysql&#39;
+# 使用streaming直接模式消费kafka
+kafka_streaming_rdd&#x3D;KafkaUtils.createDirectStream(ssc,[topic],&#123;&quot;metadata.broker.list&quot;:brokers&#125;)
+lines_rdd&#x3D;kafka_streaming_rdd.map(lambda x:x[1])
+
+counts&#x3D;lines_rdd.flatMap(lambda line:line.strip().split(&quot; &quot;)).map(lambda word:(word,1)).reduceByKey(lambda a,b:a+b)
+
+counts.pprint()
+# 与StreamingKafka.py不同的地方
+# 写入mysql数据库
+counts.foreachRDD(func)
+ssc.start()
+ssc.awaitTermination()</code></pre>
+<h5>启动spark streaming</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">spark-submit --jars &#x2F;apps&#x2F;spark&#x2F;jars&#x2F;spark-streaming-kafka-0-8-assembly_2.11-2.4.3.jar StreamingKafkaToMysql.py</code></pre>
+---
+<h5>启动flume</h5>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_spool_com.conf \
+--name agent1 \
+-Dflume.root.logger&#x3D;DEBUG,console</code></pre>
+再开一个终端，在flume的检测目录~flume/spool/logs下创建wordcount2.txt
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hello flume
+hello kafka
+hello sparkStreaming
+hello mysql</code></pre>
+<h5>查看结果</h5>
+在flume-ng终端看到输出到Hdfs如下：
+<p><img src="%E6%9C%AA%E5%91%BD%E5%90%8D.assets/1607522497328.png" alt="1607522497328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hadoop fs -cat &#x2F;myflume_com&#x2F;q7.1607522322699</code></pre>
+<p><img src="%E6%9C%AA%E5%91%BD%E5%90%8D.assets/1607522763646.png" alt="1607522763646"></p>
+<p>在 StreamingKafkaToMysql.py 的终端看到如下：</p>
+<p><img src="%E6%9C%AA%E5%91%BD%E5%90%8D.assets/1607522373332.png" alt="1607522373332"></p>
+<p>查看 Mysql 中的结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from wordcount2;</code></pre>
+<p><img src="%E6%9C%AA%E5%91%BD%E5%90%8D.assets/1607523138295.png" alt="1607523138295"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
 
     <!-- copyright -->
     
@@ -271,7 +854,165 @@
   </div>
    
     </div>
+      
+    <div class="article-entry" itemprop="articleBody">
        
+  <h1><center>Sqoop</center></h1>
+<h2>实验目的</h2>
+熟练使用sqoop在mysql、hive、hbase、hdfs之间传输数据。
+<h2>实验内容</h2>
+安装，配置Sqoop
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash                                                                
+if [ -d &#39;&#x2F;apps&#x2F;sqoop&#39; ];then
+    sudo rm -rf &#x2F;apps&#x2F;sqoop
+fi
+# 将Sqoop的安装包复制到&#x2F;apps下，并解压
+sudo cp ~&#x2F;big_data_tools&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz &#x2F;apps&#x2F;
+tar xzvf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C &#x2F;apps&#x2F;
+# 删除压缩包
+sudo rm -rf &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+# 修改名称
+mv &#x2F;apps&#x2F;sqoop-1.4.7.bin__hadoop-2.6.0 &#x2F;apps&#x2F;sqoop
+# 删除有关sqoop_home的环境变量
+sed -i &#39;&#x2F;SQOOP_HOME&#x2F;d&#39; ~&#x2F;.bashrc
+# 添加环境变量
+echo &#39;export SQOOP_HOME&#x3D;&#x2F;apps&#x2F;sqoop&#39; &gt;&gt; ~&#x2F;.bashrc
+echo &#39;export PATH&#x3D;$SQOOP_HOME&#x2F;bin:$PATH&#39; &gt;&gt; ~&#x2F;.bashrc
+# 在导数据时，会涉及连接mysql，将mysql驱jar包导入导Lib目录下
+cp ~&#x2F;big_data_tools&#x2F;mysql-connector-java-5.1.46-bin.jar &#x2F;apps&#x2F;sqoop&#x2F;lib&#x2F;
+# 重命令
+mv &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env-template.sh sqoop-env.sh
+# 在&#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh中添加环境变量的相关信息
+echo &#39;HADOOP_COMMON_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HADOOP_MAPRED_HOME&#x3D;&#x2F;apps&#x2F;hadoop&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HBASE_HOME&#x3D;&#x2F;apps&#x2F;hbase&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+echo &#39;HIVE_HOME&#x3D;&#x2F;apps&#x2F;hive&#39; &gt;&gt; &#x2F;apps&#x2F;sqoop&#x2F;conf&#x2F;sqoop-env.sh
+# 注释掉&#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop128到147行的内容
+sed -i &quot;128,147s&#x2F;^&#x2F;#&#x2F;g&quot; &#x2F;apps&#x2F;sqoop&#x2F;bin&#x2F;configure-sqoop
+# 重启，使环境变量生效
+sudo reboot</code></pre>
+<p>版本信息：</p>
+<p><img src="/images/1605065504106.png" alt="1605065504106"></p>
+<p>使用 sqoop help 查看支持的命令</p>
+<p><img src="/images/1605065543503.png" alt="1605065543503"></p>
+<p>使用 sqoop help COMMAND 显示具体命令的信息</p>
+<p><img src="/images/1605065630259.png" alt="1605065630259"></p>
+<p>确保 mysql 正常运行</p>
+<p><img src="/images/1605065733969.png" alt=""></p>
+<p>查询 mysql 中的数据库。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605065954401.png" alt="1605065954401"></p>
+<h2 id="使用sqoop"><a class="markdownIt-Anchor" href="#使用sqoop">#</a> 使用<strong> Sqoop</strong></h2>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">mysql -uroot -p123456</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create database mydb;
+use mydb;
+create table record 
+	(
+	id varchar(100),
+	buyer_id varchar(100),
+	dt varchar(100),
+	ip varchar(100),
+	opt_type varchar(100)
+	);
+    
+load data local infile &#39;&#x2F;data&#x2F;buyer_log&#39; into table record fields terminated by &#39;\t&#39;;</code></pre>
+<p><img src="/images/1605066716360.png" alt="1605066716360"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-databases \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F; \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066818328.png" alt="1605066818328"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop list-tables \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456</code></pre>
+<p><img src="/images/1605066933333.png" alt="1605066933333"></p>
+<h2 id="将mysql数据库中的数据存入到hdfs中"><a class="markdownIt-Anchor" href="#将mysql数据库中的数据存入到hdfs中">#</a> 将 Mysql 数据库中的数据存入到 HDFS 中</h2>
+<ul>
+<li>启动 hadoop   【<a target="_blank" rel="noopener" href="http://start-all.sh">start-all.sh</a>】</li>
+</ul>
+<p>hdfs 上的 mysqool 不能存在</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb \
+--username root \
+--password 123456 \
+--table record -m 1 \
+--target-dir &#x2F;mysqoop</code></pre>
+<p><img src="/images/1605072035832.png" alt="1605072035832"></p>
+<h2 id="将hdfs中的数据存入到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hdfs中的数据存入到mysql中先在mysql创建表结构">#</a> 将 HDFS 中的数据存入到 Mysql 中 (先在 mysql 创建表结构)</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhdfs like record;</code></pre>
+<p><img src="/images/1605067126899.png" alt="1605067126899"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhdfs -m 1 \
+--export-dir hdfs:&#x2F;&#x2F;localhost:9000&#x2F;mysqoop&#x2F;part-m-00000</code></pre>
+<p>检查 Mysql</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhdfs limit 3,5;</code></pre>
+<p><img src="/images/1605072596326.png" alt="1605072596326"></p>
+<h2 id="将mysql中数据导入到hbase先在hbase中创建表结构"><a class="markdownIt-Anchor" href="#将mysql中数据导入到hbase先在hbase中创建表结构">#</a> 将 MySQL 中数据导入到 HBase (先在 HBase 中创建表结构)</h2>
+<p>启动 HBase</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-hbase.sh</code></pre>
+<p>进入 hbase shell</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">hbase shell</code></pre>
+<p>创建名为 hbaserecord，有一个列族 mycf 的表，用来保存数据。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create &#39;hbaserecord&#39;,&#39;mycf&#39;</code></pre>
+<p><img src="/images/1605153237022.png" alt="1605153237022"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hbase-table hbaserecord \
+--column-family mycf \
+--hbase-row-key dt -m 1</code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">scan &#39;hbaserecord&#39; </code></pre>
+<p><img src="/images/1605153552871.png" alt="1605153552871"></p>
+<h2 id="将mysql的数据导入到hive先在hive中创建表结构"><a class="markdownIt-Anchor" href="#将mysql的数据导入到hive先在hive中创建表结构">#</a> 将 Mysql 的数据导入到 Hive (先在 Hive 中创建表结构)</h2>
+<p>需要在～/.bashrc 添加以下内容。</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">export HADOOP_CLASSPATH&#x3D;$HADOOP_HOME&#x2F;lib:$HIVE_HOME&#x2F;lib&#x2F;*   
+export HIVE_CONF_DIR&#x3D;$HIVE_HOME&#x2F;conf</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">source ~&#x2F;.bashrc</code></pre>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">create table hiverecord (id varchar(100),buyer_id varchar(100),dt varchar(100),ip varchar(100),opt_type varchar(100)) row format delimited fields terminated by &#39;,&#39; stored as textfile;</code></pre>
+<p><img src="/images/1605154640570.png" alt="1605154640570"></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop import \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table record \
+--hive-import \
+--hive-table hiverecord \
+--fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p>执行上面命令失败，需要去 hdfs，把 /user/chen/record 删掉。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from hiverecord</code></pre>
+<p><img src="/images//1605155841932.png" alt="1605155841932"></p>
+<h2 id="将hive表的数据导出到mysql中先在mysql创建表结构"><a class="markdownIt-Anchor" href="#将hive表的数据导出到mysql中先在mysql创建表结构">#</a> 将 Hive 表的数据导出到 Mysql 中（先在 mysql 创建表结构）</h2>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+create table recordfromhive like record;             </code></pre>
+<p>导数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sqoop export \
+--connect jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;mydb?characterEncoding&#x3D;UTF-8 \
+--username root \
+--password 123456 \
+--table recordfromhive \
+--export-dir &#x2F;user&#x2F;hive&#x2F;warehouse&#x2F;hiverecord&#x2F;part-m-00000 \
+--input-fields-terminated-by &#39;,&#39; -m 1</code></pre>
+<p><img src="/images//1605156341638.png" alt="1605156341638"></p>
+<p>查看结果</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">use mydb;
+select * from recordfromhive;</code></pre>
+<p><img src="/images//1605156492107.png" alt="1605156492107"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
 
     <!-- copyright -->
     
@@ -315,7 +1056,376 @@
   </div>
    
     </div>
+      
+    <div class="article-entry" itemprop="articleBody">
        
+  <h1><center>Flume</center></h1>
+<h2>实验目的</h2>
+掌握Flume的工作机制，熟练配置相关文件
+<h2>实验内容</h2>
+<h3>一、安装Flume</h3>
+- 1.1首先验证flume安装包的完整性
+<p><img src="/images/1605663370399.png" alt="1605663370399"></p>
+<ul>
+<li>1.2 安装</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 复制到&#x2F;apps下
+cp apache-flume-1.9.0-bin.tar.gz &#x2F;apps&#x2F;
+cd &#x2F;apps
+# 解压
+tar -xzvf apache-flume-1.9.0-bin.tar.gz 
+# 删除包
+rm -rf apache-flume-1.9.0-bin.tar.gz 
+# 重命名
+mv apache-flume-1.9.0-bin flume</code></pre>
+<ul>
+<li>1.3 设置环境变量</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">vim ~&#x2F;.bashrc
+# 添加如下内容
+export FLUME_HOME&#x3D;&#x2F;apps&#x2F;flume
+export PATH&#x3D;$FLUME_HOME&#x2F;bin:$PATH
+#####################################
+# 使其生效
+source ~&#x2F;.bashrc</code></pre>
+<p><img src="/images/1605663727436.png" alt="1605663727436"></p>
+<ul>
+<li>1.4 修改配置文件</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">cd &#x2F;apps&#x2F;flume&#x2F;conf
+cp flume-env.sh.template flume-env.sh
+vim flume-env.sh
+# 修改22行为
+export JAVA_HOME&#x3D;&#x2F;apps&#x2F;java</code></pre>
+<p><img src="/images/1605663939391.png" alt="1605663939391"></p>
+<ul>
+<li>1.5 测试</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng version</code></pre>
+<p><img src="/images/1605664063611.png" alt="1605664063611"></p>
+<p style="color:red">解决办法</p>
+<p style="color:green">将/apps/hbase/conf/hbase-env.sh文件中对环境变量HBASE_CLASSPATH的设置注释掉</p>
+![1605664293786](/images/1605664293786.png)
+<p>再测试，版本号为 1.9.0</p>
+<p><img src="/images/1605664362646.png" alt="1605664362646"></p>
+<h2>二、Flume使用</h2>
+<p style="color:blue">一个source可以输出给多个channels，但一个sink只能接收一个channel</p>
+- 2. 1Avro Source 
+<p>监听 Avro 端口来接受来自外部 Avro 客户端的 event 流。当与另一个 Flume agent 内 置的 Avro Sink 配对时，它可以创建分层收集结构。 Avro 是一个数据序列化系统，设计用于支持大批量数据交换的应用。它的主要特点是 支持二进制序列化方式，可以便捷，快速地处理大量数据；动态语言友好，Avro 提供的机制使动态语言可以方便地处理 Avro 数据 。</p>
+<p>在 /apps/flume/conf 目录下新建文件 single_avro.conf, 写入如下内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># 配置一个agent,agent名称可以自定义
+# 指定agent的sources、sinks、channels
+
+# 分别指定agent的sources,sinks,channels的名称
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# 为sources和sinks绑定channels,注意channel的单复数
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# 配置source
+a1.sources.s1.type&#x3D;avro
+a1.sources.s1.bind&#x3D;localhost
+a1.sources.s1.port&#x3D;6666
+
+# 配置channels
+a1.channels.c1.type&#x3D;memory
+
+# 配置sink
+a1.sinks.k1.type&#x3D;logger         </code></pre>
+<p>通过下面命令启动 flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;single_avro.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;DEBUG,console \
+-Dorg.apache.flume.log.printconfig&#x3D;true \
+-Dorg.apache.flume.log.rawdata&#x3D;true</code></pre>
+<p><img src="/images/1605665867874.png" alt="1605665867874"></p>
+<p>另外打开一个终端，通过 Flume 提供的 avro 客户端向指定机器指定端口发送日志信息</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng avro-client -c ~&#x2F;apps&#x2F;flume&#x2F;conf -H localhost -p 6666 -F hello.txt</code></pre>
+<p><img src="/images/1605666446768.png" alt="1605666446768"></p>
+<p>但是信息不全 welcome to the world!</p>
+<ul>
+<li>2.2 Exec Source</li>
+</ul>
+<p>ExecSource 的配置就是设定一个 Linux 命令，然后通过这个命令不断输出数据。如果 进程退出，ExecSource 也一起退出，不会产生进一步的数据。</p>
+<p>保存一下内容到 /apps/flume/conf/case_exec.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# bind source and sink to channel
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# config sources
+a1.sources.s1.type&#x3D;exec
+a1.sources.s1.command&#x3D;tail -F &#x2F;home&#x2F;chen&#x2F;flume&#x2F;logs&#x2F;test.log
+
+# config sinks
+a1.sinks.k1.type&#x3D;logger
+
+# config channel
+a1.channels.c1.type&#x3D;memory
+a1.channels.c1.capacity&#x3D;1000 # 能够存储的event的最大个数
+a1.channels.c1.transactionCapacity&#x3D;100 # channel每次从source取或每次传给sink的event的最大个数</code></pre>
+<p>使用 tail -F 命令一直读日志的尾部。</p>
+<p>启动 flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_exec.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;DEBUG,console \
+-Dorg.apache.flume.log.printconfig&#x3D;true \
+-Dorg.apache.flume.log.rawdata&#x3D;true</code></pre>
+<p><img src="/images/1605667205896.png" alt=""></p>
+<p>另开一个 ssh，向日志文件中添加一些内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &quot;welcome to hadoop home!&quot;&gt;&gt;test.log
+echo &quot;welcome to the world!&quot;&gt;&gt;test.log</code></pre>
+<p><img src="/images/1605667543610.png" alt="1605667543610"></p>
+<p>另一个终端可以接收到，但是不全</p>
+<ul>
+<li>2.3 Spooling Directory Source</li>
+</ul>
+<p>Spooling Directory Source 监视设置的目录，并将解析新文件的出现。Spool Source 有 2 个注意地方，第一个是拷贝到 spool 目录下的文件不可以再打开编辑，第二个是 spool 目录下不可包含相应的子目录。这个主要用途作为对日志的准实时监控。</p>
+<p>将下面的内容添加到文件 /apps/flume/conf/case_spool.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# bind source and sink to channel
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# config sources
+a1.sources.s1.type&#x3D;spooldir
+a1.sources.s1.spoolDir&#x3D;&#x2F;home&#x2F;chen&#x2F;flume&#x2F;spool&#x2F;logs  # 要提前创建该目录
+a1.sources.s1.fileHeader&#x3D;true
+
+# config sinks
+a1.sinks.k1.type&#x3D;logger
+
+# config channel
+a1.channels.c1.type&#x3D;memory </code></pre>
+<p>启动 Flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_spool.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;INFO,console</code></pre>
+<p>另外打开一个终端，在监控目录 /home/chen/flume/spool/logs 中新建三个文件 a,b,c,d，在 Flume 运行界 面会显示如下信息</p>
+<p><img src="/images/1605668315109.png" alt="1605668315109"></p>
+<ul>
+<li>2.4 NetCat Source</li>
+</ul>
+<p>Netcat source 在某一端口上进行监听，并将接收到的数据每一行文字作为一个 event，也 就是数据是基于换行符分隔。并通过连接通道发送。</p>
+<p>将下面的内容添加到文件 /apps/flume/conf/case_netcat.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# bind source and sink to channel
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# config sources
+a1.sources.s1.type&#x3D;netcat
+a1.sources.s1.bind&#x3D;localhost
+a1.sources.s1.port&#x3D;44444
+
+# config sinks
+a1.sinks.k1.type&#x3D;logger
+
+# config channel
+a1.channels.c1.type&#x3D;memory 
+a1.channels.c1.capacity&#x3D;1000
+a1.channels.c1.transactionCapacity&#x3D;100  </code></pre>
+<p>启动 Flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_netcat.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;INFO,console</code></pre>
+<p><img src="/images/1605668630133.png" alt="1605668630133"></p>
+<p>下面使用 telnet 向端口发送数据，先安装</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo apt install openbsd-inetd
+sudo apt install telnetd</code></pre>
+<p>查看运行状态</p>
+<p><img src="/images/1605668771181.png" alt="1605668771181"></p>
+<p>查看 telnet 服务是否开启</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo apt install net-tools
+sudo netstat -a | grep telnet</code></pre>
+<p><img src="/images/1605668833505.png" alt="1605668833505"></p>
+<p>发送数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">telnet localhost 44444</code></pre>
+<p><img src="/images/1605668973266.png" alt="1605668973266"></p>
+<p>另一边会接收到数据</p>
+<p><img src="/images/1605668992424.png" alt="1605668992424"></p>
+<ul>
+<li>2.5 Syslogtcp Source</li>
+</ul>
+<p>Syslogtcp source 接收 tcp 协议发过来的数据</p>
+<p>将下面的内容保存为 /apps/flume/conf/case_syslogtcp.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# bind source and sink to channel
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# config sources
+a1.sources.s1.type&#x3D;syslogtcp
+a1.sources.s1.port&#x3D;9999
+a1.sources.s1.host&#x3D;localhost
+
+# config sinks
+a1.sinks.k1.type&#x3D;logger
+
+# config channel
+a1.channels.c1.type&#x3D;memory</code></pre>
+<p>启动 Flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_syslogtcp.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;INFO,console</code></pre>
+<p><img src="/images/1605669235373.png" alt="1605669235373"></p>
+<p>另外打开一个终端，向端口发送内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &quot;hello flume&quot; | nc localhost 9999</code></pre>
+<p>在 flume 的启动界面就会输出接收到的数据</p>
+<p><img src="/images/1605669294697.png" alt="1605669294697"></p>
+<ul>
+<li>2.6 Hdfs Sink</li>
+</ul>
+<p>将下面的内容保存为 /apps/flume/conf/case_syslogtcp_hdfs.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name
+a1.sources&#x3D;s1
+a1.sinks&#x3D;k1
+a1.channels&#x3D;c1
+
+# bind source and sink to channel
+a1.sources.s1.channels&#x3D;c1
+a1.sinks.k1.channel&#x3D;c1
+
+# config sources
+a1.sources.s1.type&#x3D;syslogtcp
+a1.sources.s1.port&#x3D;9999
+a1.sources.s1.host&#x3D;localhost
+
+# config sinks
+a1.sinks.k1.type&#x3D;hdfs
+a1.sinks.k1.hdfs.path&#x3D;hdfs:&#x2F;&#x2F;localhost:9000&#x2F;flume
+a1.sinks.k1.hdfs.fileType&#x3D;DataStream
+
+# config channel
+a1.channels.c1.type&#x3D;memory </code></pre>
+<p>启动 Hadoop</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">start-all.sh</code></pre>
+<p>启动 Flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf \
+--conf-file &#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_syslogtcp_hdfs.conf \
+--name a1 \
+-Dflume.root.logger&#x3D;INFO,console</code></pre>
+<p>另外打开一个终端，向端口发送内容</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &quot;hello flume&quot; | nc localhost 9999</code></pre>
+<p>在 flume 的启动界面可以看到在 HDFS 上创建了一个文件</p>
+<p><img src="/images/1605669684931.png" alt="1605669684931"></p>
+<p>查看其中的内容，确认就是我们发送的字符串。</p>
+<p><img src="/images/1605669748540.png" alt="1605669748540"></p>
+<ul>
+<li>2.7 配置多代理流程</li>
+</ul>
+<p>设置一个多层的流程，第一个 agent 需要有一个 Avro sink 指向第二个 agent 的 Avro 源。 第一个 agent 将转发 Event 到下一个 agent。 创建文件 /apps/flume/conf/case_avro_sink.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name the components on this agent
+a2.sources &#x3D; s1
+a2.sinks &#x3D; k1
+a2.channels &#x3D; c1
+# Bind the source and sink to the channel
+a2.sources.s1.channels &#x3D; c1
+a2.sinks.k1.channel &#x3D; c1
+# Describe&#x2F;configure the source
+a2.sources.s1.type &#x3D; syslogtcp
+a2.sources.s1.host &#x3D; localhost
+a2.sources.s1.port &#x3D; 33333
+# Describe the channel
+a2.channels.c1.type &#x3D; memory
+a2.channels.c1.capacity &#x3D; 1000
+a2.channels.c1.transactionCapacity &#x3D; 100
+# Describe the sink
+a2.sinks.k1.type &#x3D; avro
+a2.sinks.k1.hostname &#x3D; localhost
+a2.sinks.k1.port &#x3D; 22222</code></pre>
+<p>创建文件 /apps/flume/conf/case_avro.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name the components on this agent
+a1.sources &#x3D; s1
+a1.sinks &#x3D; k1
+a1.channels &#x3D; c1
+# Bind the source and sink to the channel
+a1.sources.s1.channels &#x3D; c1
+a1.sinks.k1.channel &#x3D; c1
+# Describe&#x2F;configure the source
+a1.sources.s1.type &#x3D; avro
+a1.sources.s1.bind &#x3D; localhost
+a1.sources.s1.port &#x3D; 22222
+# Describe the channel
+a1.channels.c1.type &#x3D; memory
+a1.channels.c1.capacity &#x3D; 1000
+a1.channels.c1.transactionCapacity &#x3D; 100
+# Describe the sink
+a1.sinks.k1.type &#x3D; logger</code></pre>
+<p>注意 case_avro_sink.conf 是前面的 Agent，case_avro.conf 是后面的 Agent.</p>
+<p>先在一个终端中启动 Avro 的 Source, 监听端口</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf --conf-file \
+&#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_avro.conf --name a1 \
+-Dflume.root.logger&#x3D;DEBUG,console \
+-Dorg.apache.flume.log.printconfig&#x3D;true \
+-Dorg.apache.flume.log.rawdata&#x3D;true</code></pre>
+<p>再在另一个终端中启动 Avro 的 Sink</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent --conf conf --conf-file \
+&#x2F;apps&#x2F;flume&#x2F;conf&#x2F;case_avro_sink.conf --name a2 \
+-Dflume.root.logger&#x3D;DEBUG,console \
+-Dorg.apache.flume.log.printconfig&#x3D;true \
+-Dorg.apache.flume.log.rawdata&#x3D;true</code></pre>
+<p>再开一个终端中发送数据</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">echo &quot;hello flume avro sink&quot; | nc localhost 33333</code></pre>
+<p>可以看到已经建立连接，第二次 agent 成功接收到数据</p>
+<p><img src="/images/1605670217585.png" alt="1605670217585"></p>
+<h2>三、Flume AVRO Client开发</h2>
+ 创建工程【flume_examples】,包【sds.flume】,类【AVRO_Client】，将下面的代码复 制其中。  
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"></code></pre>
+<p>将 /apps/flume/lib 中的 jar 包全部导入工程中。</p>
+<p><img src="/images/1605671615012.png" alt="1605671615012"></p>
+<p>在 /apps/flume/conf 中创建文件 avro_client.conf</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"># Name the components on this agent
+a1.sources &#x3D; s1
+a1.sinks &#x3D; k1
+a1.channels &#x3D; c1
+# Describe&#x2F;configure the source
+a1.sources.s1.type &#x3D; avro
+a1.sources.s1.port &#x3D; 42424
+a1.sources.s1.bind &#x3D; localhost
+a1.sources.s1.channels &#x3D; c1
+# Describe the sink
+a1.sinks.k1.channel &#x3D; c1
+a1.sinks.k1.type &#x3D; logger
+# Use a channel which buffers events inmemory
+a1.channels.c1.type &#x3D; memory
+#a1.channels.c1.capacity &#x3D; 1000
+#a1.channels.c1.transactionCapacity &#x3D; 100</code></pre>
+<p>在终端中启动 Flume</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">flume-ng agent –conf conf --conf-file \
+&#x2F;apps&#x2F;flume&#x2F;conf&#x2F;avro_client.conf --name a1 \
+-Dflume.root.logger&#x3D;INFO,console</code></pre>
+<p>启动成功后，在 eclipse 中执行 AVRO_client 类，在终端 Flume 启动界面可以看到输出了</p>
+<p><img src="/images/1605671664385.png" alt="1605671664385"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
 
     <!-- copyright -->
     
@@ -355,7 +1465,28 @@
   <time datetime="2020-12-18T10:34:48.986Z" itemprop="datePublished">2020-12-18</time>
 </a>    
     </div>
+      
+    <div class="article-entry" itemprop="articleBody">
        
+  <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start"><a class="markdownIt-Anchor" href="#quick-start">#</a> Quick Start</h2>
+<h3 id="create-a-new-post"><a class="markdownIt-Anchor" href="#create-a-new-post">#</a> Create a new post</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new &quot;My New Post&quot;</code></pre>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server"><a class="markdownIt-Anchor" href="#run-server">#</a> Run server</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server</code></pre>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="generate-static-files"><a class="markdownIt-Anchor" href="#generate-static-files">#</a> Generate static files</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate</code></pre>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites"><a class="markdownIt-Anchor" href="#deploy-to-remote-sites">#</a> Deploy to remote sites</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy</code></pre>
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
 
     <!-- copyright -->
     
@@ -445,7 +1576,7 @@
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+    <a href="/"><img src="/heart.png" alt="伞"></a>
   </div>
   
   <ul class="nav nav-main">

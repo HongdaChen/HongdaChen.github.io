@@ -112,6 +112,7 @@
        
   <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
 <p>上一篇我们完成了 JWT 的生成与解析功能，并在此基础上完成了两种不同的登录接口。服务端登录成功后将 JWT 发送给客户端，供其后续访问使用。那么发送给客户端的过程中有没有风险呢？客户端收到 JWT 后该如何存储它呢？本篇带你解决这些问题，使 JWT 在客户端和服务端之间安全高效地发挥作用。</p>
+<a id="more"></a>
 <h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
 <h4 id="html5-web-storage"><a class="markdownIt-Anchor" href="#html5-web-storage">#</a> <strong>HTML5 Web Storage</strong></h4>
 <p>HTML5 Web Storage 是 HTML5 的本地存储，客户端存储 JWT 可以使用传统的 Cookies 方式，也可以使用 Web Storage。本篇重点介绍如何通过后者进行存储。</p>
@@ -327,18 +328,6 @@ user: &#123;
 
     <!-- copyright -->
     
-    <div class="declare">
-      <ul class="post-copyright">
-        <li>
-          <i class="ri-copyright-line"></i>
-          <strong>版权声明： </strong>
-          
-          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
-          
-        </li>
-      </ul>
-    </div>
-    
     <footer class="article-footer">
        
 <div class="share-btn">
@@ -483,7 +472,7 @@ user: &#123;
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="伞"></a>
+    <a href="/"><img src="/heart.png" alt="伞"></a>
   </div>
   
   <ul class="nav nav-main">

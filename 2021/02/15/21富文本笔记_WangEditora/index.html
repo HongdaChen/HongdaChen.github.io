@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    21富文本笔记_WangEditor |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-21富文本笔记_WangEditora"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  21富文本笔记_WangEditor
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/15/21%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0_WangEditora/" class="article-date">
+  <time datetime="2021-02-15T01:58:13.962Z" itemprop="datePublished">2021-02-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.4k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">14 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>通过前面两篇的学习，我们实现了在用户主页显示用户笔记本列表，并且在每次选中新的笔记本时展示笔记本中的笔记。接下来，我们将展示并编辑用户的笔记，本篇将实现富文本类型的笔记的编辑和展示功能。</p>
+<a id="more"></a>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>编辑富文本笔记，就需要了解一下支持 Vue.js 的富文本笔记组件。百度一下、Google 一下都能发现很多优秀的编辑器，这些编辑器各有特点，基本使用方法是类似的：</p>
+<ul>
+<li>加载组件</li>
+<li>设置内容</li>
+<li>处理图片、视频等上传工作</li>
+<li>获取内容</li>
+</ul>
+<!-- -->
+<p>本篇以常用的轻量级编辑器 WangEditor 举例，详细介绍富文本笔记的显示和编辑工作。</p>
+<h4 id="wangeditor"><a class="markdownIt-Anchor" href="#wangeditor">#</a> <strong>WangEditor</strong></h4>
+<p>要了解一款编辑器，比较简单快捷的方法就是看它的界面布局和效果显示，下图是 WangEditor 编辑器的实际展现效果：</p>
+<p><img src="https://images.gitbook.cn/41c90bb0-84a0-11ea-83ff-6139d7e698e7" alt="富文本示例"></p>
+<p>如图所示，它支持一些常用的效果，如：</p>
+<ul>
+<li>有序列表、无序列表</li>
+<li>H1 到 H5、超链接、引用、代码块</li>
+<li>下划线、删除线、加粗、斜体、不同字体</li>
+<li>文字颜色、文字背景颜色、emoji 表情</li>
+<li>表格、图片、视频</li>
+</ul>
+<!-- -->
+<p>这些操作基本上能满足平时使用富文本编辑的需求，官网地址：</p>
+<blockquote>
+<p><a href="wangEditor.png">http://www.wangeditor.com/</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/7bc010c0-84a0-11ea-83ff-6139d7e698e7" alt="wangEditor"></p>
+<p>Keller 云笔记中依然使用 npm 命令安装 WangEditor 组件：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm install wangeditor</code></pre>
+<p><img src="https://images.gitbook.cn/8992bb30-84a0-11ea-b6fa-0f8087ec57b4" alt="安装"></p>
+<h3 id="业务流程"><a class="markdownIt-Anchor" href="#业务流程">#</a> 业务流程</h3>
+<p>富文本笔记编辑效果如下：</p>
+<p><img src="img/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0%E6%95%88%E6%9E%9C.png" alt="富文本笔记效果"></p>
+<p>对应的业务流程说明：</p>
+<ol>
+<li>用户选择打开一个笔记</li>
+<li>当选择的是一个富文本笔记时，在右侧展示该笔记的内容，同时右上角有一个编辑图标</li>
+<li>用户点击编辑图标，加载富文本笔记编辑器</li>
+<li>编辑过程中，用户可以点击右上角的保存图标，保存笔记</li>
+</ol>
+<!-- -->
+<h3 id="服务端代码实现"><a class="markdownIt-Anchor" href="#服务端代码实现">#</a> 服务端代码实现</h3>
+<p>本篇涉及到的服务端代码，只有 NoteController 和 NoteService 两个类的改动。</p>
+<ul>
+<li>NoteController：添加获取、保存笔记内容的接口</li>
+<li>NoteService：处理获取、保存笔记内容的业务逻辑</li>
+</ul>
+<!-- -->
+<h4 id="controller"><a class="markdownIt-Anchor" href="#controller">#</a> <strong>Controller</strong></h4>
+<p>在 NoteController.java 中添加 get 方法用以获取笔记内容：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">    &#x2F;**
+ * 获取笔记详情
+ * @param kellerUserId  从 JWT 中解析到的用户 ID
+ * @param noteId    用户的笔记 ID
+ * @return
+ *&#x2F;
+@GetMapping
+public ResponseEntity get(Integer kellerUserId,Integer noteId)&#123;
+    if(StringUtils.isEmpty(kellerUserId,noteId))&#123;
+        return Response.badRequest();
+    &#125;
+    return Response.ok(service.get(kellerUserId,noteId));
+&#125;
+</code></pre>
+<p>在 NoteController.java 中添加 save 方法用以保存笔记内容：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">    &#x2F;**
+ * 保存笔记内容
+ * @param kellerUserId  必填
+ * @param noteId        必填
+ * @param text          纯文本内容
+ * @param html          Html 内容
+ * @return
+ *&#x2F;
+@PostMapping(&quot;&#x2F;save&quot;)
+public ResponseEntity save(Integer kellerUserId,Integer noteId,String text,String html)&#123;
+    if(StringUtils.isEmpty(kellerUserId,noteId) )&#123;
+        return Response.badRequest();
+    &#125;
+    if(text &#x3D;&#x3D; null)&#123;
+        text &#x3D; &quot;&quot;;
+    &#125;
+    if(html &#x3D;&#x3D; null)&#123;
+        html &#x3D; &quot;&quot;;
+    &#125;
+    NoteInfo noteInfo &#x3D; new NoteInfo(noteId);
+    noteInfo.setUserId(kellerUserId);
+    noteInfo.setText(text);
+    noteInfo.setHtml(html);
+    return Response.ok(service.save(noteInfo));
+&#125;
+</code></pre>
+<p>在保存时要注意：</p>
+<ul>
+<li>笔记内容是可以为空的，但是我们在通用 Mapper 中的设置是 null 值不更新，因此，要判断当 text、html 参数为 null 时，将其转换为空字符串。</li>
+</ul>
+<!-- -->
+<h4 id="service"><a class="markdownIt-Anchor" href="#service">#</a> <strong>Service</strong></h4>
+<p>NoteService.jave 也是添加相应方法即可，没有特殊的处理逻辑，如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public ResultData get(int userId,int noteId)&#123;
+        NoteInfo noteInfo &#x3D; getByUserIdAndNoteId(userId, noteId);
+        if(noteInfo &#x3D;&#x3D; null)&#123;
+            return ResultData.error(&quot;笔记本不存在&quot;);
+        &#125;
+        return ResultData.success(noteInfo);
+    &#125;
+</code></pre>
+<h3 id="前端代码实现"><a class="markdownIt-Anchor" href="#前端代码实现">#</a> 前端代码实现</h3>
+<p>前端主要涉及到的代码结构如下：</p>
+<ul>
+<li>
+<p>components- Note.vue：自定义组件，处理笔记详情</p>
+<ul>
+<li>WangEditor.vue：自定义组件，封装 WangEditor 组件，用于编辑富文本内容</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h4 id="定义接口"><a class="markdownIt-Anchor" href="#定义接口">#</a> <strong>定义接口</strong></h4>
+<p>首先，要在 api.js 中定义好本篇所需的两个接口：获取笔记内容、设置笔记内容：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;**
+ * 获取笔记内容 4006
+ *&#x2F;
+export const req_getNoteInfoById &#x3D; (noteId) &#x3D;&gt; &#123; 
+    return axios.get(api, &#123;
+        params:&#123;
+            noteId:noteId
+        &#125;,
+        headers:&#123;
+            &#39;method&#39;:&#39;note&#39;,
+            &#39;token&#39; : window.localStorage.getItem(&quot;token&quot;)
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err);  
+&#125;;
+
+&#x2F;**
+ * 设置笔记内容 4007
+ *&#x2F;
+export const req_setNoteContent &#x3D; (noteId,text,html) &#x3D;&gt; &#123; 
+    return axios.post(api, &#123;
+        noteId:noteId,
+        text:text,
+        html:html
+    &#125;,&#123;
+        headers:&#123;
+            &#39;method&#39;:&#39;note&#x2F;save&#39;,
+            &#39;token&#39; : window.localStorage.getItem(&quot;token&quot;)
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err); 
+&#125;;
+</code></pre>
+<h4 id="自定义-wangeditor-组件"><a class="markdownIt-Anchor" href="#自定义-wangeditor-组件">#</a> <strong>自定义 WangEditor 组件</strong></h4>
+<p>定义好接口后，我们来自定义一个 WangEditor.vue，用于按照项目中使用的场景处理 WangEditor。看到这里，大家获取会提出疑问：</p>
+<ol>
+<li>WangEditor 本身使用就很简单了，为什么还要自己再封装一下呢？</li>
+<li>在 “Keller 云笔记” 中这样封装，在其他项目中还需要封装吗？</li>
+<li>我使用其他的编辑器，也需要进行封装吗？</li>
+</ol>
+<!-- -->
+<p>对此，根据我个人在项目中实际使用情况做如下解释：</p>
+<ul>
+<li>WangEditor 使用非常简单，只需要定义一好要挂载的 HTML 节点，并做简单配置即可，短短十几行代码就能搞定。但是在项目中，用到编辑器的地方很可能不止一处，用到一次，就写一次同样的十几行吗？后期如果配置需要修改（如：图片上传的地址），要找到每一处使用编辑器的地方修改吗？因此，当我们不想当一名 CV 程序员时，就要学会封装。</li>
+<li>封装的思想，在任何项目都适用。</li>
+<li>封装的思想，在任何编辑器中都适用。</li>
+</ul>
+<!-- -->
+<p>新建 WangEditor.vue 代码如下：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+    &lt;div&gt;
+    &lt;!-- 挂载编辑器菜单栏的 Div --&gt;
+        &lt;div id&#x3D;&quot;editor1&quot;&gt;&lt;&#x2F;div&gt;
+    &lt;!-- 挂载编辑器内容编辑区的 Div --&gt;
+        &lt;div class&#x3D;&quot;content&quot; id&#x3D;&quot;editor2&quot;&gt;
+        &lt;&#x2F;div&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+    import Editor from &#39;wangeditor&#39;;
+    export default &#123;
+        data() &#123;
+            return &#123;
+                editor: new Editor(&quot;#editor1&quot;,&quot;#editor2&quot;)
+            &#125;
+        &#125;,
+        methods: &#123;
+        &#125;,
+        mounted() &#123;
+        &#125;
+    &#125;
+&lt;&#x2F;script&gt;</code></pre>
+<p>以上几行代码引入 WangEditor 组件，并将其挂载在页面中，要注意的是：使用 WangEditor 组件可以将菜单栏和内容编辑区挂载在一个 div 上，也可以将菜单栏和内容编辑区分别挂载在两个 div 上。在此建议使用后一种方法，因为前者会使用默认的 400PX 的高度，比较难以调整大小和样式；后者的方法可以灵活调节其样式。</p>
+<p>WangEditor 组件的初始化方法写在 mounted () 钩子方法中比较合适，重点需要注意的方法如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">mounted() &#123;
+            let editor &#x3D; this.editor;
+          &#x2F;&#x2F; 配置上传文件时的参数名
+            editor.customConfig.uploadFileName &#x3D; &quot;file&quot;;
+          &#x2F;&#x2F; 配置上传图片的服务端地址
+            editor.customConfig.uploadImgServer &#x3D; editorImgUploadUrl;
+          &#x2F;&#x2F; 配置上传图片时带的自定义参数
+            editor.customConfig.uploadImgParams &#x3D; &#123;
+                token: window.localStorage.getItem(&quot;token&quot;)
+            &#125;;
+            &#x2F;&#x2F; 配置上传图片的回调方法
+            editor.customConfig.uploadImgHooks &#x3D; &#123;
+                customInsert: function(insertImg, result, editor) &#123;
+                    &#x2F;&#x2F; 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                    &#x2F;&#x2F; insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                    &#x2F;&#x2F; result 必须是一个 JSON 格式字符串！！！否则报错
+                    &#x2F;&#x2F; 举例：假如上传图片成功后，服务器端返回的是 &#123;url:&#39;....&#39;&#125; 这种格式，即可这样插入图片：
+                    var url &#x3D; result.data;
+                    insertImg(url);
+                &#125;
+            &#125;;
+          &#x2F;&#x2F; 创建编辑器
+            this.editor.create();
+        &#125;
+</code></pre>
+<p>WangEditor 内容编辑区需要设置的内容为 HTML 代码，可以获取到的内容为纯文本格式的字符串和 HTML 格式的字符串两种，因此，为 WangEditor.vue 添加三个可以调用的方法，供父组件调用：</p>
+<ul>
+<li>load (html)：加载 WangEditor.vue 作为子组件时调用的设置内容的方法</li>
+<li>getText ()：获取编辑器内容编辑区的纯文本字符串</li>
+<li>getHtml ()：获取编辑器内容编辑区的 HTML 字符串</li>
+</ul>
+<!-- -->
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">getText()&#123;
+    return this.editor.txt.text();
+&#125;,
+getHtml()&#123;
+    return this.editor.txt.html();
+&#125;,
+load(html)&#123;
+    this.editor.txt.html(html);
+&#125;
+</code></pre>
+<p>至此，自定义的 WangEditor 组件配置完毕，可以用它愉快地编辑富文本笔记了。</p>
+<h4 id="自定义-note-组件"><a class="markdownIt-Anchor" href="#自定义-note-组件">#</a> <strong>自定义 Note 组件</strong></h4>
+<p>WangEditor 组件封装完毕后，我们还需要一个组件用于显示笔记内容。该组件的页面布局如下：</p>
+<p><img src="https://images.gitbook.cn/cd11efc0-84a0-11ea-83ff-6139d7e698e7" alt="预览"></p>
+<p>主要实现如下功能：</p>
+<ul>
+<li>默认为预览状态，显示笔记本标题及笔记内容</li>
+<li>点击编辑图标，进入编辑状态，按照笔记类型加载相应的编辑器</li>
+<li>在编辑状态点击保存按钮，保存修改的内容</li>
+<li>在编辑状态点击预览按钮，保存修改的内容，并切换到预览状态，显示编辑好的笔记内容</li>
+</ul>
+<!-- -->
+<p>新建 Note.vue，引入 WangEditor.vue 组件：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">  import WangEditor from &quot;.&#x2F;WangEditor.vue&quot;
+  export default &#123;
+      components: &#123;
+          WangEditor,MarkDown
+      &#125;
+&#125;
+</code></pre>
+<p>该页面所需的数据为：</p>
+<ul>
+<li>editMode：模式切换开关，用于控制编辑模式和预览模式的相互切换</li>
+<li>note：笔记对象，用于展示笔记详情</li>
+</ul>
+<!-- -->
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">data() &#123;
+            return &#123;
+                &#x2F;&#x2F;编辑模式
+                editMode: false,
+                note: &#123;&#125;
+            &#125;
+        &#125;,
+</code></pre>
+<p>Note.vue 页面布局如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;!-- 笔记详情 --&gt;
+&lt;template&gt;
+    &lt;div&gt;
+        &lt;el-row class&#x3D;&quot;border-2-info font18 ColorCommon marginBottom10 padding5&quot;&gt;
+            &lt;el-col :span&#x3D;&quot;20&quot;&gt;
+                &lt;div class&#x3D;&quot;font-bold &quot;&gt;&#123;&#123;note.title&#125;&#125;&lt;&#x2F;div&gt;
+            &lt;&#x2F;el-col&gt;
+            &lt;!-- 操作按钮 --&gt;
+            &lt;el-col :span&#x3D;&quot;2&quot; class&#x3D;&quot;alignRight&quot; v-show&#x3D;&quot;!editMode&quot;&gt;
+                &lt;!-- 编辑 --&gt;
+                &lt;el-link :underline&#x3D;&quot;false&quot; @click&#x3D;&quot;handleEdit()&quot;&gt;
+                    &lt;i class&#x3D;&quot;el-icon-edit font24&quot; title&#x3D;&quot;编辑&quot;&gt;&lt;&#x2F;i&gt;
+                &lt;&#x2F;el-link&gt;
+            &lt;&#x2F;el-col&gt;
+            &lt;!-- 操作按钮 --&gt;
+            &lt;el-col :span&#x3D;&quot;2&quot; class&#x3D;&quot;alignRight&quot; v-show&#x3D;&quot;editMode&quot;&gt;
+                &lt;!-- 预览 --&gt;
+                &lt;el-link :underline&#x3D;&quot;false&quot; @click&#x3D;&quot;handleView()&quot;&gt;
+                    &lt;i class&#x3D;&quot;el-icon-view font24&quot; title&#x3D;&quot;预览&quot;&gt;&lt;&#x2F;i&gt;
+                &lt;&#x2F;el-link&gt;
+            &lt;&#x2F;el-col&gt;
+            &lt;!-- 操作按钮 --&gt;
+            &lt;el-col :span&#x3D;&quot;2&quot; class&#x3D;&quot;alignRight&quot; v-show&#x3D;&quot;editMode&quot;&gt;
+                &lt;!-- 保存 --&gt;
+                &lt;el-link :underline&#x3D;&quot;false&quot; @click&#x3D;&quot;handleSave()&quot; v-show&#x3D;&quot;editMode&quot;&gt;
+                    &lt;i class&#x3D;&quot;el-icon-check font24&quot; title&#x3D;&quot;保存&quot;&gt;&lt;&#x2F;i&gt;
+                &lt;&#x2F;el-link&gt;
+            &lt;&#x2F;el-col&gt;
+
+        &lt;&#x2F;el-row&gt;
+        &lt;!-- 仅在富文本笔记的编辑模式中使用 WandEditor --&gt;
+        &lt;WangEditor v-show&#x3D;&quot;editMode &amp;&amp; note.type &#x3D;&#x3D; 0&quot; ref&#x3D;&quot;wangEditor&quot;&gt;&lt;&#x2F;WangEditor&gt;
+        &lt;!-- 阅读模式 --&gt;
+        &lt;div v-show&#x3D;&quot;!editMode&quot; class&#x3D;&quot;ColorMain&quot; v-html&#x3D;&quot;note.html&quot;&gt;&lt;&#x2F;div&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+</code></pre>
+<p>Note.vue 中重要的方法有：</p>
+<p>init ()：当选中不同的笔记后，Note.vue 会加载不同的内容，为了在笔记切换过程中造成的数据混乱，要在每次加载时初始化 Note.vue 使用的数据。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;&#x2F;初始化数据，防止在笔记切换过程中造成的数据混乱
+init() &#123;
+    this.editMode &#x3D; false;
+    this.note &#x3D; &#123;&#125;;
+&#125;
+</code></pre>
+<p>Note.vue 将作为 Home.vue 的子组件，因此要提供一个 load () 方法供父组件在合适的时机调用。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;&#x2F;加载数据之前，先初始化原有数据
+load(note) &#123;
+    this.init();
+    this.note &#x3D; note;
+    this.getNoteInfo();
+&#125;
+</code></pre>
+<p>handleSave ()：保存笔记内容，调用子组件的方法分别读取纯文本内容和 HTML 内容，同时判断是否其和笔记原本内容相比有无变化，仅在发生变化时才调用服务端接口进行更新。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">handleSave() &#123;
+                let newText;
+                let newHtml;
+                if(this.note.type &#x3D;&#x3D; 0)&#123;
+                    newText &#x3D; this.$refs.wangEditor.getText();
+                    newHtml &#x3D; this.$refs.wangEditor.getHtml();
+                &#125;else&#123;
+                    return;
+                &#125;
+                &#x2F;&#x2F;如果笔记内容有变化，保存
+                if(this.note.html !&#x3D;&#x3D; newHtml)&#123;
+                    req_setNoteContent(this.note.id, newText,newHtml).then(response &#x3D;&gt; &#123;
+                        let &#123;
+                            success,
+                            message
+                        &#125; &#x3D; response;
+                        &#x2F;&#x2F;应答不成功，提示错误信息
+                        if (success !&#x3D;&#x3D; 0) &#123;
+                            this.$message(&#123;
+                                message: message,
+                                type: &#39;error&#39;
+                            &#125;);
+                        &#125; else &#123;
+                            this.$notify(&#123;
+                                title: &#39;保存成功&#39;,
+                                type: &#39;success&#39;
+                            &#125;);
+                            this.note.text &#x3D; newText;
+                            this.note.html &#x3D; newHtml;
+                        &#125;
+                    &#125;);
+                &#125;else&#123;
+                &#x2F;&#x2F;笔记内容无变化，直接提示保存成功
+                    this.$notify(&#123;
+                        title: &#39;保存成功&#39;,
+                        type: &#39;success&#39;
+                    &#125;);
+                &#125;
+
+            &#125;
+</code></pre>
+<h4 id="在用户主页中使用-note-组件"><a class="markdownIt-Anchor" href="#在用户主页中使用-note-组件">#</a> <strong>在用户主页中使用 Note 组件</strong></h4>
+<p>定义好 Note.vue 后，就可以在 Home.vue 中使用了：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;&#x2F; 引入 Note.vue
+import Note from &quot;..&#x2F;components&#x2F;Note.vue&quot;
+&#x2F;&#x2F; 将 Note.vue 声明为子组件
+components: &#123;
+    NotesList,NoteList,Note
+&#125;,
+</code></pre>
+<p>在页面相应位置使用 Note 组件：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;!-- 右侧笔记内容 --&gt;
+  &lt;el-main class&#x3D;&quot;note-info&quot;&gt;
+      &lt;Note ref&#x3D;&quot;note&quot;&gt;&lt;&#x2F;Note&gt;
+  &lt;&#x2F;el-main&gt;
+</code></pre>
+<p>在选中笔记列表中的笔记后，调用 Note 组件，加载笔记内容：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">getNote(note) &#123;
+        this.$refs.note.load(note);
+&#125;,
+</code></pre>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>选中笔记后，显示笔记内容：</p>
+<p><img src="https://images.gitbook.cn/f25e46c0-84a0-11ea-83ff-6139d7e698e7" alt="显示笔记内容"></p>
+<p>点击编辑图标后，进入编辑状态，加载富文本编辑器：</p>
+<p><img src="https://images.gitbook.cn/253dce30-84a1-11ea-83ff-6139d7e698e7" alt="编辑笔记内容"></p>
+<p>点击预览按钮，保存笔记，并切换到预览状态</p>
+<p><img src="https://images.gitbook.cn/3ed8ad10-84a1-11ea-892e-3d2bc7939884" alt="保存笔记内容"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes">https://github.com/tianlanlandelan/KellerNotes</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家使用 WangEditor 完成了富文本笔记的预览和编辑功能，在源码中包含上传图片、显示图片等完整功能。网上有很多不同的富文本编辑器，在闲暇之余，大家可以体验一下其他编辑器，在使用方法和需要配置的参数上都是类似的，如果有更好的体验，可以相互推荐一下。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/15/21%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0_WangEditora/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/15/22MarkDown%E7%AC%94%E8%AE%B0_MavonEditora/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            22MarkDown笔记_MavonEditor
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/15/20%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8_Draggable%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8Fa/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">20笔记列表_Draggable拖拽排序</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

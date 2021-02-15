@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    12注册2_Axios发送HTTP请求 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-12注册2_Axios发送HTTP请求a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  12注册2_Axios发送HTTP请求
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/15/12%E6%B3%A8%E5%86%8C2_Axios%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82a/" class="article-date">
+  <time datetime="2021-02-15T01:58:13.946Z" itemprop="datePublished">2021-02-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">15 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>在前后端分离模式开发中，前端开发主要依据的是接口文档，本篇带领大家按照接口文档完成注册功能的开发。由于是首次进行业务功能开发，需要先配置好项目必须的组件：路由管理、界面 UI、Ajax 请求等。</p>
+<a id="more"></a>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<h4 id="vue-router"><a class="markdownIt-Anchor" href="#vue-router">#</a> <strong>Vue Router</strong></h4>
+<p>Vue Router 是 Vue.js 官方的路由管理器。它和 Vue.js 的核心深度集成，让构建单页面应用变得易如反掌，本项目中使用它来完成路由的管理功能。</p>
+<ul>
+<li>嵌套的路由 / 视图表</li>
+<li>模块化的、基于组件的路由配置</li>
+<li>路由参数、查询、通配符</li>
+<li>基于 Vue.js 过渡系统的视图过渡效果</li>
+<li>细粒度的导航控制</li>
+<li>带有自动激活的 CSS class 的链接</li>
+<li>HTML5 历史模式或 hash 模式，在 IE9 中自动降级</li>
+<li>自定义的滚动条行为</li>
+</ul>
+<!-- -->
+<p>Vue Router 官方文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://router.vuejs.org/zh/">https://router.vuejs.org/zh/</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/35083790-72a6-11ea-aa9c-4b75f9a497aa" alt="vue-router"></p>
+<p>在项目中使用如下命令安装 vue-router：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm install --save vue-router</code></pre>
+<h4 id="element-ui"><a class="markdownIt-Anchor" href="#element-ui">#</a> <strong>Element UI</strong></h4>
+<p>Element，一套为开发者、设计师和产品经理准备的基于 Vue 2.0 的桌面端组件库，提供了页面布局、表单、表格、进度条、消息提示、对话框、弹出框等各种规范的格式与简便易用的 UI 组件。本项目中使用它来完成界面 UI。</p>
+<p>Element 官方文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://element.eleme.io/#/zh-CN">https://element.eleme.io/#/zh-CN</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/5c70dee0-72a6-11ea-9d30-373ba420c527" alt="element"></p>
+<p>在项目中使用如下命令安装 Element UI：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm i element-ui -S</code></pre>
+<h4 id="axios"><a class="markdownIt-Anchor" href="#axios">#</a> <strong>Axios</strong></h4>
+<p>Axios 是一个基于 Promise 的 HTTP 库，可以用在浏览器和 Node.js 中。本项目使用它来完成 Ajax 请求的发送和处理。</p>
+<p>Axios 官方文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://www.axios-js.com/">http://www.axios-js.com/</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/835e62c0-72a6-11ea-9c78-13c8e455a47a" alt="axios"></p>
+<p>在项目中使用如下命令安装 Axios：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm install axios</code></pre>
+<p>安装好以上三个组件后，项目配置文件 <strong>package.json</strong> 内的依赖项 dependencies 应该是这个样子的：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">&quot;dependencies&quot;: &#123;
+  &quot;axios&quot;: &quot;^0.19.2&quot;,
+  &quot;core-js&quot;: &quot;^3.4.4&quot;,
+  &quot;element-ui&quot;: &quot;^2.13.0&quot;,
+  &quot;vue&quot;: &quot;^2.6.10&quot;,
+  &quot;vue-router&quot;: &quot;^3.1.6&quot;
+&#125;</code></pre>
+<h3 id="项目路由管理"><a class="markdownIt-Anchor" href="#项目路由管理">#</a> 项目路由管理</h3>
+<h4 id="新建页面"><a class="markdownIt-Anchor" href="#新建页面">#</a> <strong>新建页面</strong></h4>
+<p>在 Web 项目 src 文件夹下新建目录 views，所有 Vue 页面将存放在这个目录下。然后在 views 目录下新建 Vue 文件，命名为 Login.vue 和 Register.vue 分别用作登录页面和注册页面，代码如下：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;!-- 登录页面 --&gt;
+&lt;template&gt;
+    &lt;div&gt;
+        Login
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+&lt;script&gt;
+    export default&#123;
+        data()&#123;
+            return&#123;&#125;
+        &#125;,
+        methods:&#123;&#125;,
+    mounted()&#123;&#125;
+    &#125;
+&lt;&#x2F;script&gt;
+&lt;style scoped&gt;
+&lt;&#x2F;style&gt;</code></pre>
+<p>这是一个标准的 Vue 页面代码布局：</p>
+<ul>
+<li>templat：HTML 模板文件</li>
+<li>script：Vue.js 脚本</li>
+<li>style：CSS 样式</li>
+</ul>
+<!-- -->
+<p>新建一个 Vue 文件，命名为 404.vue，用做错误提示页面，代码如下：</p>
+<pre class="line-numbers language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
+    &lt;p class&#x3D;&quot;page-container&quot;&gt;404 page not found&lt;&#x2F;p&gt;
+&lt;&#x2F;template&gt;
+&lt;style scoped&gt;
+    .page-container &#123;
+        font-size: 20px;
+        text-align: center;
+        color: rgb(192, 204, 218);
+    &#125;
+&lt;&#x2F;style&gt;</code></pre>
+<h4 id="配置路由表"><a class="markdownIt-Anchor" href="#配置路由表">#</a> <strong>配置路由表</strong></h4>
+<p>在项目的 main.js 同级目录中新建一个 JS 文件，命名为 routes.js，用于路由配置，代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">import Login from &#39;.&#x2F;views&#x2F;Login.vue&#39;
+import Register from &#39;.&#x2F;views&#x2F;Register.vue&#39;
+import NotFound from &quot;.&#x2F;views&#x2F;404.vue&quot;
+
+let routes &#x3D; [
+    &#123;   path: &#39;&#x2F;Login&#39;,component: Login,name:&quot;Login&quot;&#125;,
+  &#123; path: &#39;&#x2F;Register&#39;,component: Register, name: &#39;Register&#39;&#125;,
+    &#123; path: &#39;&#x2F;404&#39;,component: NotFound, name: &#39;NotFound&#39;&#125;,
+    &#123;   path: &#39;*&#39;, redirect: &#123; path: &#39;&#x2F;404&#39; &#125;&#125;
+];
+
+export default routes;
+</code></pre>
+<p>这个文件将 Login.vue、Register.vue、404.vue 三个页面引入，并将其配置为不同的路由（语法格式参照 Vue Router 中文文档）：</p>
+<ul>
+<li>浏览器访问 /Login 时，路由到 Login.vue，即登录页面</li>
+<li>浏览器访问 /Register 时，路由到 Register.vue，即注册页面</li>
+<li>浏览器访问其他地址时，路由到 404.vue，即错误提示页面</li>
+</ul>
+<!-- -->
+<h4 id="引入组件"><a class="markdownIt-Anchor" href="#引入组件">#</a> <strong>引入组件</strong></h4>
+<p>将项目的 main.js 文件修改为如下所示：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">import Vue from &#39;vue&#39;
+import App from &#39;.&#x2F;App.vue&#39;
+&#x2F;&#x2F;引入 vue-router 组件
+import VueRouter from &#39;vue-router&#39;
+&#x2F;&#x2F;引入 element-ui 组件
+import ElementUI from &#39;element-ui&#39;
+&#x2F;&#x2F;引入 element-ui 样式表
+import &#39;element-ui&#x2F;lib&#x2F;theme-chalk&#x2F;index.css&#39;
+&#x2F;&#x2F;引入路由表
+import routes from &#39;.&#x2F;routes&#39;
+Vue.use(ElementUI)
+Vue.use(VueRouter)
+
+const router &#x3D; new VueRouter(&#123;
+    &#x2F;&#x2F;使用history模式来避免页面输入路由参数后自动加 # 
+    mode: &#39;history&#39;,
+    routes
+&#125;)
+
+new Vue(&#123;
+    router,
+  render: h &#x3D;&gt; h(App)
+&#125;).$mount(&#39;#app&#39;)
+</code></pre>
+<p>通过以上操作，就完成了路由功能的配置。</p>
+<p>验证路由功能： <code>npm run serve</code>  启动项目后，在浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:8080/Login%EF%BC%8C%E5%B0%B1%E8%AE%BF%E9%97%AE%E5%88%B0%E4%BA%86">http://localhost:8080/Login，就访问到了</a> Login.vue 页面，如下：</p>
+<p><img src="https://images.gitbook.cn/ff6491a0-72a6-11ea-9d12-3d2bd05cf9bc" alt="Login"></p>
+<p>在浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:8080/User%EF%BC%8C%E5%9B%A0%E4%B8%BA">http://localhost:8080/User，因为</a> /User 在路由中没有配置，就被重定向到了 404 页面，如下：</p>
+<p><img src="https://images.gitbook.cn/0bf76910-72a7-11ea-9e02-c110b4a4e660" alt="User"></p>
+<h3 id="注册功能的实现"><a class="markdownIt-Anchor" href="#注册功能的实现">#</a> 注册功能的实现</h3>
+<p>Vue 页面的开发流程是页面结构 -&gt; 数据 -&gt; 交互：</p>
+<ol>
+<li>先声明接口，接口规定了传入参数、返回数据的数量和格式，页面按照规定格式组织数据才能实现数据的传输。</li>
+<li>然后实现页面结构，会用到基于 Vue.js 的 UI 框架（如：Element UI），涉及到  <code>&amp;lt;template&amp;gt;</code>  标签中的内容。</li>
+</ol>
+<!-- -->
+<ul>
+<li>需要自定义样式的地方，在  <code>&amp;lt;style&amp;gt;</code>  标签中书写 CSS 样式，也可以使用 SCSS 语法。</li>
+<li>需要数据支持的地方，在  <code>&amp;lt;script&amp;gt;</code>  标签中的 data () 方法中定义数据。</li>
+</ul>
+<!-- -->
+<ol>
+<li>最后实现用户交互，在  <code>&amp;lt;script&amp;gt;</code>  标签中的  <code>methods</code>  对象中实现需要交互的方法。</li>
+</ol>
+<!-- -->
+<h4 id="声明接口"><a class="markdownIt-Anchor" href="#声明接口">#</a> <strong>声明接口</strong></h4>
+<p>页面功能开发过程中，需要发送 HTTP 请求。建议每次开发页面前先将 HTTP 接口声明完毕，这样做的好处在于：</p>
+<ul>
+<li>尚未进行页面开发，此时能排除其他干扰，按照接口文档声明，保证接口的正确性和规范性</li>
+<li>声明好的接口有助于合理定义页面数据格式，避免因格式不一致导致的操作复杂化</li>
+</ul>
+<!-- -->
+<p>在 <strong>main.js</strong> 同级目录下新建一个 <strong>api.js</strong> 文件，将所有发送 HTTP 请求的方法都写在这个文件中，代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">import axios from &#39;axios&#39;;
+&#x2F;** 需要先登录再访问的路由 *&#x2F;
+let api &#x3D; &#39;api&#39;;
+let form &#x3D; &quot;form&quot;
+
+&#x2F;** 不需要登录就能访问的路由 *&#x2F;
+let base &#x3D; &#39;base&#39;;
+&#x2F;**
+ * 获取注册验证码
+ *&#x2F;
+export const req_getCodeForRegister &#x3D; (email) &#x3D;&gt; &#123; 
+    return axios.get(base + &#39;&#x2F;getCodeForRegister&#39;, &#123;
+        params:&#123;
+            email:email
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err);  
+&#125;;
+&#x2F;**
+ * 注册用户
+ *&#x2F;
+export const req_register &#x3D; (user) &#x3D;&gt; &#123; 
+    return axios.post(base + &#39;&#x2F;register&#39;, &#123;
+        email:user.email,
+        password:user.password,
+        code:user.code
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err); 
+&#125;;
+</code></pre>
+<p>这里写了两个请求：获取注册验证码、注册用户，写的依据就是前期梳理的接口文档，具体的接口定义参见第 4 篇《接口文档设计》中 <strong>1001</strong>、<strong>1002</strong> 接口的描述。</p>
+<p>将请求统一管理，所有接口都在同一个文件中，很容易查找和管理，同时也有利于保持统一的代码风格和数据格式。</p>
+<h4 id="页面设计"><a class="markdownIt-Anchor" href="#页面设计">#</a> <strong>页面设计</strong></h4>
+<p>注册页面效果图如下：</p>
+<p><img src="https://images.gitbook.cn/47a1c370-72a7-11ea-b3fa-5b760b39398d" alt="null"></p>
+<p>根据效果图，从上到下逐行对页面进行分析：</p>
+<ul>
+<li>第一部分：页面标题 <strong>KellerNotes 注册</strong>，居中显示</li>
+<li>第二部分：步骤条，使用 Element UI 中的步骤条组件  <code>&amp;lt;el-steps&amp;gt;</code>  实现</li>
+<li>第三部分：表单，标签、文本框、按钮等</li>
+<li>第四部分：按钮或超链接，点击后跳转到登录页面</li>
+</ul>
+<!-- -->
+<p>在 <strong>Register.vue</strong> 页面中，涉及到的新知识就是 Element UI 中的<strong>步骤条</strong>组件，代码如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">        &lt;!-- 步骤条 --&gt;
+        &lt;el-steps :active&#x3D;&quot;step&quot; finish-status&#x3D;&quot;success&quot;&gt;
+            &lt;el-step title&#x3D;&quot;验证邮箱&quot;&gt;&lt;&#x2F;el-step&gt;
+            &lt;el-step title&#x3D;&quot;设置密码&quot;&gt;&lt;&#x2F;el-step&gt;
+            &lt;el-step title&#x3D;&quot;完善资料&quot;&gt;&lt;&#x2F;el-step&gt;
+        &lt;&#x2F;el-steps&gt;
+... ....
+&lt;script&gt;
+  export default &#123;
+    data() &#123;
+      return &#123;
+        step: 0
+      &#125;;
+    &#125;
+  &#125;
+&lt;&#x2F;script&gt;
+</code></pre>
+<p>Steps 步骤条：引导用户按照流程完成任务的分步导航条，可根据实际应用场景设定步骤，步骤不得少于 2 步。在该页面中的步骤条用到了一个变量 step，用来控制步骤条的进度，初始值为 0，没进行一步加一。</p>
+<p>页面其他内容按照正常的 HTML 标签格式布局就可以了，拿第一步举例，代码如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;el-row v-if&#x3D;&quot;step &#x3D;&#x3D; 0&quot;&gt;
+      &lt;el-form&gt;
+                &lt;el-form-item&gt;
+                    &lt;!--邮箱输入框--&gt;
+                    &lt;span class&#x3D;&quot;ColorCommon font-bold&quot;&gt;邮箱&lt;&#x2F;span&gt;
+                    &lt;span class&#x3D;&quot;ColorDanger&quot; v-show&#x3D;&quot;!user.emailChecked&quot;&gt; (请填写正确的邮箱地址)&lt;&#x2F;span&gt;
+                    &lt;el-input type&#x3D;&quot;text&quot; v-model&#x3D;&quot;user.email&quot; placeholder&#x3D;&quot;kellerNotes@foxmail.com&quot; autofocus&#x3D;&quot;autofocus&quot;&gt;&lt;&#x2F;el-input&gt;
+                &lt;&#x2F;el-form-item&gt;
+                &lt;el-form-item style&#x3D;&quot;width:100%;&quot;&gt;
+                    &lt;el-button type&#x3D;&quot;primary&quot; style&#x3D;&quot;width:100%;&quot; :disabled&#x3D;&quot;getCodeButtonDisabled&quot; @click&#x3D;&quot;handleGetCode&quot;&gt;获取验证码&lt;&#x2F;el-button&gt;
+                    &lt;!-- 跳转到登录页面的按钮 --&gt;
+                    &lt;el-row&gt;
+                        &lt;el-col class&#x3D;&quot;alignRight&quot;&gt;
+                            &lt;el-button type&#x3D;&quot;text&quot; @click&#x3D;&quot;handleGoLogin()&quot;&gt;已有账号，直接登录&lt;&#x2F;el-button&gt;
+                        &lt;&#x2F;el-col&gt;
+                    &lt;&#x2F;el-row&gt;
+                &lt;&#x2F;el-form-item&gt;
+     &lt;&#x2F;el-form&gt;
+&lt;&#x2F;el-row&gt;
+</code></pre>
+<p>页面的代码比较多，就不全部贴出来了，在文章末尾的<strong>源码地址</strong>中有本篇完整的项目代码。在步骤条中，我们设计了三个步骤：验证邮箱、设计密码、完善资料，其中，前两步就可以完成用户注册功能，也就是本篇的内容；最后一步是创建用户名片，暂时不实现，留待后续实现用户名片功能时完成。</p>
+<h4 id="实现交互"><a class="markdownIt-Anchor" href="#实现交互">#</a> <strong>实现交互</strong></h4>
+<p>交互过程中，离不开数据和交互方法，以获取验证码功能为例，所需的数据如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F;是否禁用获取验证码按钮
+getCodeButtonDisabled: false,
+&#x2F;&#x2F;注册用户数据
+user: &#123;
+&#x2F;&#x2F;邮箱
+    email:null,
+&#x2F;&#x2F;邮箱是否验证通过
+    emailChecked:true
+    &#125;,
+&#x2F;&#x2F;注册界面步骤条当前步骤Index
+stepsActive: 0
+</code></pre>
+<p>交互方法是：用户输入邮箱后点击<strong>获取验证码</strong>按钮，点击后处理流程如下：</p>
+<ol>
+<li>通过正则表达式验证输入的是否是邮箱地址：如果是，开始发送 HTTP 请求；否则，提示邮箱格式不正确</li>
+<li>发送 HTTP 请求，判断返回的业务状态是不是 success：如果是，提示用户验证码发送成功，进入下一步操作；否则，提示服务端返回的错误信息。</li>
+</ol>
+<!-- -->
+<p>实现代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">handleGetCode() &#123;
+              &#x2F;&#x2F;调用 data.js 中的方法验证邮箱
+                if(format.isEmail(this.user.email))&#123;
+                    this.user.emailChecked &#x3D; true;
+                &#125;else&#123;
+                    this.user.emailChecked &#x3D; false;
+                    return;
+                &#125;
+              &#x2F;&#x2F;将获取验证码按钮禁用，避免用户重复点击
+                this.getCodeButtonDisabled &#x3D; true;
+                let email &#x3D; this.user.email;
+              &#x2F;&#x2F;调用获取验证码的接口发送 Http 请求
+                req_getCodeForRegister(email).then(response &#x3D;&gt; &#123;
+                    &#x2F;&#x2F;解析接口应答的json串
+                    let &#123;
+                        message,
+                        success
+                    &#125; &#x3D; response;
+                    &#x2F;&#x2F;应答不成功，提示错误信息
+                    if (success !&#x3D;&#x3D; 0) &#123;
+                        this.$message(&#123;
+                            message: message,
+                            type: &#39;error&#39;
+                        &#125;);
+                    &#125; else &#123;
+                        &#x2F;&#x2F;应答成功，提示验证码发送成功
+                        this.$notify.success(&#123;
+                            title: email,
+                            message: &quot;验证码已发送到您的邮箱，请及时查收&quot;
+                        &#125;);
+            &#x2F;&#x2F;控制步骤条状态，进入下一步操作
+                        this.step++;
+                    &#125;
+                &#125;);
+            &#125;
+</code></pre>
+<p>该方法中的第一行代码用到了 data.js 中的方法验证一个字符串是不是邮箱地址，该 JS 是自己写的工具类，其中验证邮箱的代码使用正则表达式实现，具体代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;&#x2F;使用正则表达式定义邮箱格式
+emailFormat : new RegExp(&quot;^[a-zA-Z0-9.!#$%&amp;&#39;*+&#x2F;&#x3D;?^_&#96;&#123;|&#125;~-]+@((\\[[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]&#123;2,&#125;))$&quot;),
+    isEmail(email)&#123;
+      &#x2F;&#x2F;使用正则表达式验证一个字符串是否是邮箱地址
+        return this.emailFormat.test(email);
+    &#125;</code></pre>
+<h3 id="跨域问题处理"><a class="markdownIt-Anchor" href="#跨域问题处理">#</a> 跨域问题处理</h3>
+<p>注册功能开发完成后，进行测试，会发现访问失败，是因为浏览器同源策略不允许跨域访问。在前端开发中，跨域问题的处理是避免不了的，Vue CLI 官网上对跨域的配置由详细的说明，官网地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://cli.vuejs.org/zh/config/#vue-config-js">https://cli.vuejs.org/zh/config/#vue-config-js</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/e9a28ab0-72a7-11ea-ad55-4b5f9f0c99bb" alt="vue.config"></p>
+<p>在项目 package.json 同级目录下新建 vue.config.js 文件，按如下格式配置：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">module.exports &#x3D; &#123;
+    outputDir: &#39;dist&#39;, &#x2F;&#x2F;build 输出目录
+    assetsDir: &#39;assets&#39;, &#x2F;&#x2F;静态资源目录（js、css、img）
+    lintOnSave: false, &#x2F;&#x2F;是否开启 ESLint
+    devServer: &#123;
+        open: true, &#x2F;&#x2F;是否自动弹出浏览器页面
+        host: &quot;127.0.0.1&quot;,
+        port: 8088, &#x2F;&#x2F;指定启动端口，必须是大于 1024 的值才生效
+        https: false, &#x2F;&#x2F;是否使用 HTTPS 协议
+        hotOnly: false, &#x2F;&#x2F;是否开启热更新
+        proxy: &#123; &#x2F;&#x2F;跨域代理地址
+            &#39;&#x2F;api&#39;: &#123;
+                target: &#39;http:&#x2F;&#x2F;127.0.0.1:8080&#39;,
+                changeOrigin: true,
+                secure: false
+            &#125;,
+      &#39;&#x2F;base&#39;: &#123;
+                target: &#39;http:&#x2F;&#x2F;127.0.0.1:8080&#39;,
+                changeOrigin: true,
+                secure: false
+            &#125;
+        &#125;,
+    &#125;
+&#125;</code></pre>
+<p>这样指定了项目运行的端口号和请求代理地址，在使用 Ajax 访问  <code>/base</code>  时会将请求转发到 <a target="_blank" rel="noopener" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>，也就是服务端运行的地址。</p>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>测试时要保证前后端项目都是正常运行的，同时检查后端项目运行的端口与前端代理的端口保持一致，比如本项目中都是 8080。</p>
+<h4 id="前端效果"><a class="markdownIt-Anchor" href="#前端效果">#</a> <strong>前端效果</strong></h4>
+<p>填写邮件地址，发送验证码，页面提示<strong>验证码已发送到您的邮箱，请及时查收</strong>：</p>
+<p><img src="https://images.gitbook.cn/2716f6b0-72a8-11ea-9d12-3d2bd05cf9bc" alt="验证码发送成功"></p>
+<p>填写收到的验证码并设置密码，注册用户，注册完成后提示<strong>注册成功</strong>：</p>
+<p><img src="https://images.gitbook.cn/2fd0d9b0-72a8-11ea-ad55-4b5f9f0c99bb" alt="注册成功"></p>
+<p>这是邮箱中收到的邮件：</p>
+<p><img src="https://images.gitbook.cn/3b4744a0-72a8-11ea-803c-711d330d13a5" alt="null"></p>
+<h4 id="后端日志记录"><a class="markdownIt-Anchor" href="#后端日志记录">#</a> <strong>后端日志记录</strong></h4>
+<p>服务端会在每次收到请求和查询数据库时在控制台打印日志，观察日志可以看到每一次请求的处理过程。</p>
+<p>收到发送验证码的请求，校验用户是否已经注册：</p>
+<p><img src="https://images.gitbook.cn/47f5e170-72a8-11ea-80ec-dd597353a0eb" alt="发送验证码日志"></p>
+<p>验证码发送成功后，记录在数据库中：</p>
+<p><img src="https://images.gitbook.cn/584d8910-72a8-11ea-8b3a-93665903b876" alt="邮件记录日志"></p>
+<p>收到注册请求，校验验证码，校验成功后注册用户，将用户信息写在数据库中：</p>
+<p><img src="https://images.gitbook.cn/63e0cad0-72a8-11ea-aa9c-4b75f9a497aa" alt="注册日志"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完成源码地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/12.%E6%B3%A8%E5%86%8C2">https://github.com/tianlanlandelan/KellerNotes/tree/master/12. 注册 2</a></p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/15/12%E6%B3%A8%E5%86%8C2_Axios%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/15/13%E7%99%BB%E5%BD%951_JWT%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            13登录1_JWT身份验证
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/15/11%E6%B3%A8%E5%86%8C1_Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">11注册1_Java发送邮件</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

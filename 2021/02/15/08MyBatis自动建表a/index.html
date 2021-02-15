@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    08MyBatis自动建表 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-08MyBatis自动建表a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  08MyBatis自动建表
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/15/08MyBatis%E8%87%AA%E5%8A%A8%E5%BB%BA%E8%A1%A8a/" class="article-date">
+  <time datetime="2021-02-15T01:58:13.939Z" itemprop="datePublished">2021-02-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">16 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>上一篇我们完成了 MyBatis 通用 Mapper 的开发，在掌握了 Java 反射、泛型机制后，发现我们能做的远远不止于此……</p>
+<a id="more"></a>
+<h4 id="现状分析"><a class="markdownIt-Anchor" href="#现状分析">#</a> <strong>现状分析</strong></h4>
+<p>使用通用 Mapper 能节省大量的 SQL 书写时间，能满足开发过程中对于持久层大多数的需求。但是作为一个全栈开发工程师，目标不仅仅于此。</p>
+<p>工作中，往往需要自己设计数据表，写实体类；修改数据表，修改实体类，总感觉花费很多时间在这样重复的事情上。如果你喜欢先设计数据表，然后根据数据表生成 Java 代码，可以使用代码生成器，或者根据项目需要手写一个代码生成器。如果你更喜欢写 Java 代码而不喜欢写建表脚本，就可以根据 Java 实体类生成建表脚本。</p>
+<h4 id="期望结果"><a class="markdownIt-Anchor" href="#期望结果">#</a> <strong>期望结果</strong></h4>
+<p>如果在上一篇《MyBatis 通用 Mapper》的基础上进行适当的扩展，就能达到调用一个方法即可生成一段标准的建表脚本或者直接创建好数据表，岂不是很不错的选择，比如说这样子：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public void createUserInfoTable()&#123;
+    userMapper.baseCreate(new UserInfo());
+&#125;</code></pre>
+<p>本篇就带大家实现这样的功能，是不是感觉酷酷的 <sup>_</sup>。</p>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<h4 id="类型转换"><a class="markdownIt-Anchor" href="#类型转换">#</a> <strong>类型转换</strong></h4>
+<p>要想实现根据 Java 实体类生成 SQL 脚本，重点和难点是进行合适的数据类型转换，下面作者总结了在 Java 实体类中常用的类型与 MySQL 类型间的对应关系：</p>
+<table>
+<thead>
+<tr>
+<th>Java 类型</th>
+<th>MySQL 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>varchar/text/mediumtext/longtext</td>
+<td>varchar/text 最大 64Kb，mediumtext 最大长度 16Mb，longtext 最大 4Gb</td>
+</tr>
+<tr>
+<td>int/Integer</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>long/Long</td>
+<td>bigint</td>
+<td></td>
+</tr>
+<tr>
+<td>float/Float</td>
+<td>decimal</td>
+<td></td>
+</tr>
+<tr>
+<td>double/Double</td>
+<td>decimal</td>
+<td></td>
+</tr>
+<tr>
+<td>byte[]/Byte[]</td>
+<td>varbinary/blob</td>
+<td>varbinary 允许最大长度为 65535，超过后自动转换为 blob 类型</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>根据这样的对应关系，我们尝试着用代码实现 Java 类型到 MySQL 类型间的转换。</p>
+<p>新建类 TypeCaster.java，专门处理类型转换。考虑到有些类型是固定的对应关系，如：Java 的 int 类型对应 MySQL 的 int 类型，因此在设计时，使用一个 HashMap 做缓存，将这些固定不变的对应关系缓存起来。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F;新建 HashMap 用来存储 Java 到 MySQL 间数据格式的对应关系
+private static Map&lt;String,String&gt; map &#x3D; new HashMap&lt;&gt;(16);
+
+private static final String STRING &#x3D; &quot;string&quot;;
+private static final String INT &#x3D; &quot;int&quot;;
+private static final String INTEGER &#x3D; &quot;integer&quot;;
+private static final String LONG &#x3D; &quot;long&quot;;
+private static final String DATE &#x3D; &quot;date&quot;;
+private static final String BYTE_ARRAY &#x3D; &quot;byte[]&quot;;
+private static final String FLOAT &#x3D; &quot;float&quot;;
+private static final String DOUBLE &#x3D; &quot;double&quot;;
+static &#123;
+        &#x2F;&#x2F;HashMap 初始化
+    map.put(STRING,&quot;varchar(50)&quot;);
+    map.put(INT,&quot;int&quot;);
+    map.put(INTEGER,&quot;int&quot;);
+    map.put(LONG,&quot;bigint&quot;);
+    map.put(DATE,&quot;datetime&quot;);
+    map.put(BYTE_ARRAY,&quot;varbinary(50)&quot;);
+    map.put(FLOAT,&quot;decimal(10,2)&quot;);
+    map.put(DOUBLE,&quot;decimal(10,2)&quot;);
+&#125;</code></pre>
+<p>在这里有一点默认值设置的考虑：</p>
+<ol>
+<li>Java 中的 String 类型可转换为 MySQL 中的 varchar 类型，varchar 类型要求长度在 65535 以内，超过之后可以转换为 text，更大的有 mediumtext 和 longtext。可以根据实际项目的使用场景，设置 varchar 的默认长度。在本项目中将其默认长度设置为 50，存储昵称、邮箱、签名等信息。</li>
+<li>Java 中的 byte [] 类型可转换为 MySQL 中的 varbinary 类型，varbinary 类型要求长度在 65535 以内，超过之后可以转换为 blob。可以根据实际项目的使用场景，设置 varbinary 的默认长度。在本项目中将其默认长度设置为 50。</li>
+<li>Java 中的 float、double 类型可转换为 MySQL 中的 decimal 类型，decimal 类型要求有两个长度值：数据总长度和浮点数的长度。可以根据实际项目的使用场景，设置 decimal 的默认长度。</li>
+</ol>
+<!-- -->
+<p>默认转换规则设置完毕后，需要对特殊设置长度的字段进行转换，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">        &#x2F;&#x2F;varchar&#x2F;varbinary 类型，允许最大长度为 65535，在这里限制：如果超过 3000，转换为 text&#x2F;blob
+    private static final int MAX &#x3D; 3000;
+    &#x2F;**
+     * TINYTEXT     256 bytes
+     * TEXT     65,535 bytes    ~64kb
+     * MEDIUMTEXT      16,777,215 bytes   ~16Mb
+     * LONGTEXT     4,294,967,295 bytes     ~4Gb
+     *&#x2F;
+    private static final int TEXT_MAX &#x3D; 65535;
+    &#x2F;&#x2F;decimal 类型的最大长度为 65，根据平时使用的需要，设置为 20，足够大多数场景使用了
+    private static final int DECIMAL_MAX &#x3D; 20;
+public static String getType(String key,int length)&#123;
+    if(StringUtils.isEmpty(key))&#123;
+     return null;
+    &#125;
+    if(length &lt;&#x3D; 0)&#123;
+        return map.get(key.toLowerCase());
+    &#125;
+    &#x2F;*
+    float&#x2F;Float&#x2F;double&#x2F;Double 类型判断设置的长度是否符合规则，如果超长，将长度设置为允许的最大长度
+     *&#x2F;
+    if(FLOAT.equalsIgnoreCase(key)
+            || DOUBLE.equalsIgnoreCase(key))&#123;
+        length &#x3D; length &gt; DECIMAL_MAX ? DECIMAL_MAX:length;
+        return &quot;decimal(&quot; + length + &quot;,2)&quot;;
+    &#125;
+    &#x2F;&#x2F;String 根据长度，转换为 varchar 或 text
+    if(STRING.equalsIgnoreCase(key))&#123;
+        if(length &lt; MAX)&#123;
+            return &quot;varchar(&quot; + length + &quot;)&quot;;
+        &#125;
+        if(length &lt; TEXT_MAX)&#123;
+            return &quot;text&quot;;
+        &#125;
+        return &quot;mediumtext&quot;;
+    &#125;
+    &#x2F;&#x2F;byte[] 根据长度，转换为 varbinary 或 blob
+    if(BYTE_ARRAY.equalsIgnoreCase(key))&#123;
+        if(length &lt; MAX)&#123;
+            return &quot;varbinary(&quot; + length + &quot;)&quot;;
+        &#125;
+        return &quot;blob&quot;;
+    &#125;
+    return map.get(key.toLowerCase());
+&#125;</code></pre>
+<p>至此，Java 到 MySQL 间的类型转换规则设置完毕，可以写个测试类对转换方法进行测试。然后就可以分析建表脚本的格式，开始进行脚本的构建了。</p>
+<h3 id="方案分析"><a class="markdownIt-Anchor" href="#方案分析">#</a> 方案分析</h3>
+<h4 id="分析建表脚本"><a class="markdownIt-Anchor" href="#分析建表脚本">#</a> <strong>分析建表脚本</strong></h4>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table user_info
+(
+ id int auto_increment primary key,
+ type int not null comment &#39;用户类型&#39;,
+ email varchar(200) not null comment &#39;邮箱&#39;,
+ password varchar(200) null comment &#39;密码&#39;,
+ createTime datetime null,
+ status int null comment &#39;用户账号状态&#39;,
+ isDelete int null,
+ updateTime datetime null,
+ updateUserId int null
+)comment &#39;用户信息表&#39;;
+create index user_info_index_email on user_info (email);
+create index user_info_index_status on user_info (status);
+create index user_info_index_type on user_info (type);
+</code></pre>
+<p>创建的数据表，含表名、数据表描述、字段名、字段描述、字段约束、主键、自增主键、索引，结合通用 Mapper 分析这些所需的信息：</p>
+<p><strong>1. 数据表名、数据表描述信息</strong></p>
+<ul>
+<li>@TableAttribute 注解可以获取到表名</li>
+<li>可以在 @TableAttribute 注解中新增方法用来设置数据表的描述信息</li>
+</ul>
+<!-- -->
+<p><strong>2. 字段名、字段描述、字段类型、长度、是否必填、是否唯一</strong></p>
+<ul>
+<li>@FieldAttribute 注解标注一个属性是数据表的字段</li>
+<li>可以通过反射机制获取到属性的类型，写一个 Java 类型到 MySQL 类型的转换规则即可完成字段类型的设置</li>
+<li>可以在 @FieldAttribute 注解中新增若干方法分别标注字段描述、长度、是否必填、是否唯一等信息</li>
+</ul>
+<!-- -->
+<p><strong>3. 主键、自增主键</strong></p>
+<ul>
+<li>@KeyAttribute 注解可以标注主键</li>
+<li>可以在 @KeyAttribute 注解中新增一个方法表示是否是自增主键</li>
+</ul>
+<!-- -->
+<p><strong>4. 索引</strong></p>
+<ul>
+<li>@IndexAttribute 注解可以标注索引</li>
+</ul>
+<!-- -->
+<h4 id="总体方案"><a class="markdownIt-Anchor" href="#总体方案">#</a> <strong>总体方案</strong></h4>
+<p>经过以上分析，自动建表的整体方案设计如下：</p>
+<ol>
+<li>扩展 <strong>MyBatis 通用 Mapper</strong> 中原有的几个注解，以实现建表过程中需要的字段信息</li>
+<li>通过 <strong>Java 反射机制</strong>解析类和注解信息，获取到建表脚本需要的所有信息</li>
+<li>拼接建表脚本并执行</li>
+</ol>
+<!-- -->
+<h3 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h3>
+<h4 id="扩展注解"><a class="markdownIt-Anchor" href="#扩展注解">#</a> <strong>扩展注解</strong></h4>
+<p>通过分析我们可以知道，只需要在通用 Mapper 相关的注解上添加一些属性，即可满足建表脚本所需的信息。具体代码改动如下。</p>
+<p>@TableAttribute：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F;表说明
+String comment() default &quot;&quot;;</code></pre>
+<p>@FieldAttribute：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">    &#x2F;&#x2F;字段描述
+String value() default &quot;&quot;;
+    &#x2F;&#x2F;是否必填
+boolean notNull() default false;
+&#x2F;&#x2F;字段长度限制。String 、byte[] 类型分别对应 mysql 中 varchar、varbinary 类型，需要设置长度，默认 50
+int length() default 0;
+    &#x2F;&#x2F;是否唯一
+boolean unique() default false;
+</code></pre>
+<p>在这里要注意，由于 @FieldAttribute 注解定义的属性比较多，一定要设置默认值。这样在使用时，很多不用做特殊设置的字段就不用再单独赋值了。</p>
+<p>@KeyAttribute：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">    &#x2F;&#x2F;是否自增
+boolean autoIncr() default false;
+</code></pre>
+<h4 id="引用注解"><a class="markdownIt-Anchor" href="#引用注解">#</a> <strong>引用注解</strong></h4>
+<p>分别对几个注解进行扩充后，在 UserInfo 中对引用的注解进行字段填充：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@TableAttribute(name &#x3D; &quot;user_info&quot;,comment &#x3D; &quot;用户信息表&quot;)
+public class UserInfo   extends BaseEntity &#123;
+    @KeyAttribute(autoIncr &#x3D; true)
+    @FieldAttribute
+    private int id;
+
+    @FieldAttribute(value &#x3D; &quot;用户类型&quot;,notNull &#x3D; true)
+    @IndexAttribute
+    private Integer type;
+
+    @FieldAttribute(value &#x3D; &quot;密码&quot;,length &#x3D; 200)
+    private String password;
+
+    @FieldAttribute(value &#x3D; &quot;邮箱&quot;,notNull &#x3D; true,length &#x3D; 200)
+    @IndexAttribute
+    private String email;
+
+    @FieldAttribute
+    private Date createTime &#x3D; new Date();
+
+    @FieldAttribute(&quot;用户账号状态&quot;)
+    @IndexAttribute
+    private Integer status ;
+
+    @FieldAttribute(&quot;是否删除，1 表示删除&quot;)
+    @IndexAttribute
+    private Integer isDelete;
+
+    @FieldAttribute(&quot;最后一次修改时间&quot;)
+    private Date updateTime &#x3D; new Date();
+
+    @FieldAttribute(&quot;修改人&quot;)
+    private Integer updateUserId;
+&#125;
+</code></pre>
+<p>至此，注解信息修改完毕，相关的信息也已经填充完毕，接下来只要在使用时通过反射机制读取到相应信息即可完成创建数据表的 SQL 脚本。</p>
+<h4 id="解析字段信息"><a class="markdownIt-Anchor" href="#解析字段信息">#</a> <strong>解析字段信息</strong></h4>
+<p>实体类的注解信息设置完成之后，就可以对注解进行解析了，和上一节解析的方法一样。先解析字段信息，从属性上获取到字段名、字段对应的 Java 类型；从 @FieldAttribute 注解上获取字段描述、是否非空、是否唯一等约束信息。从而拼接出 SQL 语句中的字段描述，如： <code>email varchar(200) not null comment '邮箱'</code> ，完整代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static &lt;T extends BaseEntity&gt; String getAddFieldSql(T entity)&#123;
+    &#x2F;&#x2F;通过反射读取到实体类的字段列表
+    Field[] fields &#x3D; entity.getClass().getDeclaredFields();
+    &#x2F;&#x2F;创建一个 StringBuilder 用于拼接 SQL 语句
+    StringBuilder builder &#x3D; new StringBuilder();
+    &#x2F;&#x2F;遍历字段列表
+    for(Field field:fields)&#123;
+            &#x2F;&#x2F;获取到 @FieldAttribute 注解信息
+        FieldAttribute fieldAttribute &#x3D; field.getAnnotation(FieldAttribute.class);
+        if(fieldAttribute !&#x3D; null)&#123;
+            &#x2F;&#x2F;拼接字段名、字段类型和长度限制
+            builder.append(field.getName()).append(&quot; &quot;)
+.append(TypeCaster.getType(field.getType().getSimpleName(),fieldAttribute.length()));
+                        &#x2F;&#x2F;添加非空约束
+            if(fieldAttribute.notNull())&#123;
+                builder.append(&quot; not null &quot;);
+            &#125;
+            &#x2F;&#x2F;添加唯一约束
+            if(fieldAttribute.unique())&#123;
+                builder.append(&quot; unique &quot;);
+            &#125;
+            &#x2F;&#x2F;如果有字段说明，添加字段说明
+            if(StringUtils.isNotEmpty(fieldAttribute.value())) &#123;
+                builder.append(&quot; comment &#39;&quot;)
+                        .append(fieldAttribute.value()).append(&quot;&#39;&quot;);
+            &#125;
+            &#x2F;&#x2F;逗号隔开下一个字段
+            builder.append(&quot;, \n&quot;);
+        &#125;
+    &#125;
+    &#x2F;&#x2F;全部拼接完毕后去掉最后一个逗号
+    builder.deleteCharAt(builder.lastIndexOf(&quot;,&quot;));
+    &#x2F;&#x2F;返回 SQL 字符串
+    return builder.toString();
+&#125;
+</code></pre>
+<h4 id="添加主键"><a class="markdownIt-Anchor" href="#添加主键">#</a> <strong>添加主键</strong></h4>
+<p>设置完普通字段后，单独对主键进行设置，参考的 SQL 语句格式如下：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">alter table user_info change id id int auto_increment  primary key comment &#39;用户Id&#39;; 
+</code></pre>
+<p>根据这个格式，我们解析 @KeyAttribute 注解，拼写 SQL 语句：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">private static &lt;T extends BaseEntity&gt; String getCreateKeySql(T entity)&#123;
+    &#x2F;&#x2F;通过反射获取实体类的字段列表
+      Field[] fields &#x3D; entity.getClass().getDeclaredFields();
+      &#x2F;&#x2F;创建一个 StringBuilder 用于拼接 SQL 语句
+    StringBuilder builder &#x3D; new StringBuilder();
+    for(Field field:fields)&#123;
+            &#x2F;&#x2F;获取到 @KeyAttribute 注解信息
+        KeyAttribute keyAttribute &#x3D; field.getAnnotation(KeyAttribute.class);
+        if(keyAttribute !&#x3D; null)&#123;
+            FieldAttribute fieldAttribute &#x3D; field.getAnnotation(FieldAttribute.class);
+            if(fieldAttribute &#x3D;&#x3D; null)&#123;
+                return &quot;&quot;;
+            &#125;
+            &#x2F;&#x2F;拼写 SQL 语句
+            builder .append(&quot;alter table &quot;)
+                    .append(getTableName(entity))
+                    .append(&quot; change &quot;)
+                    .append(field.getName())
+                    .append(&quot; &quot;)
+                    .append(field.getName())
+                    .append(&quot; &quot;)
+.append(TypeCaster.getType(field.getType().getSimpleName(),fieldAttribute.length()));
+                        &#x2F;&#x2F;如果是自增，设置为自增主键
+            if(keyAttribute.autoIncr())&#123;
+                builder.append(&quot; auto_increment &quot;);
+            &#125;
+            builder.append(&quot; primary key comment &#39;&quot;)
+                    .append(fieldAttribute.value())
+                    .append(&quot;&#39;; \n&quot;);
+
+            break;
+        &#125;
+    &#125;
+    &#x2F;&#x2F;返回拼接好的 SQL 语句
+    return builder.toString();
+&#125;
+
+</code></pre>
+<h4 id="添加索引"><a class="markdownIt-Anchor" href="#添加索引">#</a> <strong>添加索引</strong></h4>
+<p>最后为数据表添加索引，参考的添加索引的 SQL 格式如下：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">alter table user_info add index user_info_index_type (type); 
+</code></pre>
+<p>在这里有两点说明</p>
+<ol>
+<li>设置的索引名称的格式为： <code>表名_index_索引字段名</code> ，这样能保证添加的所有索引不会有命名冲突</li>
+<li>在这里暂时不考虑设置联合索引的场景，每个索引都是单字段的</li>
+</ol>
+<!-- -->
+<p>实现代码参考如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static &lt;T extends BaseEntity&gt; String getCreateIndexSql(T entity)&#123;
+        &#x2F;&#x2F;获取到表名
+    String tableName &#x3D; getTableName(entity);
+    StringBuilder builder &#x3D; new StringBuilder();
+        &#x2F;&#x2F;使用反射机制获取到字段列表
+    Field[] fields &#x3D; entity.getClass().getDeclaredFields();
+    for(Field field:fields)&#123;
+            &#x2F;&#x2F;只处理带 @IndexAttribute 注解的字段
+        if(field.getAnnotation(IndexAttribute.class) !&#x3D; null)&#123;
+                        &#x2F;&#x2F;拼写 SQL
+            builder.append(&quot;alter table &quot;)
+                    .append(tableName)
+                    .append(&quot; add index &quot;)
+                    .append(tableName)
+                    .append(&quot;_index_&quot;)
+                    .append(field.getName())
+                    .append(&quot; (&quot;)
+                    .append(field.getName())
+                    .append(&quot;); \n&quot;);
+        &#125;
+    &#125;
+    &#x2F;&#x2F;返回拼写好的 SQL 
+    return builder.toString();
+&#125;
+</code></pre>
+<h4 id="拼接脚本"><a class="markdownIt-Anchor" href="#拼接脚本">#</a> <strong>拼接脚本</strong></h4>
+<p>字段定义、主键定义、索引定义的脚本都拼写完毕后，将这些脚本拼接在一起就是一个完整的建表脚本：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static &lt;T extends BaseEntity&gt; String getCreateTableSql(T entity)&#123;
+    &#x2F;&#x2F;解析 @TableAttribute 注解，获取到表名和表说明
+      TableAttribute table &#x3D;  entity.getClass().getAnnotation(TableAttribute.class);
+    if(table &#x3D;&#x3D; null)&#123;
+        throw new BaseException(&quot;要解析表名，未发现@TableAttribute注解&quot;);
+    &#125;
+    &#x2F;&#x2F;获取表名
+    String tableName &#x3D; table.name();
+    &#x2F;&#x2F;获取表说明
+    String tableComment &#x3D; table.comment();
+    StringBuilder builder &#x3D; new StringBuilder();
+    &#x2F;&#x2F;拼写 create table 表名
+    builder.append(&quot;create table &quot;)
+            .append(tableName)
+            .append(&quot;( \n&quot;);
+    &#x2F;&#x2F; 添加字段
+    builder.append(getAddFieldSql(entity));
+    builder.append(&quot;) &quot;);
+    &#x2F;&#x2F; 如果有表说明，添加表说明
+    if(StringUtils.isNotEmpty(tableComment))&#123;
+        builder.append(&quot;comment &#39;&quot;)
+                .append(tableComment)
+                .append(&quot;&#39;; \n&quot;);
+    &#125;else &#123;
+        builder.append(&quot;; \n&quot;);
+    &#125;
+    &#x2F;&#x2F;添加主键
+    builder.append(getCreateKeySql(entity));
+    &#x2F;&#x2F;添加索引
+    builder.append(getCreateIndexSql(entity));
+    &#x2F;&#x2F;输出脚本
+    Console.print(&quot;&quot;,builder.toString());
+    &#x2F;&#x2F;返回拼写好的 SQL 语句
+    return builder.toString();
+&#125;</code></pre>
+<p>至此，就可以通过 Java 实体类生成完整的建表脚本了，可以手动执行生成的建表脚本，也可以参照上一篇的写法，将添加到通用 Mapper 中。</p>
+<h4 id="将自动建表的方法添加至通用-mapper"><a class="markdownIt-Anchor" href="#将自动建表的方法添加至通用-mapper">#</a> <strong>将自动建表的方法添加至通用 Mapper</strong></h4>
+<p>新建一个类 BaseCreateProvider，调用 <strong>getCreateTableSql</strong> 方法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 创建表的Provider
+ * @author yangkaile
+ * @date 2019-09-12 15:07:09
+ *&#x2F;
+public class BaseCreateProvider &#123;
+
+    &#x2F;**
+     *
+     * 创建表的同时要创建索引，会执行多条语句，在application.properties中要设置 allowMultiQueries&#x3D;true
+     * spring.datasource.url &#x3D; jdbc:mysql:&#x2F;&#x2F;localhost:3306&#x2F;my_core
+     * ?useUnicode&#x3D;true&amp;characterEncoding&#x3D;utf-8&amp;useSSL&#x3D;false&amp;allowMultiQueries&#x3D;true
+     * @param entity
+     * @param &lt;T&gt;
+     * @return
+     *&#x2F;
+    public static &lt;T extends BaseEntity&gt; String create(T entity)&#123;
+        return SqlFieldReader.getCreateTableSql(entity);
+    &#125;
+&#125;
+</code></pre>
+<p>在这里要注意一点，因为建表脚本包括创建数据表、设置主键、添加索引等多条 SQL 语句，要设置数据库连接为允许执行多条语句。</p>
+<p>在 BaseMapper 中添加映射：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 创建表
+ * @param entity
+ *&#x2F;
+@UpdateProvider(type &#x3D; BaseCreateProvider.class , method &#x3D; &quot;create&quot;)
+void baseCreate(T entity);
+</code></pre>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>在测试类 UserMapperTest 中新增一个测试方法用于测试自动建表的运行情况：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@Test
+public void createUserInfoTable()&#123;
+    userMapper.baseCreate(new UserInfo());
+&#125;
+</code></pre>
+<p>运行效果如下：</p>
+<p><img src="https://images.gitbook.cn/2e4dabd0-724a-11ea-b39b-4d2cde13353b" alt="createUserInfo"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/8.%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%BB%BA%E8%A1%A8%E8%84%9A%E6%9C%AC/server">https://github.com/tianlanlandelan/KellerNotes/tree/master/8. 自动生成建表脚本 /server</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带大家在通用 Mapper 的基础上实现根据 Java 实体类创建数据表，创建的数据表包含字段约束、主键、索引、字段描述、表描述等，能满足大多数使用场景，对于不喜欢写 SQL 语句的同学能提供相当友好的操作方式。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/15/08MyBatis%E8%87%AA%E5%8A%A8%E5%BB%BA%E8%A1%A8a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/15/09%E7%BB%9F%E4%B8%80%E7%9A%84HTTP%E5%BA%94%E7%AD%94a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            09统一的HTTP应答
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/15/07MyBatis%E9%80%9A%E7%94%A8Mappera/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">07MyBatis通用Mapper</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    10统一的HTTP请求处理 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-10统一的HTTP请求处理a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  10统一的HTTP请求处理
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/15/10%E7%BB%9F%E4%B8%80%E7%9A%84HTTP%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86a/" class="article-date">
+  <time datetime="2021-02-15T01:58:13.942Z" itemprop="datePublished">2021-02-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">4k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">16 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="问题引入"><a class="markdownIt-Anchor" href="#问题引入">#</a> 问题引入</h3>
+<h4 id="现状分析"><a class="markdownIt-Anchor" href="#现状分析">#</a> <strong>现状分析</strong></h4>
+<p>统一了接口的应答格式，那么需不需要对请求做统一的处理呢？这个问题需要从以下几个方面进行分析：</p>
+<a id="more"></a>
+<p>代码重复性：</p>
+<ul>
+<li>接口文档中大多数接口都需要用户上传 Token 进行身份校验，是否每个接口都要处理 Token 参数？</li>
+</ul>
+<!-- -->
+<p>安全性：</p>
+<ul>
+<li>所有的接口方法都对外开放会不会有安全性问题？</li>
+<li>需不需要将一部分接口对外隔离，仅限内部访问？</li>
+</ul>
+<!-- -->
+<p>可扩展性：</p>
+<ul>
+<li>现在服务端架构发展的趋势是微服务，如果项目需要改为微服务架构，是否每个接口都要进行改造？</li>
+<li>是否能在改动少许代码的情况下将项目做集群部署以支持大用户量？</li>
+</ul>
+<!-- -->
+<p>目前的架构还不能满足以上这些要求，因此，本篇带领大家做统一的请求处理，使项目安全稳定、扩展性强、开发简单，满足现有开发需求的同时为以后大型项目做准备。</p>
+<h4 id="期望结果"><a class="markdownIt-Anchor" href="#期望结果">#</a> <strong>期望结果</strong></h4>
+<p>针对以上考虑，我们期望：</p>
+<ul>
+<li>有一个代理的接口对外接收所有请求，并验证用户身份及访问权限</li>
+<li>验证通过后将请求分发给相应的接口进行业务处理，拿到处理结果后返回给客户端</li>
+<li>否则，直接拒绝访问</li>
+</ul>
+<!-- -->
+<p>这样做的好处是：</p>
+<ul>
+<li>所有实际业务接口只负责处理业务，不需要关心用户身份和访问权限等问题，业务代码量大大减小</li>
+<li>仅代理接口对外开发，避免了项目过多接口的暴露，安全性得到保证</li>
+<li>以后做集群部署或微服务改造时仅需改动代理接口相关的代码，业务代码不需要改动，项目扩展性比较好</li>
+</ul>
+<!-- -->
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>上一篇，使用 Spring-web 组件中 org.springframework.http 包中的一些类实现了统一应答，本篇同样用到了 Spring-web 组件中的内容。</p>
+<h4 id="resttemplate"><a class="markdownIt-Anchor" href="#resttemplate">#</a> <strong>RestTemplate</strong></h4>
+<p>RestTemplate 在 Spring-web 组件的 org.springframework.web.client 包中，用于快捷方便地访问 RESTful 接口，在 Spring Cloud 项目中经常会用它进行不同组件间的 HTTP 访问，源码如图：</p>
+<p><img src="https://images.gitbook.cn/fdf31d60-7250-11ea-b8cb-b108c7f0b146" alt="RestTemplate"></p>
+<p>使用方式也比较简单，不需要单独再引入 jar 包，直接在项目的启动类中定义一个 Bean 就可以了，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@SpringBootApplication
+public class KellerApplication &#123;
+    @Bean
+    &#x2F;**
+     * 引入RestTemplate Bean
+     * 用来进行服务间的Http通信
+     * 同时重新定义其解析时用到的字符集，防止中文乱码
+     *&#x2F;
+    RestTemplate restTemplate()&#123;
+          &#x2F;&#x2F;创建一个 RestTemplate 实例
+        RestTemplate restTemplate &#x3D; new RestTemplate();
+          &#x2F;&#x2F;清除掉原有的消息转换器，因为这些转换器处理中文字符的能力有限，比较容易出现乱码
+        restTemplate.getMessageConverters().clear();
+          &#x2F;&#x2F;为 RestTemplate 实例指定 FastJson 的消息转换器
+        restTemplate.getMessageConverters().add(new FastJsonHttpMessageConverter());
+          &#x2F;&#x2F;返回配置好的 RestTemplate 实例
+        return restTemplate;
+    &#125;
+
+    public static void main(String[] args) &#123;
+        SpringApplication.run(KellerApplication.class, args);
+    &#125;
+&#125;
+</code></pre>
+<p>在这里需要注意的是，RestTemplate 默认使用 jackson 或 gson 处理 JSON 数据，可能产生中文乱码，最好替换为 FastJson。</p>
+<p>配置好后，按如下方式就可以快捷地访问 RESTful 接口了：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F;GET 
+restTemplate.getForEntity(&quot;URL&quot;, String.class,params);
+&#x2F;&#x2F;POST 
+restTemplate.postForEntity(&quot;URL&quot;,request,String.class,params);
+&#x2F;&#x2F;PUT 
+restTemplate.put(&quot;URL&quot;,request,params);
+&#x2F;&#x2F;DELETE 
+restTemplate.delete(&quot;URL&quot;,params);
+</code></pre>
+<h4 id="fastjson"><a class="markdownIt-Anchor" href="#fastjson">#</a> <strong>FastJson</strong></h4>
+<p>FastJson 是阿里巴巴的开源 JSON 解析库，它可以解析 JSON 格式的字符串，支持将 Java Bean 序列化为 JSON 字符串，也可以从 JSON 字符串反序列化到 JavaBean。在本项目中将其作为 JSON 解析库，引入方式为：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;fastjson&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;1.2.51&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;
+</code></pre>
+<p>FastJson 中文文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/Quick-Start-CN">https://github.com/alibaba/fastjson/wiki/Quick-Start-CN</a>，如图：</p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/0905e480-7251-11ea-972c-452d07ff8220" alt="FastJson"></p>
+<h4 id="applicationrunner"><a class="markdownIt-Anchor" href="#applicationrunner">#</a> <strong>ApplicationRunner</strong></h4>
+<p>SpringBoot 项目由启动类进行启动，有时希望项目在启动的时候加载一些系统参数（如：项目运行的端口等），就要用到 ApplicationRunner。</p>
+<p>具体用法为：</p>
+<ol>
+<li>新建一个类，实现 ApplicationRunner 接口</li>
+<li>重写 run 方法，该方法中写希望在项目启动时执行的代码</li>
+<li>在类上添加 @Component 注解，这样该类就会被添加到 Spring 容器中</li>
+<li>如果有多个类都想在启动时执行，需要在每个类上添加 @Order 注解，该注解指定了多个类启动的顺序</li>
+</ol>
+<!-- -->
+<p>示例代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@Component
+@Order(value &#x3D; 1)
+public class KellerRunner implements ApplicationRunner &#123;
+    @Resource
+    private CommonConfig config;
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception &#123;
+        RequestUtil.port &#x3D; config.port;
+        RequestUtil.address &#x3D; config.address;
+    &#125;
+&#125;</code></pre>
+<h3 id="方案分析"><a class="markdownIt-Anchor" href="#方案分析">#</a> 方案分析</h3>
+<h4 id="流程设计"><a class="markdownIt-Anchor" href="#流程设计">#</a> <strong>流程设计</strong></h4>
+<p>统一请求的流程图如下：</p>
+<p><img src="https://images.gitbook.cn/12002be0-7251-11ea-8377-13f07d2f46fb" alt="流程图"></p>
+<p><strong>1. 客户端的所有请求由代理类统一处理；这里的请求要区分多种情况：</strong></p>
+<ul>
+<li>需要身份认证后才能发起的请求，如：获取个人信息</li>
+<li>不需要身份认证就能发起的请求，如：注册、登录</li>
+<li>Web 表单格式的请求</li>
+<li>JSON 格式的请求</li>
+</ul>
+<!-- -->
+<p><strong>2. 代理类对请求进行校验，若校验成功，将请求转发到实际的业务类处理；这时需要：</strong></p>
+<ul>
+<li>服务运行的 IP 地址、端口号</li>
+<li>获取到请求的方式（GET/POST/PUT/DELETE）</li>
+<li>获取到请求的参数名和值</li>
+<li>获取到请求的 URL</li>
+</ul>
+<!-- -->
+<p><strong>3. 若校验不成功，直接返回相应的错误码给客户端。</strong></p>
+<p><strong>4. 代理类获取到业务类的返回结果，并将其返回给客户端。</strong></p>
+<p>按照以上流程，做出以下解决方案。</p>
+<h4 id="总体方案"><a class="markdownIt-Anchor" href="#总体方案">#</a> <strong>总体方案</strong></h4>
+<ol>
+<li>通过 <strong>ApplicationRunner 机制</strong>获取到项目启动时的系统参数</li>
+<li>创建不同的代理类分别处理 <strong>JSON</strong> 和<strong>表单</strong>格式的请求</li>
+<li>使用 <strong>RestTemplate</strong> 对请求进行转发，并处理返回结果</li>
+<li>记录必要的请求日志</li>
+</ol>
+<!-- -->
+<h3 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现">#</a> 代码实现</h3>
+<h4 id="获取系统参数"><a class="markdownIt-Anchor" href="#获取系统参数">#</a> <strong>获取系统参数</strong></h4>
+<p>Spring Boot 项目的系统配置都在 application.properties 文件中，如下：</p>
+<pre class="line-numbers language-properties" data-language="properties"><code class="language-properties">## 端口
+server.port&#x3D;8080</code></pre>
+<p>在项目中要读取这些配置，需要按照以下步骤：</p>
+<ul>
+<li>新建一个类，使用  <code>@PropertySource</code>  注解指定要读取的配置文件名称</li>
+<li>在属性上使用  <code>@Value</code>  注解指定要对应的配置项及默认值</li>
+<li>在类上使用  <code>@Configuration</code>  注解将其添加到 Spring 容器中</li>
+</ul>
+<!-- -->
+<p>在本项目中，新建一个 <strong>CommonConfig</strong> 类用于读取所有的系统配置，具体代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 项目配置文件，从 application.properties 中加载
+ * @author yangkaile
+ * @date 2019-05-30 09:38:05
+ *&#x2F;
+@Configuration
+@PropertySource(&quot;classpath:application.properties&quot;)
+public class CommonConfig &#123;
+    @Value(&quot;$&#123;server.port:8080&#125;&quot;)
+    public String port;
+
+    @Value(&quot;$&#123;server.address:http:&#x2F;&#x2F;127.0.0.1&#125;&quot;)
+    public String address;
+        …… ……
+&#125;</code></pre>
+<p>到这一步，就可以在项目的所有类中通过  <code>@Resource</code>  注解注入 <strong>CommonConfig</strong> 类的实例从而实现读取所有系统配置的功能了，但是不能作为静态变量使用。</p>
+<p>因为系统配置会有很多，而统一请求中需要的只是其中的两个（项目运行的 IP 地址 address、项目运行的端口号 port），且想作为静态变量使用。因此，可以新建一个 <strong>RequestUtil</strong> 类用于处理所有与请求有关的工作，如：address、port、请求日志记录、请求参数解析等。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class RequestUtil &#123;
+    public static String port;
+    public static String address;
+&#125;</code></pre>
+<p>在 <strong>RequestUtil</strong> 类中声明好静态变量后，需要在项目启动时赋值，就用到了 <strong>ApplicationRunner</strong>。新建 <strong>KellerRunner</strong> 类，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 继承 Application 接口后项目启动时会按照执行顺序执行 run 方法
+ * 通过设置 Order 的 value 来指定执行的顺序
+ *&#x2F;
+@Component
+@Order(value &#x3D; 1)
+public class KellerRunner implements ApplicationRunner &#123;
+
+      &#x2F;&#x2F;引入 CommonConfig 实例，就可以读取到所有的系统配置了
+    @Resource
+    private CommonConfig config;
+
+      &#x2F;&#x2F;重写 ApplicationRunner 中的 run 方法，在该方法中给 RequestUtil 类中的静态变量赋值 
+    @Override
+    public void run(ApplicationArguments args) throws Exception &#123;
+        RequestUtil.port &#x3D; config.port;
+        RequestUtil.address &#x3D; config.address;
+    &#125;
+&#125;</code></pre>
+<p>在 <strong>KellerRunner</strong> 类中，通过注入 <strong>CommonConfig</strong> 实例的方式获取到系统配置中的项目运行地址及端口号，并用其初始化 <strong>RequestUtil</strong> 中的静态变量。</p>
+<p>至此，就可以在项目的代码中使用 RequestUtil.port 的方式读取到系统配置中与请求处理相关的参数了。</p>
+<h4 id="创建代理类"><a class="markdownIt-Anchor" href="#创建代理类">#</a> <strong>创建代理类</strong></h4>
+<p>获取到必要的参数后，就可以创建代理类了，通过上面分析过：代理类要区分 JSON 格式和表单格式的请求，因此，在这里新建两个代理类：</p>
+<p><strong>ApiController</strong> 类用于处理 JSON 格式的请求：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@RestController
+@RequestMapping(&quot;&#x2F;api&quot;)
+@CrossOrigin(origins &#x3D; &quot;*&quot;,allowedHeaders&#x3D;&quot;*&quot;, maxAge &#x3D; 3600)
+public class ApiController &#123;
+    @Resource
+    HttpServletRequest request;
+
+    @Autowired
+    RestTemplate restTemplate;
+
+      @GetMapping
+    public ResponseEntity get(@RequestBody Map&lt;String,String&gt; params)&#123;
+        ... ...
+    &#125;
+&#125;</code></pre>
+<p><strong>FormController</strong> 类用于处理表单格式的请求：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@RestController
+@RequestMapping(&quot;&#x2F;form&quot;)
+@CrossOrigin(origins &#x3D; &quot;*&quot;,allowedHeaders&#x3D;&quot;*&quot;, maxAge &#x3D; 3600)
+public class FormController &#123;
+    @Resource
+    HttpServletRequest request;
+
+    @Autowired
+    RestTemplate restTemplate;
+      @GetMapping
+    public ResponseEntity get()&#123;
+        ... ...  
+    &#125;
+&#125;</code></pre>
+<p>这两个类的主要区别在与对请求的处理方式不同：Spring 处理 json 格式的请求时，需要用  <code>@RequestBody</code>  方式注解将其参数转换为相应的 Java 类型，在这里，将其转换为 Map；Spring 处理表单格式的请求时可以直接从 <strong>HttpServletRequest</strong> 对象中获取到请求的参数。同时 <strong>HttpServletRequest</strong> 中可以获取到不同请求格式的请求头。</p>
+<p>在这里需要注意：</p>
+<ul>
+<li>要使用  <code>@RestController</code>  注解，而不是  <code>@Controller</code>  注解，因为这是 RESTful 格式的接口，返回的是 Json 格式的数据</li>
+<li>注意添加  <code>@CrossOrigin</code>  注解，避免因为服务端导致的跨域问题</li>
+<li>可以通过注入 <strong>HttpServletRequest</strong> 的方式读取请求</li>
+</ul>
+<!-- -->
+<h4 id="解析请求"><a class="markdownIt-Anchor" href="#解析请求">#</a> <strong>解析请求</strong></h4>
+<p>通过 <strong>HttpServletRequest</strong> 读取到请求之后，需要对请求进行解析，解析的内容包括请求头和请求参数。我们可以将相关方法写在 <strong>RequestUtil</strong> 类中，将其封装为处理 Request 的工具类。</p>
+<p>使用 <strong>HttpServletRequest</strong> 对象中的一些方法可以快捷地获取到相应相求头的内容，如：请求地址、请求方式、访问者的 IP 地址和端口号、自定义的请求头等。代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static HashMap&lt;String,String&gt; getHeader(HttpServletRequest request)&#123;
+    HashMap&lt;String,String&gt; headerMap &#x3D; new HashMap&lt;&gt;(16);
+    &#x2F;&#x2F;请求的 URL 地址
+    headerMap.put(RequestConfig.URL,request.getRequestURL().toString());
+    &#x2F;&#x2F;请求的资源
+    headerMap.put(RequestConfig.URI,request.getRequestURI());
+    &#x2F;&#x2F;请求方式 GET&#x2F;POST
+    headerMap.put(RequestConfig.REQUEST_METHOD,request.getMethod());
+
+    &#x2F;&#x2F;来访者的 IP 地址
+    headerMap.put(RequestConfig.REMOTE_ADDR,request.getRemoteAddr());
+    &#x2F;&#x2F;来访者的 HOST
+    headerMap.put(RequestConfig.REMOTE_HOST,request.getRemoteHost());
+    &#x2F;&#x2F;来访者的端口
+    headerMap.put(RequestConfig.REMOTE_PORT,request.getRemotePort() + &quot;&quot;);
+    &#x2F;&#x2F;来访者的用户名
+    headerMap.put(RequestConfig.REMOTE_USER,request.getRemoteUser());
+
+    &#x2F;&#x2F;自定义的 Header （接口名）
+        headerMap.put(RequestConfig.METHOD,
+                                    request.getHeader(RequestConfig.METHOD));
+    &#x2F;&#x2F;自定义的 Header （TOKEN）
+    headerMap.put(RequestConfig.TOKEN,
+                                    request.getHeader(RequestConfig.TOKEN));
+    return headerMap;
+&#125;</code></pre>
+<p>在 <strong>ApiController</strong> 代理类中，通过  <code>@RequestBody</code>  注解将 Json 格式的请求参数转换为了 Map，在这里需要处理的是 <strong>FormController</strong> 代理类中表单格式的请求。通过 <strong>HttpServletRequest</strong> 对象中的  <code>getParameterMap()</code>  方法将请求中的参数获取到，将其转换为方便处理的  <code>Map&amp;lt;String,String&amp;gt;</code>  类型。具体代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static Map&lt;String,String&gt; getParam(HttpServletRequest request)&#123;
+    Map&lt;String,String&gt; paramMap &#x3D; new HashMap&lt;&gt;(16);
+    &#x2F;&#x2F;request 对象封装的参数是以 Map 的形式存储的
+    Map&lt;String, String[]&gt; map &#x3D; request.getParameterMap();
+    for(Map.Entry&lt;String, String[]&gt; entry :map.entrySet())&#123;
+        String paramName &#x3D; entry.getKey();
+        String paramValue &#x3D; &quot;&quot;;
+        String[] paramValueArr &#x3D; entry.getValue();
+        for (int i &#x3D; 0; paramValueArr!&#x3D;null &amp;&amp; i &lt; paramValueArr.length; i++) &#123;
+            if (i &#x3D;&#x3D; paramValueArr.length-1) &#123;
+                paramValue +&#x3D; paramValueArr[i];
+            &#125;else &#123;
+                paramValue +&#x3D; paramValueArr[i]+&quot;,&quot;;
+            &#125;
+        &#125;
+        paramMap.put(paramName,paramValue);
+    &#125;
+    if(paramMap.size() &#x3D;&#x3D; 0)&#123;
+        return null;
+    &#125;
+    return paramMap;
+&#125;</code></pre>
+<p>获取到请求头和请求参数后就可以根据两者拼接出实际的请求地址，代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static String getUrl(Map&lt;String,String&gt; params,HttpServletRequest request)&#123;
+    &#x2F;&#x2F;读取请求头
+    HashMap&lt;String,String&gt; headers &#x3D; getHeader(request);
+    StringBuilder builder &#x3D; new StringBuilder();
+        &#x2F;&#x2F;拼接请求地址、端口号、请求方法
+    builder
+            .append(address).append(&quot;:&quot;)
+            .append(port).append(&quot;&#x2F;&quot;)
+            .append(headers.get(RequestConfig.METHOD));
+    if(params &#x3D;&#x3D; null)&#123;
+        return builder.toString();
+    &#125;
+      &#x2F;&#x2F;拼接请求参数
+    builder.append(&quot;?&quot;);
+    for(String key :params.keySet())&#123;
+        builder.append(key)
+                .append(&quot;&#x3D;&#123;&quot;)
+                .append(key)
+                .append(&quot;&#125;&amp;&quot;);
+    &#125;
+    Console.info(builder.toString());
+    return builder.toString();
+&#125;</code></pre>
+<p>至此，完成了代理类中请求地址、请求头、请求参数的解析，以及源请求到目标请求的转换工作。</p>
+<h4 id="转发请求"><a class="markdownIt-Anchor" href="#转发请求">#</a> <strong>转发请求</strong></h4>
+<p>从源请求转换到目标请求后，只需要将转发到目标请求并获取到应答，将应答返回给客户端即可，这就用到了 <strong>RestTemplate</strong> 对象。下面是一个使用 <strong>RestTemplate</strong> 对象发送 GET 请求的例子：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * JSON 格式的 GET 请求
+ * @param params
+ * @return
+ *&#x2F;
+@GetMapping
+public ResponseEntity get(@RequestBody Map&lt;String,String&gt; params)&#123;
+        &#x2F;&#x2F;定义应答
+    ResponseEntity responseEntity;
+    try &#123;
+          &#x2F;&#x2F;转发 GET 请求并获取到应答
+        responseEntity &#x3D; restTemplate.getForEntity(RequestUtil.getUrl(params,request), String.class,params);
+          &#x2F;&#x2F;记录请求处理成功的日志  
+          RequestUtil.successLog(request,params,responseEntity);
+    &#125;catch (Exception e)&#123;
+        &#x2F;&#x2F;解析请求失败的应答
+          responseEntity &#x3D; ResponseUtils.getResponseFromException(e);
+        &#x2F;&#x2F;记录请求处理失败的日志
+          RequestUtil.errorLog(request,params,responseEntity);
+    &#125;
+      &#x2F;&#x2F;返回应答
+    return responseEntity;
+&#125;</code></pre>
+<p>在这里需要说明几点：</p>
+<ol>
+<li>使用 <strong>RestTemplate</strong> 对象发送 HTTP 请求时，如果应答码不是  <code>200 OK</code> ，会抛出 HttpClientErrorException 异常，需要对该异常进行处理，返回相应的错误码。</li>
+<li>作为比较完善的服务端系统，业务日志是需要记录下来的，以利于后续的系统分析及问题定位。</li>
+</ol>
+<!-- -->
+<h4 id="处理异常请求"><a class="markdownIt-Anchor" href="#处理异常请求">#</a> <strong>处理异常请求</strong></h4>
+<p><code>getResponseFromException(e)</code>  方法的完整代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static ResponseEntity getResponseFromException(Exception exception)&#123;
+    ResponseEntity response;
+      &#x2F;&#x2F; 如果异常属于 HttpClientErrorException 则其状态码代表请求状态码，按照请求状态码返回相应的 ResponseEntity 即可
+    if(exception instanceof HttpClientErrorException)&#123;
+        HttpClientErrorException errorException &#x3D; (HttpClientErrorException) exception;
+        switch (errorException.getStatusCode())&#123;
+            case FORBIDDEN:  response &#x3D; Response.forbidden(); break;
+            case BAD_REQUEST: response &#x3D; Response.badRequest();break;
+            case UNAUTHORIZED: response &#x3D; Response.unauthorized();break;
+            case INTERNAL_SERVER_ERROR: response &#x3D; Response.error();break;
+            default:&#123;
+                ResultData resultData &#x3D; ResultData.error(&quot;ERROR&quot;);
+                response &#x3D; ResponseEntity.status(errorException.getStatusCode()).contentType(MediaType.APPLICATION_JSON).body(resultData);
+            &#125;
+        &#125;
+    &#125;else &#123;
+        response &#x3D; Response.badRequest();
+    &#125;
+    return  response;
+&#125;</code></pre>
+<p>首先对异常类型进行判断：如果异常属于 HttpClientErrorException 则其状态码代表请求状态码，按照请求状态码返回相应的 ResponseEntity 即可；否则，返回  <code>400 BadRequest</code> 。</p>
+<h4 id="记录日志"><a class="markdownIt-Anchor" href="#记录日志">#</a> <strong>记录日志</strong></h4>
+<p>记录日志的时候要注意可能的并发问题，如下代码：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static void successLog(HttpServletRequest request, Map&lt;String,String&gt; params, ResponseEntity response)&#123;
+      &#x2F;&#x2F;生成 UUID 标记唯一请求
+    String requestId &#x3D; StringUtils.getUUID();
+    &#x2F;&#x2F;记录请求头
+    Console.info(&quot;api header&quot;,requestId,getHeader(request));
+      &#x2F;&#x2F;记录请求参数
+    Console.info(&quot;param&quot;,requestId,params);
+      &#x2F;&#x2F;记录应答
+    Console.info(&quot;response success&quot;,requestId,response.getBody());
+&#125;</code></pre>
+<p>用户量稍大的系统中，请求往往是有大量的并发的，因此需要一个唯一的标识来保证请求的唯一性，以保证在日志记录中能将同一个请求的请求头、请求参数、应答对应起来。</p>
+<p>至此，统一请求开发完成，所有的接口都可以通过走代理类的方式访问，极大程度上保证了内部接口的安全性。</p>
+<h3 id="效果测试"><a class="markdownIt-Anchor" href="#效果测试">#</a> 效果测试</h3>
+<p>测试上一篇 <strong>UserController</strong> 中的  <code>getByEmail(String email)</code>  接口，接口不变，将请求方式改为代理类的方式，如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">URL:
+    localhost:8080&#x2F;api
+Headers:
+    method:&quot;user&#x2F;getByEmail&quot;
+  Content-Type:&quot;application&#x2F;json&quot;
+Body:
+&#123;
+    &quot;email&quot;: &quot;Fwwu9pHew6&quot;
+&#125;</code></pre>
+<p>在 <strong>Postman</strong> 中测试正常，如图：</p>
+<p><img src="https://images.gitbook.cn/47316b80-7251-11ea-9415-437c2ee98aa7" alt="postman"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/10.%E7%BB%9F%E4%B8%80%E8%AF%B7%E6%B1%82/server">https://github.com/tianlanlandelan/KellerNotes/tree/master/10. 统一请求 /server</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇带领大家完成了对项目统一的请求处理，通过统一的代理类进行请求的转发和应答处理。使项目架构安全稳定、扩展性强、开发便捷，满足现有开发需求的同时为以后大型项目做准备。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/15/10%E7%BB%9F%E4%B8%80%E7%9A%84HTTP%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86a/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/15/11%E6%B3%A8%E5%86%8C1_Java%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6a/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            11注册1_Java发送邮件
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/15/09%E7%BB%9F%E4%B8%80%E7%9A%84HTTP%E5%BA%94%E7%AD%94a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">09统一的HTTP应答</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

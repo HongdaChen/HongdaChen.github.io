@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    20笔记列表_Draggable拖拽排序 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="伞" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-20笔记列表_Draggable拖拽排序a"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  20笔记列表_Draggable拖拽排序
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/02/15/20%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8_Draggable%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8Fa/" class="article-date">
+  <time datetime="2021-02-15T01:58:13.961Z" itemprop="datePublished">2021-02-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/">云笔记全栈</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">12 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="前言"><a class="markdownIt-Anchor" href="#前言">#</a> 前言</h3>
+<p>通过上一篇的学习，大家对于 Vue 组件化有了一定的了解。本篇继续使用组件化的思想来实现笔记列表，同时在组件化的基础上，对笔记列表实现拖拽排序的功能。</p>
+<a id="more"></a>
+<h3 id="知识准备"><a class="markdownIt-Anchor" href="#知识准备">#</a> 知识准备</h3>
+<p>学习之前，先来了解一下 Vue 中完成拖拽排序功能的组件：vue.Draggable。</p>
+<h4 id="vuedraggable"><a class="markdownIt-Anchor" href="#vuedraggable">#</a> <strong>vue.Draggable</strong></h4>
+<p>官网是这样介绍该组件的：</p>
+<blockquote>
+<p>Vue component (Vue.js 2.0) or directive (Vue.js 1.0) allowing drag-and-drop and synchronization with view model array. – <a target="_blank" rel="noopener" href="http://www.npmjs.com">www.npmjs.com</a></p>
+</blockquote>
+<p>也就是说该组件支持拖放操作，并且可以同步视图模型数组数据。 Draggable 基于 Sortable.js，主要特性有：</p>
+<ul>
+<li>支持拖拽、选择文本、智能滚动</li>
+<li>支持触摸设备</li>
+<li>支持不同列表之间的拖拽操作</li>
+</ul>
+<!-- -->
+<p>参考文档地址：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/vuedraggable">https://www.npmjs.com/package/vuedraggable</a></p>
+</blockquote>
+<p><img src="https://images.gitbook.cn/f4f839f0-838c-11ea-b751-6ff511beda88" alt="npm"></p>
+<p>在 Keller 云笔记项目中，使用  <code>npm install --save vuedraggable</code>  命令即可安装，如图：</p>
+<p><img src="https://images.gitbook.cn/a6e13010-838b-11ea-892e-3d2bc7939884" alt="vuedraggable"></p>
+<h3 id="业务流程"><a class="markdownIt-Anchor" href="#业务流程">#</a> 业务流程</h3>
+<p>本篇要实现的效果如下：</p>
+<p><img src="https://images.gitbook.cn/6857f150-838e-11ea-bced-d975e1287828" alt="拖拽排序"></p>
+<p>本篇涉及到的业务流程说明：</p>
+<ul>
+<li>
+<p>展示笔记列表：- 进入用户主页后，获取到笔记本列表</p>
+<ul>
+<li>默认显示笔记本列表中第一个笔记本中的笔记</li>
+<li>当选中不同的笔记本后，显示被选中的笔记本中的笔记</li>
+</ul>
+  <!-- -->
+</li>
+<li>
+<p>修改笔记排序：- 笔记列表可以进行拖拽操作</p>
+<ul>
+<li>当拖拽时，根据笔记当前在列表中的排序修改笔记的顺序</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h3 id="服务端代码实现"><a class="markdownIt-Anchor" href="#服务端代码实现">#</a> 服务端代码实现</h3>
+<p>本篇在服务端没有新的知识点，只是业务逻辑的开发，在此仅以 4001 新建笔记接口举例，代码结构如下：</p>
+<ul>
+<li>
+<p>entity- NoteInfo.java：笔记实体类</p>
+  <!-- -->
+</li>
+<li>
+<p>mapper- NoteMapper.java：笔记数据库映射类</p>
+  <!-- -->
+</li>
+<li>
+<p>service- NoteService.java：笔记业务逻辑类</p>
+  <!-- -->
+</li>
+<li>
+<p>controller- NoteController.java：笔记接口处理类</p>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h4 id="entity"><a class="markdownIt-Anchor" href="#entity">#</a> <strong>entity</strong></h4>
+<p>新建 NoteInfo.java 类，按照数据库设计中的 note_info 表中数据格式设计字段，特别要注意的是笔记内容字段。</p>
+<p>content、contentMD 字段的长度按照需要进行设计：</p>
+<ul>
+<li>一般可以设计长度为 65535 以内，在创建数据表时将自动映射为 Text 类型，可以存储最大 64Kb 的内容；</li>
+<li>如果笔记内容可能很长，可以将长度设置超过 65535，在创建数据表时将自动映射为 MediumText 格式，可以存储最大 16Mb 的内容；</li>
+<li>更大的还有 LongText 类型，可以存储最大 4Gb 的内容。一下读取 4Gb 的数据，服务器也吃不消，网络也吃不消，因此不建议使用。</li>
+</ul>
+<!-- -->
+<p>content、contentMD 字段要标注为明细字段：</p>
+<ul>
+<li>将字段标记为  <code>detailed = true</code>  时，表示该字段在查询列表时不会返回；</li>
+<li>因为笔记内容会很长，如果获取笔记列表时返回每个笔记的内容，HTTP 的传输量会特别大，也比较耗时。</li>
+</ul>
+<!-- -->
+<p>参考代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@TableAttribute(name &#x3D; &quot;note_info&quot;,comment &#x3D; &quot;笔记详情表&quot;)
+public class NoteInfo extends BaseEntity &#123;
+
+    @FieldAttribute
+    @KeyAttribute(autoIncr &#x3D; true)
+    private Integer id;
+
+    ... ...
+
+    @FieldAttribute(&quot;笔记类型 0:富文本笔记 1:MarkDown笔记&quot;)
+    private Integer type;
+
+    @FieldAttribute(&quot;笔记标题&quot;)
+    private String title;
+
+    @FieldAttribute(value &#x3D; &quot;笔记内容&quot;,length &#x3D; 70000,detailed &#x3D; true)
+    private String content;
+
+    @FieldAttribute(value &#x3D; &quot;MarkDown 笔记内容&quot;,length &#x3D; 70000,detailed &#x3D; true)
+    private String contentMD;
+
+    @FieldAttribute(&quot;排序&quot;)
+    @SortAttribute
+    private int sort;
+
+        ... ...
+&#125;
+</code></pre>
+<h4 id="mapper"><a class="markdownIt-Anchor" href="#mapper">#</a> <strong>mapper</strong></h4>
+<p>新建 NoteMapper.java 继承 BaseMapper，实例化为 NoteInfo 类型：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@Mapper
+public interface NoteMapper extends BaseMapper&lt;NoteInfo&gt; &#123;
+&#125;</code></pre>
+<h4 id="test"><a class="markdownIt-Anchor" href="#test">#</a> <strong>test</strong></h4>
+<p>使用 NoteMaper 继承的通用 Mapper 方法，创建 note_info 表：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">    @Resource
+private NoteMapper noteMapper;
+@Test
+public void createNoteTable()&#123;
+    noteMapper.baseCreate(new NoteInfo());
+&#125;
+</code></pre>
+<h4 id="service"><a class="markdownIt-Anchor" href="#service">#</a> <strong>service</strong></h4>
+<p>新建 NoteService.java，这里需要注入 NotesService 组件，用以在每次新建笔记时，校验笔记本，并在新建完成后将笔记本中的笔记数量加 1：</p>
+<ul>
+<li>首先校验指定的笔记本是否是该用户的，避免非法访问篡改数据的情景；</li>
+<li>如果不是该用户的，返回笔记本不存在；</li>
+<li>否则，新建笔记；</li>
+<li>笔记创建成功后，将笔记所属的笔记本中笔记数量加 1。</li>
+</ul>
+<!-- -->
+<p>代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@Service
+public class NoteService &#123;
+
+    @Resource
+    private NoteMapper mapper;
+
+    @Resource
+    private NotesService notesService;
+  public ResultData createNote(NoteInfo noteInfo)&#123;
+            &#x2F;&#x2F; 校验用户的笔记本
+        NotesInfo notesInfo &#x3D; notesService.getByIdAndUserId(noteInfo.getNotesId(),noteInfo.getUserId());
+        if(notesInfo &#x3D;&#x3D; null)&#123;
+            return ResultData.error(&quot;笔记本不存在&quot;);
+        &#125;
+
+            &#x2F;&#x2F;添加笔记
+        Integer result &#x3D; mapper.baseInsertAndReturnKey(noteInfo);
+        if(result &#x3D;&#x3D; 1)&#123;
+              &#x2F;&#x2F; 将笔记本中的笔记数量加 1
+            notesService.addNoteCount(notesInfo);
+            return ResultData.success(noteInfo);
+        &#125;else &#123;
+            return ResultData.error(&quot;创建笔记本失败&quot;);
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h4 id="controller"><a class="markdownIt-Anchor" href="#controller">#</a> <strong>controller</strong></h4>
+<p>新建 NoteController.java，按照接口文档，实现笔记相关的接口：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@RestController
+@RequestMapping(&quot;&#x2F;note&quot;)
+public class NoteController &#123;
+
+    @Resource
+    private NoteService service;
+
+      @PostMapping
+    public ResponseEntity create(Integer kellerUserId,Integer notesId,String title,Integer type)&#123;
+          &#x2F;&#x2F;校验必填参数
+        if(StringUtils.isEmpty(kellerUserId,notesId,title))&#123;
+            return Response.badRequest();
+        &#125;
+          &#x2F;&#x2F;如果没有指定笔记类型，默认为创建富文本笔记
+        if(type &#x3D;&#x3D; null)&#123;
+            type &#x3D; PublicConstant.NOTE_TYPE_RICH_TEXT;
+        &#125;else&#123;
+              &#x2F;&#x2F;校验笔记类型是富文本或者 MarkDown
+            if(type !&#x3D; PublicConstant.NOTE_TYPE_RICH_TEXT &amp;&amp; type !&#x3D; PublicConstant.NOTE_TYPE_MARK_DOWN)&#123;
+                return Response.badRequest();
+            &#125;
+        &#125;
+        NoteInfo noteInfo &#x3D; new NoteInfo(kellerUserId,notesId,title);
+        noteInfo.setType(type);
+        return Response.ok(service.createNote(noteInfo));
+    &#125;
+&#125;
+</code></pre>
+<p>至此，服务端代码实现完毕，在文末有完整源码。</p>
+<h3 id="前端代码实现"><a class="markdownIt-Anchor" href="#前端代码实现">#</a> 前端代码实现</h3>
+<p>前端代码结构如下：</p>
+<ul>
+<li>
+<p>components- NoteList.vue：自定义 Vue 组件，用于展示笔记列表</p>
+<ul>
+<li>Home.vue：用户主页，引入 NoteList.vue 作为子组件</li>
+</ul>
+  <!-- -->
+</li>
+</ul>
+<!-- -->
+<h4 id="定义接口"><a class="markdownIt-Anchor" href="#定义接口">#</a> <strong>定义接口</strong></h4>
+<p>首先，在 api.js 中按照接口文档，定义好笔记相关功能所需的接口：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;**
+ * 添加笔记 4001
+ *&#x2F;
+export const req_addNote &#x3D; (note) &#x3D;&gt; &#123; 
+    return axios.post(api, &#123;
+        notesId:note.notesId,
+        title:note.title,
+        type:note.type
+    &#125;,&#123;
+        headers:&#123;
+            &#39;method&#39;:&#39;note&#39;,
+            &#39;token&#39; : window.localStorage.getItem(&quot;token&quot;)
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err); 
+&#125;;
+
+&#x2F;**
+ * 获取笔记列表 4003
+ *&#x2F;
+export const req_getNoteList &#x3D; (notesId) &#x3D;&gt; &#123; 
+    return axios.get(api, &#123;
+        params:&#123;
+            notesId:notesId
+        &#125;,
+        headers:&#123;
+            &#39;method&#39;:&#39;note&#x2F;list&#39;,
+            &#39;token&#39; : window.localStorage.getItem(&quot;token&quot;)
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err);  
+&#125;;
+&#x2F;**
+ * 笔记重排序 4005
+ *&#x2F;
+export const req_noteReSort &#x3D; (noteId,sort) &#x3D;&gt; &#123; 
+    return axios.post(api, &#123;
+        noteId:noteId,
+        sort:sort
+    &#125;,&#123;
+        headers:&#123;
+            &#39;method&#39;:&#39;note&#x2F;reSort&#39;,
+            &#39;token&#39; : window.localStorage.getItem(&quot;token&quot;)
+        &#125;
+    &#125;).then(res &#x3D;&gt; res.data).catch(err &#x3D;&gt; err); 
+&#125;;
+</code></pre>
+<h4 id="自定义笔记列表组件"><a class="markdownIt-Anchor" href="#自定义笔记列表组件">#</a> <strong>自定义笔记列表组件</strong></h4>
+<p>笔记列表组件的基本功能是展示用户笔记本中的笔记列表，效果如下：</p>
+<p><img src="https://images.gitbook.cn/d34f3de0-838b-11ea-bced-d975e1287828" alt="笔记列表"></p>
+<p>新建 NoteList.vue，使用 v-for 实现列表的布局：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;template&gt;
+    &lt;div&gt;
+            &lt;!-- 笔记列表 使用 v-for --&gt;
+            &lt;div class&#x3D;&quot;font16 ColorCommon border-three padding5&quot; v-for&#x3D;&quot;item in list&quot; :key&#x3D;&quot;item.id&quot; @click&#x3D;&quot;currentNote(item)&quot;&gt;
+                &lt;div :class&#x3D;&quot;note.id &#x3D;&#x3D; item.id ? &#39;note-bg&#39;:&#39;cursorPointer &#39;&quot;&gt;
+                    &lt;el-row&gt;
+                        &lt;el-col :span&#x3D;&quot;2&quot; :offset&#x3D;&quot;1&quot;&gt;
+                            &lt;i class&#x3D;&quot;el-icon-document&quot;&gt;&lt;&#x2F;i&gt;
+                        &lt;&#x2F;el-col&gt;
+                        &lt;el-col :span&#x3D;&quot;14&quot;&gt;
+                            &#123;&#123;item.title.length &gt; 10 ?item.title.substring(0,10) + &#39;...&#39; : item.title&#125;&#125;
+                        &lt;&#x2F;el-col&gt;
+                        &lt;el-col :span&#x3D;&quot;6&quot;&gt;
+                            &#123;&#123;format.formatDate(item.createTime)&#125;&#125;
+                        &lt;&#x2F;el-col&gt;
+                    &lt;&#x2F;el-row&gt;
+                &lt;&#x2F;div&gt;
+            &lt;&#x2F;div&gt;
+    &lt;&#x2F;div&gt;
+&lt;&#x2F;template&gt;
+</code></pre>
+<p>在 JS 中，获取笔记列表：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">getNoteList(notesId) &#123;
+                req_getNoteList(notesId).then(response &#x3D;&gt; &#123;
+                    &#x2F;&#x2F;解析接口应答的json串
+                    let &#123;
+                        data,
+                        message,
+                        success
+                    &#125; &#x3D; response;
+                    &#x2F;&#x2F;应答不成功，提示错误信息
+                    if (success !&#x3D;&#x3D; 0) &#123;
+                        this.$message(&#123;
+                            message: message,
+                            type: &#39;error&#39;
+                        &#125;);
+                    &#125; else &#123;
+                        if (data.length &gt; 0) &#123;
+                            this.list &#x3D; data;
+                            this.note &#x3D; this.list[0];
+                        &#125;
+                    &#125;
+                &#125;);
+            &#125;,
+</code></pre>
+<p>这一部分和上一篇的 NotesList.vue 没有区别。</p>
+<h4 id="父组件触发子组件加载事件"><a class="markdownIt-Anchor" href="#父组件触发子组件加载事件">#</a> <strong>父组件触发子组件加载事件</strong></h4>
+<p>同上一篇一样，在 Home.vue 中引入 NoteList.vue：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">  import NoteList from &quot;..&#x2F;components&#x2F;NoteList.vue&quot;;
+  ... ...
+  export default &#123;
+      components: &#123;
+          NotesList,NoteList
+      &#125;,
+      data() &#123;
+    ... ...
+  &#125;
+&#125;
+</code></pre>
+<p>在页面中使用，为其设置 ref 属性，并监听其 @func 回调函数：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;!-- 中间笔记列表 --&gt;
+                &lt;el-aside width&#x3D;&quot;21%&quot; class&#x3D;&quot;note-list&quot;&gt;
+                    &lt;NoteList @func&#x3D;&quot;getNote&quot; ref&#x3D;&quot;noteList&quot;&gt;&lt;&#x2F;NoteList&gt;
+                &lt;&#x2F;el-aside&gt;
+</code></pre>
+<p>将主动调用 NoteList.vue 中 load 方法的时机选择在：当笔记本列表组件 NotesList.vue 中当前选中的笔记本发生变化时，也就是在监听到 NotesList.vue 的回调方法时，主动调用 NoteList.vue 的加载方法。这样就能保证，在选中一个笔记本后，加载它里面的笔记列表：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">&#x2F;**
+ * 笔记本列表组件 NotesList 中当前选中的笔记本有变化时，通知父组件刷新当前笔记本
+ * @param &#123;Object&#125; notes
+ *&#x2F;
+getNotes(notes) &#123;
+    this.currentNotes &#x3D; notes;
+    &#x2F;&#x2F;加载笔记本中的笔记列表
+    this.$refs.noteList.load(notes.id);
+&#125;,
+</code></pre>
+<p>完成后的效果如下。</p>
+<p>当选中笔记本 “小小账本” 时，显示 “小小账本” 中的笔记列表：</p>
+<p><img src="https://images.gitbook.cn/f5b18260-838d-11ea-8e01-8df59dc64941" alt="小小账本"></p>
+<p>当选中笔记本 “生活随笔” 时，显示 “生活随笔” 中的笔记列表：</p>
+<p><img src="https://images.gitbook.cn/04e850b0-838e-11ea-bced-d975e1287828" alt="生活随笔"></p>
+<h4 id="拖拽排序"><a class="markdownIt-Anchor" href="#拖拽排序">#</a> <strong>拖拽排序</strong></h4>
+<p>在 NoteList.vue 中，引入 vue.Draggable 组件：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">import draggable from &#39;vuedraggable&#39;;
+
+components: &#123;draggable&#125;
+</code></pre>
+<p>引入后，使用  <code>&amp;lt;draggable&amp;gt;</code>  标签包裹笔记本列表：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html">&lt;draggable group&#x3D;&quot;note&quot; v-model&#x3D;&quot;list&quot; @change&#x3D;&quot;noteListChange()&quot;&gt;
+    &lt;!-- 笔记列表 --&gt;
+    &lt;div class&#x3D;&quot;font16 ColorCommon border-three padding5&quot; v-for&#x3D;&quot;item in list&quot; :key&#x3D;&quot;item.id&quot; @click&#x3D;&quot;currentNote(item)&quot;&gt;
+        ... ...
+        &lt;&#x2F;div&gt;
+&lt;&#x2F;draggable&gt;
+</code></pre>
+<p>使用说明：</p>
+<ul>
+<li>group：将 vue.Draggable 组件分组，不同组的 vue.Draggable 可以是父子关系也可以是兄弟关系，其支持不同组件间的数据进行拖拽。</li>
+<li>v-model：绑定的数据模型，要求是一个数组。在这里绑定了笔记列表数组，拖拽的变化会引起数组元素顺序的变化。</li>
+<li>@change：引起拖拽变化时绑定的处理方法。</li>
+</ul>
+<!-- -->
+<p>在这里，将 @change 的处理方法绑定为 noteListChange：</p>
+<ul>
+<li>遍历笔记数组，判断每一项数据元素的顺序有没有发生变化</li>
+<li>如果没有变化，不做处理</li>
+<li>如果有变化，调用接口 4005，修改笔记顺序</li>
+</ul>
+<!-- -->
+<p>参考代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">noteListChange() &#123;
+                for (var i &#x3D; 0; i &lt; this.list.length; i++) &#123;
+                    &#x2F;&#x2F;如果笔记的顺序没有发生变化，不做处理
+                    if(this.list[i].sort &#x3D;&#x3D; i )&#123;
+                        continue;
+                    &#125;
+                    &#x2F;&#x2F;当笔记顺序发生变化时，重新排序
+                    req_noteReSort(this.list[i].id, i).then(response &#x3D;&gt; &#123;
+                        &#x2F;&#x2F;解析接口应答的json串
+                        let &#123;
+                            message,
+                            success
+                        &#125; &#x3D; response;
+                        &#x2F;&#x2F;应答不成功，提示错误信息
+                        if (success !&#x3D;&#x3D; 0) &#123;
+                            this.$message(&#123;
+                                message: message,
+                                type: &#39;error&#39;
+                            &#125;);
+                        &#125;
+                    &#125;);
+                &#125;
+            &#125;
+</code></pre>
+<p>实现后的效果如图，可以通过拖拽改变笔记本下笔记的顺序：</p>
+<p><img src="https://images.gitbook.cn/33872130-838e-11ea-b7aa-e93f38329615" alt="拖拽排序"></p>
+<h3 id="源码地址"><a class="markdownIt-Anchor" href="#源码地址">#</a> 源码地址</h3>
+<p>本篇完整的源码地址如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tianlanlandelan/KellerNotes/tree/master/20.%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8">https://github.com/tianlanlandelan/KellerNotes/tree/master/20.%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8</a></p>
+</blockquote>
+<h3 id="小结"><a class="markdownIt-Anchor" href="#小结">#</a> 小结</h3>
+<p>本篇实现了显示所选笔记本下的笔记列表功能，同时使用 vue.Draggable 组件实现了笔记列表的拖拽排序功能。</p>
+<p>vue.Draggable 是支持不同列表之间的拖拽的，大家可以自己实现一下笔记本列表的拖拽排序，以及将笔记拖拽到不同的笔记本中。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/02/15/20%E7%AC%94%E8%AE%B0%E5%88%97%E8%A1%A8_Draggable%E6%8B%96%E6%8B%BD%E6%8E%92%E5%BA%8Fa/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E7%AC%94%E8%AE%B0%E5%85%A8%E6%A0%88/" rel="tag">云笔记全栈</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/02/15/21%E5%AF%8C%E6%96%87%E6%9C%AC%E7%AC%94%E8%AE%B0_WangEditora/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            21富文本笔记_WangEditor
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/02/15/19%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%88%97%E8%A1%A8_Vue%E7%BB%84%E4%BB%B6a/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">19笔记本列表_Vue组件</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+<script src="/js/dz.js"></script>
+
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    疯狂java部分视频笔记 |  伞
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/heart.png" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-疯狂java部分视频笔记"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  疯狂java部分视频笔记
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/22/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2022-03-22T00:01:24.145Z" itemprop="datePublished">2022-03-22</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%AD%E8%A8%80/">语言</a> / <a class="article-category-link" href="/categories/%E8%AF%AD%E8%A8%80/java/">java</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">10.6k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">40 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="Ⅰ"><a href="#Ⅰ" class="headerlink" title="Ⅰ."></a>Ⅰ.</h2><h3 id="编译java程序"><a href="#编译java程序" class="headerlink" title="编译java程序"></a>编译java程序</h3><p>命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">javac -d &lt;目录&gt; 源程序 &#x2F;&#x2F; 指定。.class文件位置</code></pre>
+
+<h3 id="运行java程序"><a href="#运行java程序" class="headerlink" title="运行java程序"></a>运行java程序</h3><p>命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">java 主类</code></pre>
+
+<p>可运行的类必须包含main方法。</p>
+<h3 id="jshell工具"><a href="#jshell工具" class="headerlink" title="jshell工具"></a>jshell工具</h3><p>交互式工具，从java9开始。</p>
+<p>命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">jshell</code></pre>
+
+<h3 id="java注释"><a href="#java注释" class="headerlink" title="java注释"></a>java注释</h3><p>单行注释：// 注释内容</p>
+<p>多行注释：/*  */</p>
+<p>文档注释：javadoc工具可以提取文档注释来生成API文档。</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;**
+*
+*
+*&#x2F;</code></pre>
+
+<p>API文档：为java类提供的使用说明书。</p>
+<p>文档注释：文档注释只有放在类、成员变量、方法、构造器、内部类之前才有意义！javadoc默认只提取public和protected成员之前的文档注释。</p>
+<p>生成文档注释</p>
+<pre class="line-numbers language-none"><code class="language-none">javadoc -d &lt;目录&gt; 源文件 &#x2F;&#x2F;-d指定“API”文档存放的位置</code></pre>
+
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>用于装数据，变量相当于一个容器。</p>
+<p><strong>声明变量</strong></p>
+<p>类型 变量名 [= 初始值]； </p>
+<p> <strong>标识符</strong>（就是名字）</p>
+<p>由字母、下划线、数字、$组成，但数字不能开头。不能使java的保留字。</p>
+<p>可为变量、类、方法。。。。起名字</p>
+<p>关键字：都是小写的。</p>
+<p>保留字：goto,const.</p>
+<p>一共有53个单词作为标识符。</p>
+<p>包括<strong>基本类型</strong>和<strong>引用类型</strong></p>
+<p><strong>基本类型</strong>：</p>
+<ul>
+<li><p><strong>整型</strong>：只能正整数和负整数和0 。bit（位）要么0，要么1; 字节（Byte）8个bit(能表示256个数)</p>
+<p>2^20=&gt;M       2^30=&gt;G        2^40=&gt;T</p>
+<p>byte:    字节,8个bit(能表示256个数),取值范围：-128~127</p>
+<p>short:    16位（能够表示65536个数）、取值范围：-32768~32767</p>
+<p>int    :     32位（能够表示4G个数）、取值范围：-2G~2G-1</p>
+<p>long:        64位。</p>
+<p>注意点：</p>
+<ul>
+<li><p>你直接给一个整数。整数默认是Int型。</p>
+<p>如果该整数较小、且直接赋值给byte或short、java也可以将它当成byte、short处理。</p>
+</li>
+<li><p>如果你直接给出一个巨大的整数，java不会自动把他当成long型处理。</p>
+<p>如果希望java把改整型当成long处理，需要在整数后添加L或l后缀。</p>
+</li>
+<li><p>整数一共有四种表示形式：</p>
+<p>十进制</p>
+<p>八进制：以零开头、逢8进1、只能出现0~7.</p>
+<p>十六进制：以0X开头或0x开头、逢16进1、只能出现0<del>9、a</del>f</p>
+<p>二进制：以0B或0b开头、逢2进1、只能出现0~1。</p>
+<p>十六进制的数，在编程中常常用——每位十六进制的数，恰好换算成4位二进制数，非常方便。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>浮点型</strong>：</p>
+<p>只能带小数部分的数。java的浮点型只有两个：</p>
+<p>float:      4个字节（32位）：    取值更大</p>
+<p>double:  8个字节（64位）：    取值超大</p>
+<p>编程时使用double，因为浮点型有精度损失，而float损失更严重。</p>
+<ul>
+<li><p>注意点：</p>
+<ul>
+<li><p>如果直接给一个浮点数，默认是double类型。如果你希望一个浮点数被当成float处理，必须在浮点值后添加F或f。</p>
+</li>
+<li><p>浮点数有精度损失、所以浮点数比较时，应该使用“差值法”</p>
+</li>
+<li><p>浮点数有两种形式：</p>
+<ul>
+<li>小数形式</li>
+<li>科学计数法</li>
+</ul>
+</li>
+<li><p>浮点数值有3个特殊值：</p>
+<p>浮点数除以0，得到无穷大。</p>
+<p>正无穷大：正正得正，负负得正</p>
+<p>负无穷大：正负得负</p>
+<p>所有正无穷大都相等，所有负无穷大都相等</p>
+<p>非数：浮点0除以0，对负数开方。得到的就是非数。</p>
+<p>非数与任何数都不想等，与他自己也不相等。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>字符型</strong>：</p>
+<p>只能装单个字符（英文、中文、日文。。。）且单个字符放在单引号里。</p>
+<p>char:2个字节（16位）</p>
+<p>注意：</p>
+<ul>
+<li>字符型有三种表示形式：<ul>
+<li>单引号里放普通字符。</li>
+<li>单引号里放特殊的转义字符。java的转义字符参考教材P52</li>
+<li>用字符的Unicode编号。十六进制</li>
+</ul>
+</li>
+<li>字符可以当成无符号整数使用。使用的是该字符的编号。取值范围（）</li>
+</ul>
+<p>字符集：为了计算机底层保存字符。为所有字符编号，需要保存字符时，实际上保存的是该字符的编号（二进制）。读取字符内容时，读取的是二进制的编号，还需要参照编号才能找到对应的字符。</p>
+<ul>
+<li><p>ASCII：只支持英文、数字、标点符号，♠，♥，♦，😊</p>
+<p>a-z:97<del>97+25    A</del>Z:65<del>90    0</del>9:48~57</p>
+<p>\r:    13    \n:    10    ‘:    39    “:    34</p>
+</li>
+<li><p>GB2312:简体中文字符集</p>
+</li>
+<li><p>GBK：国标扩大</p>
+</li>
+<li><p>GB18030：目前简体的字符集。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>boolean型</strong></p>
+<p>只有2个值：true和false</p>
+</li>
+<li><p><strong>类型转换</strong></p>
+<ul>
+<li><p>自动转换：取值范围小的可以直接转换为范围大的。</p>
+<p>byte    -&gt;    short（-32768~32767）    -&gt;    int    -&gt;    long    -&gt;    float    -&gt;    double</p>
+<pre><code>                char    (0~65535)                 /
+</code></pre>
+<p>推论：所有的整型都可以自动转换成浮点型。</p>
+<pre><code>        所有的**数值型**都可以转**double**型 
+</code></pre>
+</li>
+<li><p>强制转换：上图反过来就需要强制类型转换。double不能自动转int</p>
+<p>int it = (int)5.9;//直接砍掉小数点后的部分</p>
+<p>可能发生“溢出”</p>
+<ul>
+<li><p><strong>溢出规则</strong>：用该数-目标函数的大小*n,保证减出来的差在取值范围内</p>
+<pre class="line-numbers language-none"><code class="language-none">int e &#x3D; 1333;
+byte f &#x3D; (byte)e;
+&#x2F;&#x2F;1333-256*4&#x3D;309	-&gt;	309-256&#x3D;53</code></pre></li>
+</ul>
+</li>
+<li><p>表达式类型的自动提升</p>
+<p>整个表达式的类型,和该表达式中最高等级的操作数的类型相同。</p>
+<p>byte b = 97 + 1;//在编译时就会算出98,98在byte表示的范围（-128~127）内，不会报错。但是：</p>
+<p>byte b = 127 + 1;//128会报错</p>
+<p>byte b = 126 + 1;//127不会报错</p>
+<p><strong>面视题</strong>：</p>
+<pre class="line-numbers language-none"><code class="language-none">byte a &#x3D; 2;
+a &#x3D; a + 1;
+System.out.println(a);</code></pre></li>
+</ul>
+</li>
+</ul>
+<h3 id="使用var定义变量"><a href="#使用var定义变量" class="headerlink" title="使用var定义变量"></a>使用var定义变量</h3><p>从java10开始才引入的特征。</p>
+<p>语法为：var 变量名 = 初始值</p>
+<ul>
+<li><p>var并不是关键字，是一种动态类型，var动态类型将会有java的编译器根据变量的【所赋的值】来推断其类型。</p>
+</li>
+<li><p>为何引入var？</p>
+<p>很多语言（Kotlin、Js等）都支持var变量，java 10为了迎合普通开发者，才引入var</p>
+<p>java没有全局变量一说。</p>
+</li>
+<li><p>使用var注意点：</p>
+<ul>
+<li>var只能在方法中定义变量，不能在类中定义成员变量。</li>
+<li>var声明的变量，必须在声明时指定初始值</li>
+<li>var每次只能声明一个变量。如：var c =12,b=3;×，不允许在符合声明中使用。</li>
+</ul>
+</li>
+<li><p>使用var优缺点：</p>
+<p>优点：编程简洁，代码整齐。</p>
+<p>缺点：会降低程序的可读性。</p>
+</li>
+<li><p>何时不因该使用var声明变量？</p>
+<p>声明变量时，指定了一个直观初始值（2，“打分”，3.3），此时可以使用var</p>
+<p>不应该使用2处：</p>
+<ul>
+<li><p>变量所赋的值是很复杂的方法调用，类型不直观时。</p>
+<p>var a = def(abc().xyz()); // 此处a的类型很难看出，因此不应该使用var声明。</p>
+</li>
+<li><p>当你的变量的作用域很大时，方法很长，var变量影响深远，不应该使用。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="随机验证码"><a href="#随机验证码" class="headerlink" title="随机验证码"></a>随机验证码</h3><pre class="line-numbers language-none"><code class="language-none">import java.util.Random
+public class 随机验证码
+&#123;
+	public static void main(String[] args)
+	&#123;
+	    &#x2F;&#x2F;原理
+		&#x2F;&#x2F;int d &#x3D; 100;
+		&#x2F;&#x2F;char c &#x3D; (char)d;
+		&#x2F;&#x2F;System.out.println(c);
+		
+		&#x2F;&#x2F;假如生成随机的小写字符：97~97+25 
+		Random rnd &#x3D; new Random();
+		rnd.nextInt(26) + 97;
+		char c &#x3D; (char)d;
+		System.out.print(c);
+		
+	&#125;
+&#125;</code></pre>
+
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><p>+，-，*，/，%</p>
+<p>++：将单个变量的值加1；</p>
+<p>– ：将单个变量的值减1；</p>
+<p>boolean值不可以加减；</p>
+<p>对于一些更复杂的运算，应该使用Math类，（不用手动导入）</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F;计算乘方
+Math.pow(3,8);
+&#x2F;&#x2F;开方
+Math.sqrt(25);
+&#x2F;&#x2F;四舍五入
+Math.round(3.3);
+&#x2F;&#x2F;向下取整
+Math.floor(-4.5);&#x2F;&#x2F;-5
+&#x2F;&#x2F;向上取整
+Math.ceil(4.4);</code></pre>
+
+<p><strong>赋值运算符</strong>：= </p>
+<p>右边的值赋给左边。右边可以是简单值、表达式。左边只能是变量。</p>
+<p><strong>比较运算符</strong></p>
+<p>&gt;=    &lt;    &lt;=    ==    !=  &gt;<br>结果为true或false</p>
+<p> <strong>逻辑运算符</strong></p>
+<p>只能对boolean值进行运算。</p>
+<p>&amp;&amp;  与 ，两个都为true才为true</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F;短路
+int a &#x3D; 10;
+int b &#x3D; 5;
+boolean ne &#x3D; a &gt; 15 &amp;&amp; b++ &gt;2;
+System.out.println(bn);&#x2F;&#x2F;false
+System.out.println(bn);&#x2F;&#x2F;b还是5，说明b++没有执行</code></pre>
+
+
+
+<p>&amp;    不短路与</p>
+<p>||    或     一个为true，就为true</p>
+<p>|    不断路或</p>
+<p>！    非</p>
+<p>^        异或：两个条件相同得到false,不同得到true</p>
+<p><strong>扩展的赋值运算符</strong>（<strong>快</strong>）</p>
+<p>a += b    a = a + b;</p>
+<p>a -= b;</p>
+<p>a *= b;</p>
+<p>扩展的赋值运算符的左边只能是变量</p>
+<p><strong>三目运算符</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">int s &#x3D; 4000
+String ss &#x3D; s &gt; 12000 ? &quot;收入还行，可以买买买&quot;:&quot;只能吃土&quot;; 
+String sss &#x3D; s &gt; 12000 ? &quot;收入高，可以买买买&quot;:(s &gt; 3000 ? &quot;收入还行&quot;:&quot;只能吃土&quot;); &#x2F;&#x2F;嵌套</code></pre>
+
+<p>逻辑表达式 ？ 值1：值2</p>
+<p>表达式为true,返回值1，否则返回值2</p>
+<p><strong>运算符的优先级和结合性</strong></p>
+<p>结合性：大部分运算符从左向右，赋值运算符从右向左。</p>
+<p>优先级：先乘除，后加减。用括号保证优先级。</p>
+<p><strong>位运算符</strong></p>
+<ul>
+<li><p>按位与    &amp;:两个对应位都为1，结果才为1 </p>
+</li>
+<li><p>按位或    | :两个对应位有一个为1，结果就为1</p>
+</li>
+</ul>
+<p>当表示状态时，会用特定的数代表<strong>开关</strong>。</p>
+<p>文本状态：粗体（1）、斜体（2）、下划线（4）<br>                        001           010                   100<br>负数的进制码：保存的是补码。 </p>
+<p>原码：数，直接算出来的叫原码，最高位又叫符号位。0表示正数，1表示负数</p>
+<p>反码：除符号位之外，其他位都按位取反。</p>
+<p>补码：反码+1</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F;int是32位
+&#x2F;*
+0000_0000_0000_0000_0000_0000_0001_0111  &#x2F;&#x2F;23&#x3D;16+4+2+1
+0000_0000_0000_0000_0000_0000_0100_0101  &#x2F;&#x2F;69&#x3D;64+4+1
+0000_0000_0000_0000_0000_0000_0000_0101  &#x2F;&#x2F;&amp;:1+4&#x3D;5 
+0000_0000_0000_0000_0000_0000_0101_0111  &#x2F;&#x2F;|:1+2+4+16+64&#x3D;87
+
+1000_0000_0000_0000_0000_0000_0001_0111  &#x2F;&#x2F;-23的原码
+1111_1111_1111_1111_1111_1111_1110_1000  &#x2F;&#x2F;23的反码
+1111_1111_1111_1111_1111_1111_1110_1001  &#x2F;&#x2F;-23的补码
+
+0000_0000_0000_0000_0000_0000_0100_0101  &#x2F;&#x2F;69的原码、补码
+----------------------------------------------------------------------
+1111_1111_1111_1111_1111_1111_1110_1101  &#x2F;&#x2F;计算结果（补码）
+1111_1111_1111_1111_1111_1111_1110_1100  &#x2F;&#x2F;计算结果（补码-1&#x3D;反码）
+1000_0000_0000_0000_0000_0000_0001_0011  &#x2F;&#x2F;计算结果 （原码）
+
+
+*&#x2F;
+System.out.println(23 &amp; 69);&#x2F;&#x2F;5
+System.out.println(23 | 69);&#x2F;&#x2F;87
+System.out.println(-23 | 69);&#x2F;&#x2F;-19</code></pre>
+
+<ul>
+<li>~    按位取反。原来是0变成1，原来是1变成0；正数变成负的（绝对值+1），负数变成正的（绝对值-1）。</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">System.out.println(~5);&#x2F;&#x2F;-6
+System.out.println(~93);&#x2F;&#x2F;-94
+System.out.println(~-93);&#x2F;&#x2F;92
+System.out.println(~-87);&#x2F;&#x2F;86</code></pre>
+
+<ul>
+<li>^    :按位异或。上下两位相同得0，不同得1；</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;*
+0000_0000_0000_0000_0000_0000_0011_1000  &#x2F;&#x2F;56的原码
+0000_0000_0000_0000_0000_0000_0101_1001  &#x2F;&#x2F;89的原码
+0000_0000_0000_0000_0000_0000_0110_0001	 &#x2F;&#x2F;97
+*&#x2F;
+
+System.out.println(56^89);&#x2F;&#x2F;97</code></pre>
+
+<ul>
+<li><p>&lt;&lt;    左移：左移N位，相当于乘以2的N次方。</p>
+<p>面视：2*8的最快实现是：2 &lt;&lt; 3</p>
+</li>
+<li><p>“&gt;&gt;   右移：右移N位，相当于除以2的N次方。除不尽时，实际结果总是比实际结果略小的整数”  </p>
+<pre class="line-numbers language-none"><code class="language-none">System.out.println(34 &gt;&gt; 3);&#x2F;&#x2F;4
+int a &#x3D; 3;
+a &lt;&lt; 1;&#x2F;&#x2F;扩大一倍.</code></pre></li>
+<li><p>“&gt;&gt;&gt; :无符号右移。如果被移的数是正数，那么该运算符与&gt;&gt;效果一致。</p>
+</li>
+</ul>
+<p>如果被移的数是负数，被空出来的高位总是补0—-这个数就会变成正数。</p>
+<h2 id="Ⅱ"><a href="#Ⅱ" class="headerlink" title="Ⅱ."></a>Ⅱ.</h2><h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><ul>
+<li>顺序结构</li>
+<li>分支结构</li>
+<li>循环结构</li>
+</ul>
+<p><strong>break</strong></p>
+<p>终止结束循环</p>
+<pre class="line-numbers language-none"><code class="language-none">for (int i &#x3D; 0; i &lt; 20 ;i ++ )
+&#123;
+	if (i &#x3D;&#x3D; 3)
+		&#123;
+			break;
+		&#125;
+&#125;
+
+outer:
+for (int i &#x3D; 0; i &lt; 20 ;i ++ )
+&#123;
+	for (int j &#x3D; 0; j &lt; 10; j++)
+	&#123;
+		System.out.println(&quot;i:&quot;+i+&quot;,j:&quot;+j);
+		if (j &gt; 2)
+		&#123;
+			break outer;&#x2F;&#x2F;跳出标签所在的循环。
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+<p><strong>continue</strong></p>
+<p>忽略剩下的语句，执行下一次循环</p>
+<p>带标签时，可以忽略标签，</p>
+<pre class="line-numbers language-none"><code class="language-none">outer:
+for (int i &#x3D; 0; i &lt; 20 ;i ++ )
+&#123;
+	for (int j &#x3D; 0; j &lt; 10; j++)
+	&#123;
+		System.out.println(&quot;i:&quot;+i+&quot;,j:&quot;+j);
+		if (j &gt; 2)
+		&#123;
+			continue outer;&#x2F;&#x2F;忽略标签所在的循环剩下的语句，进入标签所在循环的下一个。
+		&#125;
+	&#125;
+&#125;</code></pre>
+
+
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>java类型：基本类型：8个</p>
+<p>引用类型：数组、类、接口、枚举。</p>
+<p>数组就是一种引用类型。任何已有类型，添加一组方括号就变成了数组类型。</p>
+<p>// int          -&gt; int[]<br>// long       -&gt; long[]<br>// String     -&gt; String[]<br>// double    -&gt; double[]<br>// int[]         -&gt; int[][]<br>// long[][]         -&gt; long[][][]<br>//<br>创建数组对象<br>动态<br>静态</p>
+<p>所有数组元素为数值型时，初始值为0；</p>
+<p>默认的值：<br>      引用类型                                 null;<br>      boolean                                 false;</p>
+<h3 id="深入理解数组"><a href="#深入理解数组" class="headerlink" title="深入理解数组"></a>深入理解数组</h3><p>数组是引用类型，引用类型和基本类型的区别在哪里？</p>
+<p>java程序的内存可以分为：</p>
+<ul>
+<li><p>堆内存（heap):java虚拟机启动时分配的一块永久的，很大的内存区。堆内存只有一块。</p>
+</li>
+<li><p>栈内存（stack):每次方法运行分配一块临时、很小的内存区。每个方法都有自己对应栈区，方法结束时，对应的栈区就会被回收。</p>
+</li>
+<li><p>在方法中定义的、局部变量（不管什么类型），都放入对应的方法栈区。</p>
+</li>
+<li><p>new出来的东西，都在堆内存。堆内存中的对象，如果没有应用变量指向它，那他就会变成垃圾，等待Vm回收。</p>
+<p>计算机的每个内存单元（byte、字节）在操作系统都有一个编号，就像一栋大楼要为每个房间编号一样。</p>
+</li>
+<li><p>基本类型的赋值：直接将该值放入变量所在的内存。</p>
+</li>
+</ul>
+<h3 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h3><ul>
+<li><p><strong>总决：定义类、创建对象、调用方法</strong>。</p>
+<ul>
+<li><p>定义类：</p>
+<p><strong>【修饰符】class 类名</strong></p>
+<p><strong>{</strong></p>
+<pre><code>**//成员变量(field)**
+    
+**//方法（method）**
+    
+**//构造器（constructor）**
+    
+**//内部类（nested class）**
+    
+**//初始化块**
+</code></pre>
+<p><strong>}————————–类体（有且只有以上5个）</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">public class 面视题
+&#123;
+	int age &#x3D; 20;
+	double de;&#x2F;&#x2F;成员变量
+	de &#x3D; 3.4;&#x2F;&#x2F;赋值语句。报错
+&#125;</code></pre>
+
+
+
+<p>类中5大成员！3大类型：类、接口、枚举！4个修饰符！</p>
+<ul>
+<li>修饰符：public、final  |  abstract。有且仅有。</li>
+<li>类名：语法要求（只要是标识符即可）。多个单词连缀而成，每个单词首字母大写。</li>
+</ul>
+</li>
+<li><p><strong>成员变量（field）</strong></p>
+<ul>
+<li><p>[修饰符] 类型 变量名 【=初始值】</p>
+</li>
+<li><p>修饰符：private  |  protected  |  public  、final  、static 、(transient:序列化相关)</p>
+</li>
+<li><p>类型：任意基本类型或引用类型</p>
+</li>
+<li><p>变量名：语法要求，只要是标识符即可。驼峰命名法，首字母小写，后面每个单词首字母大写。用于描述该类或对象的状态，建议用名词。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>方法（method）</strong></p>
+<ul>
+<li><p>【修饰符】 返回值类型 方法名（形参列表）</p>
+<p>{</p>
+<pre><code>//代码：定义变量（包括数组）、变量赋值、流程控制、
+</code></pre>
+<p>}——————–方法体</p>
+</li>
+<li><p>修饰符：private  | protected  | public  、final  | abstract  、 static</p>
+</li>
+<li><p>返回值类型：任意基本类型或引用类型。可使用void声明没有返回值。</p>
+</li>
+<li><p>方法名：语法要求：只要是标识符即可：驼峰写法。用于描述该类或对象的行为，通常时动词。只定义项目感兴趣的行为</p>
+</li>
+<li><p>形参列表：形参类型 形参名</p>
+</li>
+</ul>
+</li>
+<li><p><strong>构造器</strong></p>
+<p>作用：new调用构造器来创建对象。如果你没有为类写构造器，系统会默认为该类提供一个无参的构造器。构造器很像一个特殊的方法，没有返回值类型声明。构造器必须与类名相同。构造器的作用：用于初始化对象—-构造器永远属于实例。他不可能用static修饰。</p>
+<ul>
+<li><p>【修饰符】构造器名（形参列表）</p>
+<p>{</p>
+<pre><code>//代码：定义变量（包括数组）、变量赋值、流程控制、
+</code></pre>
+<p>}————-构造体</p>
+<ul>
+<li><p>构造器名必须与类名相同.</p>
+<p>判断一个体是否为构造器，要看两点：名称与类名相同。没有返回值类型。</p>
+</li>
+<li><p>修饰符：private  | protected  | public</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>类可以用来做什么？</p>
+<ol>
+<li>所有的类都是引用类型。所有的类都可用于<strong>声明变量</strong>。很多没有main方法的类就是为主类服务的。</li>
+<li>调用static修饰的方法或static修饰的变量。</li>
+<li>创建对象。new构造器（参数）。</li>
+<li>派生子类。</li>
+</ol>
+</li>
+<li><p>对象可以用来做什么？</p>
+<ol>
+<li>调用无static修饰的成员变量。（实例变量）</li>
+<li>调用无static修饰的方法。（实例方法）</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p><strong>this关键字</strong></p>
+<p>this可以出现<strong>非static的方法、构造器</strong>中。作用如下：</p>
+<ul>
+<li><p>出现<strong>非static方法</strong>中，this代表该方法的调用者。“谁调用该方法，this就代表谁”</p>
+</li>
+<li><p>出现在构造器中,this代表该构造器正在初始化的对象。<strong>构造器用于对对象进行初始化</strong></p>
+</li>
+</ul>
+<p>this.的作用：用于区分方法或构造器的局部变量（尤其是与成员变量同名时）</p>
+<pre class="line-numbers language-none"><code class="language-none">public class Apple
+&#123;
+	String color;
+	double weight;
+	
+	public Apple(String color , double weight)
+	&#123;
+		this.color &#x3D; color;
+		this.weight &#x3D; weight;
+	&#125;
+&#125;</code></pre></li>
+<li><p>方法详解：</p>
+<ul>
+<li><p>方法类似于函数。但与函数不同的是，方法不能存在，方法必须定义在类里面。</p>
+</li>
+<li><p>定义在类中的方法。从逻辑上来看，如果该方法有static修饰，该方法属于类本身，应该用类调用</p>
+<p>如果该方法无static修饰，该方法属于对象本身。</p>
+</li>
+<li><p>方法不能独立执行。方法一定要看调用者。如果在调用同一个类中的方法，可以省略调用者，此时系统会添加默认的调用者。如果该方法是无static修饰的方法，添加this作为默认的调用者。</p>
+</li>
+</ul>
+</li>
+<li><p>形参个数可变的方法：</p>
+<p>类型… 形参名：形参个数可变的方法。实际是数组，写法上等价于：类型[] 形参名</p>
+<p>类型…    这样写的好处：调用方法时更加方便。即可直接传入多个元素，系统会自动将他们封装成数组。缺点：只能作为形参列表的最后一个元素。一个方法最多只能有一个参数可变的形参；</p>
+<h3 id="递归方法"><a href="#递归方法" class="headerlink" title="递归方法"></a>递归方法</h3><p>方法调用自身–递归带来了隐式循环。要避免无限递归。一定要在可能出现的某些情况下，不在调用方法自身。</p>
+<p>递归要向已知方向发展。</p>
+<h3 id="方法重载"><a href="#方法重载" class="headerlink" title="方法重载"></a>方法重载</h3><p>在同一个类中，有多个同名的方法，但这多个方法的形参列表不同。</p>
+<p>三同一不同。同一个类、返回值类型、方法名相同。参数列表不同。</p>
+<p>修饰符不同不算重载。</p>
+<h3 id="参数传递"><a href="#参数传递" class="headerlink" title="参数传递"></a>参数传递</h3><p>java是值传递，传递的是参数的一个副本。如果</p>
+<pre class="line-numbers language-none"><code class="language-none">\\交换值
+public class A
+&#123;
+	public static void swap(int a, int b)
+	&#123;
+		int tem &#x3D; a;
+		a &#x3D; b;
+		b &#x3D; tem;
+	&#125;
+	public static void main(String[] args)
+	&#123;
+		int a &#x3D; 6;
+		int b &#x3D; 9;
+		A.swap(a,b);
+		System.out.println(a);&#x2F;&#x2F;6
+		System.out.println(b);&#x2F;&#x2F;9
+	&#125;
+&#125;
+
+class DataWrap
+&#123;
+	int a &#x3D; a;
+	int b &#x3D; b;
+&#125;
+public class B
+&#123;
+	public static void swap(DataWrap dw)
+	&#123;
+		int tem &#x3D; dw.a;
+		dw.a &#x3D; dw.b;
+		dw.b &#x3D; tem;
+	&#125;
+	public static void main(String[] args)
+	&#123;
+		DataWrap dw &#x3D; new DataWrap();
+		dw.a &#x3D; 6;
+		dw.b &#x3D; 9;
+		B.swap(dw);
+		System.out.println(dw.a);&#x2F;&#x2F;9
+		System.out.println(dw.b);&#x2F;&#x2F;6
+	&#125;
+&#125;</code></pre>
+
+<ul>
+<li><p>如果传递的参数是<strong>基本数据类型</strong>，方法中对参数所做的修改，完全不会影响参数本身！！</p>
+</li>
+<li><p>如果传递的是引用类型，参数的副本和参数本身指向的是同一个对象，因此方法通过参数副本修改对象时，会影响参数本身所指的对象。</p>
+</li>
+</ul>
+<p><strong>一个.java文件中可以定义多个类，但只能有一个public类。</strong></p>
+<h2 id="变量详解"><a href="#变量详解" class="headerlink" title="变量详解"></a>变量详解</h2><p>java变量（没有全局变量的概念）</p>
+<ul>
+<li><p><strong>成员变量</strong></p>
+<p><strong>类</strong>中定义成员变量</p>
+<ul>
+<li>类变量（有static）</li>
+<li>实例变量（无static）</li>
+</ul>
+</li>
+<li><p><strong>局部变量</strong></p>
+<p><strong>方法</strong>中定义局部变量（方法在栈中，方法执行完就被销毁）</p>
+<ul>
+<li>形参</li>
+<li>普通局部变量</li>
+<li>代码块的局部变量</li>
+</ul>
+</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li><p>成员变量：可以不需要显示指定初始值，系统可以自动分配初始值，初始值规则和数组元素的初始值规则相同。</p>
+<ul>
+<li><p>程序中类本身只有一个；程序一定要先有类，再有对象（实例）！</p>
+</li>
+<li><p>类变量：类变量属于类本身，当系统初始化类时，就会为类分别分配空间，并执行初始化。</p>
+</li>
+<li><p>实例变量：实例变量属于对象本身，系统每次创建对象时，都需要为该对象的实例变量分配空间，并执行初始化。</p>
+</li>
+<li><p>严格来说：类变量应该由类本身进行访问。</p>
+<pre><code>实例变量，应该由对象进行访问。
+</code></pre>
+<p>但java允许用对象来访问类变量，一个对象修改了类变量以后，其他对象访问的类变量就成了修改之后的。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200723102044928.png" alt="C:\Users\chenhongda\AppData\Roaming\Typora\typora-user-images\image-20200721094839622.png"></p>
+<pre><code>  - Computer.java
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/20200723102154115.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>​      </p>
+<pre><code>          ComputerTest.java
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/20200723115015396.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200723115050375.png" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>局部变量：必须由程序员先显示指定初始值，然后才能使用—–否则编译报错。</p>
+</li>
+<li><p>```<br>//代码块的作用域很小，离开代码块，代码块的局部变量就失效了<br>{</p>
+<pre><code>int a = 1;
+</code></pre>
+<p>}<br>System.out.print(a);//编译报错</p>
+<pre class="line-numbers language-none"><code class="language-none">
+  
+
+### 方法详解
+
+- 方法所属性：
+- 形参个数可变的方法
+- 递归方法
+- 方法重载（3同一不同） 
+- 方法传参机制。值传递，传递到是参数的副本。
+
+类变量-------是在第一次用该类，系统会为该类变量分配空间，并初始化。每个类的类变量都只会有一个。
+
+实例变量----每次创建对象，系统都会为该对象的实例变量分配空间，并初始化。
+
+### 封装
+
+**面向对象三大特征：封装、继承、多态。**
+
+- 隐藏：隐藏对象的内部实现细节。
+
+- 暴露：将一些操作界面暴露出来。通过暴露的界面来操作对象，该对象的内部状态不会被破坏。
+
+  合理隐藏、合理暴露。
+
+**访问控制器：**
+
+- private	-&gt;	不写	-&gt;	protected	-&gt;	public	
+- private（类访问权限）:该修饰符修饰的成员，只能在该类中被访问。（彻底的隐藏）
+- 不写（包访问权限）：该修饰符修饰的成员，只能在该类、及该类所在包中被访问。
+- protected（子类访问权限）：该修饰符修饰的成员，只能在该类、及该类所在包、该类的子类中被访问。
+- public（公类）：该修饰符修饰的成员，可以在任意地方被访问。
+
+|          | private | 不写 | protected | public |
+| -------- | ------- | ---- | --------- | ------ |
+| 当前类   | √       | √    | √         | √      |
+| 同一个包 | ×       | √    | √         | √      |
+| 子类     | ×       | ×    | √         | √      |
+| 任意     | ×       | ×    | ×         | √      |
+
+- 指定原则：
+  - 成员变量（实例变量），通常用private修饰，为了隐藏实现细节。
+  - 为每个成员变量提供public的getter、setter方法，用于控制该成员变量的方法。
+  - 需要暴露的方法，通常用public 修饰。
+  - 如果希望一个方法主要用于被子类重写，用protected修饰。
+
+**包**
+
+不同的公司完全可以定义同名的类，为了解决不同公司、不同项目类名冲突的问题，java就引入“包”机制。就是在类名添加一个前缀。
+
+java程序为类定义包？
+
+- 在源代码中加入package包名。
+
+- 将生成的class文件要放在对应的文件结构下。
+
+- 包命名规范：语法要求，只要求标识符即可。专业要求，推荐用公司域名倒写，再加项目名。
+
+  **备注**：一旦你为类指定了包名之后，使用该类时应该用完整类名：**包命+类名**。
+
+导入包
+
+import 的作用：为了省略写包名，如果不写import 那么每次都要写类的全名（包命+类名）。
+
+import 包名.类名；每次导入一个类
+
+import 包名.*；指定包的所有类，星号代表类，不可以代表包。
+
+java默认导入   java.lang包下所有类。
+
+**import static**       静态导入
+
+可以省略写类名。用于导入指定包下的所有类变量。
+
+import static 包名.类名.静态成员名；每次导入一个静态成员名
+
+import static 包名.类名.*；导入指定类的所有静态成员。
+
+java源程序的结构：
+
+**一条package 语句**
+
+**N个import 语句**
+
+**N个class定义**
+
+### 构造器详解
+
+构造器规则：
+
+- 构造器用于初始化对象
+- 构造器如何调用？必须用new来调用构造器，这样可以返回一个初始化完成的对象。
+
+构造器重载：
+
+- 一个类中可以定义多个构造器，必须要求形参列表不同-------这就是构造器重载。
+
+  **this调用**：this后紧跟一个括号（参数）。this调用代表**调用同一个类中重载的构造器**---this调用只能出现在**构造器的第一行**。具体调用哪个构造器看this括号中传入的参数。
+
+  **this引用**：this后紧跟一个点：this.name;
+
+
+## Ⅲ.
+
+### 继承
+
+封装、继承、多态----------面向对象3大特征。
+
+- 理解继承
+
+  java的继承是一种类与类之间的继承。
+
+  				   是一种由“一般到特殊”的关系。
+		
+  	       		子类是一种特殊的父类。
+		
+  			    	子类----小类； 父类-----大类	
+		
+  					**子类实例，完全可以当成父类实例来使用**
+		
+  					java的继承使用的是extends单词，扩展。
+		
+  					父类（超类、基类、大类）；子类（派生类、小类）
+
+- 继承语法
+</code></pre>
+<p>[修饰符] class 类名 extends 父类<br>{</p>
+<pre><code>   ////
+</code></pre>
+<p>}</p>
+</li>
+</ul>
+<p>  class A<br>  {}<br>  class B extends A<br>  {}<br>  class C extends B<br>  {}<br>  Object-&gt;A-&gt;B-&gt;C     B是C的直接父类，A和Object是C的间接父类或叫做祖先类。<br>  <pre class="line-numbers language-none"><code class="language-none">
+  - java是单继承，只能有**一个直接父类**。
+  - 如果你不是显式继承父类，java默认是继承Object类（JDK系统提供的类）一切都是Object类。
+
+- 继承的好处，代码复用
+
+  - 子类继承父类，可以得到父类的
+    - 成员变量
+    - 方法
+
+- 方法重写（override）
+
+  子类发现父类不适合自己时，就要重写父类的方法。
+
+  **方法重写口诀：2同2小1大**。
+
+  - 2同：方法名相同、形参列表相同。
+  - 2小：返回值类型相同或更小，声明抛出的异常相同或更小。
+  - 1大：访问权限相同或更大。
+
+  @Override：作用是报错。
+
+  - 要求被修饰的方法必须重写父类的方法，否则就报错。
+  
+- super限定
+
+  与前面this应用非常相似，super用于限定访问父类定义的实例变量或实例方法。
+
+  super.父类定义的实例变量
+
+  super.父类定义的实例方法(参数)
+  ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727083724904.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+- 子类的构造器调用父类的构造器
+
+  子类构造器【一定调用】父类构造器【一次】，有且仅有一次。
+
+  - 如果子类的构造器没有显式调用父类构造器，系统会自动在子类构造器的第一行先调用父类的无参数的构造器。
+  - 子类的构造器的第一行显式使用super调用来调用父类构造器。
+
+  super调用一定是**调用父类的构造器**。只能出现在构造器的第一行。
+
+  this调用是**调用当前类的构造器**。只能出现在构造器的第一行。
+
+  【super调用和this调用不可能同时出现！】
+
+  super限定：super紧跟一个点
+
+  - super.name;
+  - super.walk();
+
+  super调用：super紧跟圆括号。
+
+  - super(参数);
+
+  【备注】：如果父类没有无参数的构造器，子类的构造器必须显式调用父类指定的构造器。
+
+### 多态
+
+3种类型：类、接口、枚举
+
+4个修饰符：private|protected|public、final、static、abstract
+
+5大成员：成员变量、方法、构造器、初始化块、内部类
+
+- 多态：
+
+  为什么会有多态？
+
+  因为当java执行方法时，方法的执行是动态绑定的；方法总是执行该变量实际所指向对象的方法。
+
+  变量类型：
+
+  - - 编译时类型：声明该变量时指![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727083816581.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+定的类型。在java程序编译阶段，编译器只认识编译时类型。
+    
+  - 以下程序编译无法通过
+  - ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727083841573.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727083854964.png)
+强制转换为Rect类型。
+    
+    - 运行时类型（实际类型）：该变量实际所引用的对象的类型。
+    
+  - 变态：同一个类型的实例、在执行同一个方法，个别对象呈现出变异的行为特征----“变态”。
+
+  - 多态：同一个类型的多个实例、在执行同一个方法，呈现出多种行为特征-----“多态”。
+
+  - 向上转型:   子类的对象可以直接赋值给父类变量。**自动完成。**
+  - ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727083922285.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+ - 向下转型：父类变量赋值给子类变量。**强制转换。**
+
+    注意点：
+
+    - 强转运算符只能在编译类型具有继承关系的变量之间进行强制转换，否则编译报错：不兼容类型。
+    - 如果在编译类型具有继承关系的变量之间转换时，如果被转变量的实际类型，不是要转的目标类型，程序就会应发ClassCastException（类型转换异常）
+
+  - instanceof 运算符：
+
+    为了避免ClassCaseException异常，java就增加了个运算符。
+
+    变量名 instanceof 类型 ------- 当变量所引用的对象是后面类或子类的实例时，该运算符返回true
+
+    instanceof 只能在编译类型具有**继承**关系之间进行判断，否则编译报错：不兼容类型，如下
+    ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;2020072708394713.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+## 初始化块
+
+语法：
+
+【修饰符】&#123;
+
+	各种语句
+
+&#125;
+
+|              | 执行次数 | 执行先后 | 何时执行           |
+| ------------ | -------- | -------- | ------------------ |
+| 类初始化块   | 1次      | 先       | 第一次主动使用该类 |
+| 实例初始化块 | n次      | 后       | 每次调用构造器     |
+
+- 初始化块是没有名字的。
+
+- 修饰符只能出现一个：static
+
+  - 有static叫类初始化块（静态初始化块）
+
+    - 负责对类执行初始化。当程序第一次**主动**使用该类时，系统会为该类分配内存空间、并执行初始化（调用初始化块）只要你使用该类，基本都算主动使用--------除了仅使用类声明变量。
+
+    - 类初始化块何时执行？
+
+      程序第一次**主动**使用该类时，会执行该类的类初始化块。程序运行时，该初始化块只执行一次。
+
+    - 定义类变量时指定的初始值，也是假象。-----------指定的初始值。编译之后就变成类初始化中的一条赋值语句。但到底在类初始化块的代码之前，还是代码之后，取决于他在源代码中的顺序。在后面的似乎覆盖了前面同名的变量。
+    - ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084016807.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+ - 无static叫实例初始化块（动态初始化块）
+
+    - 实例初始化块是“假象”，一个类在编译之后，实例初始化块就会消失-----实例初始化块的代码会被还原到**每个构造器代码之前**。
+
+      **实例初始化块**的作用：将多个构造器前面部分相同的代码提取到实例初始化块中。
+
+      实例初始化块何时执行?
+
+      只要程序调用构造器创建对象，程序总会先执行初始化块。
+
+      反编译工具 javap -c class文件名，无.class后缀
+![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084045780.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+Init.java
+![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084105570.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+ InitTest.java
+ ![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084125990.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+  - 定义实例变量时指定的初始值，也是假象。
+
+        ------执行初始值，编译之后被还原到构造器所有代码之前，成为一条赋值语句。
+
+
+
+![](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084144225.png?x-oss-process&#x3D;image&#x2F;watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ&#x3D;&#x3D;,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https:&#x2F;&#x2F;img-blog.csdnimg.cn&#x2F;20200727084158371.png)
+        实例初始化块的语句要被还原到构造器所有代码之前：定义变量指定的初始值，也要变成构造器之前的一条赋值语句。原来顺序是什么样的，还原之后的顺序还是什么样的。在前面的起作用，不会覆盖。
+
+        - 初始化任何类之前，一定先从Object开始初始化，依次初始化他的所有祖先类，最后才到他自己。
+        - 创建任何对象之前，一定是先从Object构造器开始执行，执行它所有祖先类的构造器，最后才执行他自己的构造器。
+    
+      &#96;&#96;&#96;java
+      class Base
+      &#123;
+          static &#123;
+               System.out.println(&quot;Base的类初始化块&quot;);
+          &#125;
+          &#123;
+               System.out.println(&quot;Base的实例初始化块&quot;);
+          &#125;
+          public Base()
+          &#123;
+              System.out.println(&quot;Base的无参构造器&quot;);
+          &#125;
+          public Base(String name)
+          &#123;
+               System.out.println(&quot;Base的String参数构造器&quot;);
+          &#125;
+      &#125;
+      class Mid extends Base
+      &#123;
+          static &#123;
+               System.out.println(&quot;Mid的类初始化块&quot;);
+          &#125;
+          &#123;
+               System.out.println(&quot;Mid的实例初始化块&quot;);
+          &#125;
+          public Mid(int age)
+          &#123;
+              this();
+              System.out.println(&quot;Mid的(int)构造器&quot;);
+          &#125;
+          public Mid()
+          &#123;
+              super(&quot;fkit&quot;);
+              System.out.println(&quot;Mid的无参构造器&quot;);
+          &#125;
+      &#125;
+      class Sub extends Mid
+      &#123;
+          static &#123;
+               System.out.println(&quot;Sub的类初始化块&quot;);
+          &#125;
+          &#123;
+               System.out.println(&quot;Sub的实例初始化块&quot;);
+          &#125;
+          public Sub()
+          &#123;
+               System.out.println(&quot;Sub的无参构造器&quot;);
+          &#125;
+          public Sub(double d)
+          &#123;
+               System.out.println(&quot;Sub的(double)构造器&quot;);
+          &#125;
+      &#125;
+      
+      public class Test
+      &#123;
+          public static void main(String[] args)
+          &#123;
+              new Sub(2.4);
+              new Sub(3.4);
+          &#125;
+      &#125;</code></pre><br><img src="https://img-blog.csdnimg.cn/20200727084227817.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<pre><code>  &gt; 总之，new一个对象，如果是第一次使用该类，那么优先执行类初始化块，其中优先执行祖先的类初始化块。类初始化块执行完成后，再执行对应的构造器，构造器里面的执行顺序是，祖先的构造器-----&gt;自己的实例初始化块-----&gt;自己的构造器中的语句（包括this()）。如果没有显示的写出调用祖先的构造器，那么默认调用祖先的无参构造器。
+</code></pre>
+<p>测试this();与实例初始化块谁先执行————–&gt;实例初始化块优先于this();但super();优先于实例初始化块。<br><img src="https://img-blog.csdnimg.cn/20200727084257623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200727084309191.png" alt="在这里插入图片描述"></p>
+<h2 id="Ⅳ"><a href="#Ⅳ" class="headerlink" title="Ⅳ."></a>Ⅳ.</h2><h3 id="包装类"><a href="#包装类" class="headerlink" title="包装类"></a>包装类</h3><p>java有8种基本类型，byte    short    int    long    float    double    char    boolean</p>
+<p>这8个基本类型不能当成对象使用，而且不能接受null值。</p>
+<p>为了解决上面问题，java为8种基本类型提供了对应的包装类——–可将他们包装成对象。</p>
+<p>byte—–Byte</p>
+<p>short—-Short</p>
+<p>int——–Integer</p>
+<p>long—–Long</p>
+<p>float—–Float</p>
+<p>自动装箱：基本类型的值可以自动当作基本类型的值</p>
+<p>自动拆箱：包装类的实例可以自动当作基本类型是值使用</p>
+<pre class="line-numbers language-none"><code class="language-none">Integer in &#x3D; 2;
+Object ob &#x3D; 2.3;&#x2F;&#x2F;2.3自动装箱Double，Double自动向上转型为Object
+Long re &#x3D; in * ob;
+System.out.println(re);&#x2F;&#x2F; 自动拆箱</code></pre>
+
+<p>做项目时，同常来说建议使用包装类来声明变量。</p>
+<p>包装类的方法：</p>
+<pre><code>方法可将字符串转成对应的基本类型值
+</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">int i &#x3D; Integer.parseInt(&quot;123&quot;);&#x2F;&#x2F;-------&gt;i &#x3D; 123
+long lo &#x3D; Long.parseLong(&quot;123&quot;);&#x2F;&#x2F;-------&gt;lo &#x3D; 123
+blooean b &#x3D; Boolean.parseBoolean(&quot;true&quot;);&#x2F;&#x2F;----&gt;b &#x3D; true</code></pre>
+
+<p>NumberFormatException:要转的字符串不符合数值格式，会引发该异常。</p>
+<ul>
+<li><p>面视题</p>
+<pre class="line-numbers language-none"><code class="language-none">public class 面视题
+&#123;
+    public static void main(String[] args)
+        &#123;
+            Integer i &#x3D; 20; &#x2F;&#x2F; 在-128~127之间，缓存
+            Integer j &#x3D; 20; &#x2F;&#x2F; 直接使用缓存中的对象
+            System.out.println(i &#x3D;&#x3D; j);&#x2F;&#x2F;true
+
+            Integer k &#x3D; 200; 
+            Integer l &#x3D; 200;
+            System.out.println(k &#x3D;&#x3D; l);&#x2F;&#x2F;false
+        &#125;
+&#125;</code></pre>
+
+<blockquote>
+<p>当程序对Integer使用自动装箱时，它有一个缓存机制，它会缓存-128~127之间的对象。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="两个被重写的方法"><a href="#两个被重写的方法" class="headerlink" title="两个被重写的方法"></a>两个被重写的方法</h3><ul>
+<li><p>toString()方法</p>
+<p>程序打印对象，或把对象自动转成字符串时，实际上调用的是该对象的toString方法。</p>
+<p>Object提供的toString返回：类名@hashCode方法返回        返回的是16进制的数值。</p>
+<pre class="line-numbers language-none"><code class="language-none">@Override
+public String toString()
+&#123;
+return &quot;Apple[color&#x3D;&quot;+color
+		+&quot;,weight&#x3D;&quot;+weight
+		+&quot;]&quot;;
+&#125;
+&#x2F;&#x2F;重写toString方法，返回对象的信息</code></pre>
+
+<blockquote>
+<p>任何对象+””,就会变成字符串</p>
+</blockquote>
+</li>
+<li><p>equals()方法</p>
+<p>== 如果判断的两个引用变量，要求两个引用变量指向同一个对象时，才会返回true.</p>
+<p>默认的equals：Object提供的equals方法，判断两个对象相等的标准与==是完全一样的。</p>
+<ul>
+<li><p>重写equals()方法，根据业务规则定义。比较一些关键的成员变量。</p>
+<p><img src="https://img-blog.csdnimg.cn/2020073001292163.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>  <img src="https://img-blog.csdnimg.cn/20200730012939833.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="static修饰符详解"><a href="#static修饰符详解" class="headerlink" title="static修饰符详解"></a>static修饰符详解</h3><p>  static并不是静态的意思。static是类的意思，有static修饰的成员属于类成员，没有static的成员属于实例成员。</p>
+<p>  static是否可以修饰局部变量——局部变量不属于成员 ，不能用static修饰</p>
+<p>  static能否修饰外部类 —————-外部类不属于成员，因此不能用static修饰</p>
+<p>  static可修饰的成员：成员变量、方法、<del>构造器</del>、初始化块、内部类</p>
+<ul>
+<li><p>static 成员（成员变量、方法、初始化块、内部类）属于类成员</p>
+<p>所有类成员，都只能用类名调用！java允许使用对象来调用类成员，其实没有意义！</p>
+</li>
+<li><p>static考点：<strong>static成员不能访问非static成员；非static成员可以访问static成员</strong>。</p>
+</li>
+</ul>
+<p>  <img src="https://img-blog.csdnimg.cn/2020073001295860.png" alt="在这里插入图片描述"></p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>  在某些场景下，某些类只需要（只能）创建一个实例，比如系统的窗口管理器，数据库引擎访问点，Java程序所在的jre环境。。。。。。都只要产生一个实例。此时就应该采用单例模式。</p>
+<p>  如何设计单例模式？</p>
+<ul>
+<li><p>隐藏构造器——–避免被创建实例</p>
+</li>
+<li><p>暴露一个static方法，该方法用于创建实例，该方法还需要保证，该类只产生一个实例。</p>
+<pre class="line-numbers language-none"><code class="language-none">public class Singleton
+&#123;
+	private static Singleton s;
+	&#x2F;&#x2F; 构造器隐藏
+	private Singleton()&#123;&#125;
+	&#x2F;&#x2F;暴露一个static方法，用于创建
+	public static Singleton instance()
+	&#123;
+		if (s &#x3D;&#x3D; null) &#x2F;&#x2F;还没有创建实例
+		&#123;
+			s &#x3D; new Singleton();
+		&#125;
+		return s
+	&#125;
+&#125;
+
+public class SingletonTest
+&#123;
+	public static void main(String[] args)
+	&#123;
+		Singleton s1 &#x3D; new Singleton();&#x2F;&#x2F;报错，构造器隐藏了
+		Singleton s1 &#x3D; Singleton.instance();
+		Singleton s1 &#x3D; Singleton.instance();
+		System.out.println(s1 &#x3D;&#x3D; s2);&#x2F;&#x2F;true
+	&#125;
+&#125;</code></pre></li>
+</ul>
+<h3 id="final修饰符详解"><a href="#final修饰符详解" class="headerlink" title="final修饰符详解"></a>final修饰符详解</h3><p>可以修饰变量（各种）、方法、类。</p>
+<p>final与abstract是互斥的</p>
+<ul>
+<li><p>final修饰变量：该变量被赋初始值后，不能被重新赋值，final修饰的变量<strong>必须赋初始值</strong>，且只能赋值<strong>一次</strong>。</p>
+</li>
+<li><p>final修饰的成员变量</p>
+<p>非final的成员变量：系统自动分配</p>
+<p>final的成员变量：必须显示指定初始值</p>
+<ul>
+<li><p>final实例变量必须显示指定初始值，且必须在以下3个位置</p>
+<ul>
+<li>定义时指定初始值</li>
+<li>实例初始化块</li>
+<li>每个构造器显示指定一次初始值</li>
+</ul>
+<p>本质上只有一个：构造器</p>
+</li>
+<li><p>final类变量必须显示指定初始值，且必须在以下2个位置</p>
+<ul>
+<li>定义时指定初始值</li>
+<li>类初始化块</li>
+</ul>
+<p>本质上只有一个：类初始化块</p>
+</li>
+<li><p>final修饰局部变量</p>
+<p>与普通变量的区别是：不能第二次赋值，必须由程序员显示赋值。</p>
+</li>
+<li><p>final修饰引用类型变量</p>
+<p>final只能保证本身的变量不被重新赋值，但可以修改final变量所引用的对象</p>
+<p>重写toString()</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730013016644.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730013032417.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>final修饰的“宏替换”的变量</p>
+<p>如果一个变量满足以下3个条件：</p>
+<ul>
+<li>变量有final修饰</li>
+<li>声明变量时指定初始值</li>
+<li>变量的初始值可以在编译时确定（初始值的表达式中没有变量、方法调用等）</li>
+</ul>
+<p>这个变量就会消失，所有出现该变量的地方，在编译时就会替换该变量的值。</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730013051502.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/2020073001310645.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/2020073001312138.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/2020073001313591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730013155302.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>​    </p>
+<ul>
+<li><p>final修饰方法</p>
+<p>表明该方法不能被子类重写。但是该方法可以被重载，也可以被子类调用！</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730013209362.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>final修饰类</p>
+<p>表明该类不能派生子类！jdk里有很多类都是final:    String    Math    System</p>
+</li>
+</ul>
+<h2 id="abstract-抽象"><a href="#abstract-抽象" class="headerlink" title="abstract(抽象)"></a>abstract(抽象)</h2><p>他只能修饰2个东西：方法、类。抽象方法、抽象类。</p>
+<p>abstract与final互斥。</p>
+<ul>
+<li><p>抽象类：有得有失。</p>
+<p>抽象类与普通类的区别：有得有失</p>
+<p>有得：得到一个新功能：抽象类可拥有抽象方法。</p>
+<p>有失：失去一个功能：创建对象。</p>
+<p>抽象类的主要作用：</p>
+<ul>
+<li>派生子类</li>
+<li>子类构造器一定要调用父类构造器方法一次，因此抽象类一定有构造器。</li>
+</ul>
+</li>
+<li><p>抽象方法：</p>
+<p><strong>只有方法签名，没有方法体</strong>的方法。</p>
+<p><strong>只有抽象类可以拥有抽象方法</strong>。 </p>
+</li>
+<li><p>抽象类作用：</p>
+<ul>
+<li>定义变量</li>
+<li>调用类方法和类变量</li>
+<li>派生子类—–主要目的</li>
+</ul>
+</li>
+<li><p>抽象类派生子类</p>
+<p>子类要么重写抽象父类中所有抽象方法，要么子类也只能是抽象的。</p>
+</li>
+</ul>
+<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>接口相当于一种<strong>彻底抽象的类</strong>，接口体现的是一种规范——–要暴露出来供大家使用，多以接口的多有东西都用public修饰，不管你写还是不写，时钟都是public修饰，通常不写。</p>
+<p>【修饰符】interface 接口名 extends 父接口1，父接口2，….</p>
+<p>{</p>
+<pre><code>// 成员变量。只有常量。始终会添加public static final修饰。通常不写。
+
+//抽象方法。java8后，类方法、默认方法（抽象添加方法体）**默认方法就是实例方法**
+
+//内部类
+</code></pre>
+<p>}</p>
+<ul>
+<li>接口是多继承的。</li>
+<li>修饰符：public  。 接口是彻底抽象的，不能有final;接口已经够抽象了，因此不需要abstract修饰</li>
+<li>接口名：基本等同于类名，接口一般推荐都是用形容词。添加able就是形容词。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730013230423.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730013242871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDYyNjI3OQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>接口的作用：</p>
+<ul>
+<li>定义变量，只能实现类的实例来赋值（向上转型）</li>
+<li>调用类方法或类变量</li>
+<li>派生实现类</li>
+</ul>
+</li>
+<li><p>实现接口</p>
+<p>【修饰符】 class 类名 extends 父类 implements 父接口1，父接口2，…</p>
+<p>{</p>
+<pre><code>//5大成员
+</code></pre>
+<p>}</p>
+</li>
+<li><p>java9为接口增加的private方法</p>
+<p>多个default方法之间很可能出现“公共部分”，这个“公共部分”就应该被抽取到“工具方法”中。</p>
+<p>而工具方法又希望被隐藏,=====用private修饰。</p>
+<p>本质：工具方法，为其他方法服务。</p>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/03/22/%E7%96%AF%E7%8B%82java%E9%83%A8%E5%88%86%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2022/03/22/%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            种花问题
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2022/03/22/%E5%AD%A6%E7%94%9F%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86-java%E5%AE%9E%E7%8E%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">学生系统管理-java实现</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021-2022
+        <i class="ri-heart-fill heart_icon"></i> 伞
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        由 <a href="https://hexo.io" target="_blank">Hexo</a> 强力驱动
+        <span class="division">|</span>
+        主题 - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/heart.png" alt="伞"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=22707008&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+  </div>
+</body>
+
+</html>
